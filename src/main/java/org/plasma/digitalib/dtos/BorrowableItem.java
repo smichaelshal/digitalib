@@ -13,4 +13,11 @@ public abstract class BorrowableItem implements Serializable {
     protected final Instant enteredTime;
     protected final boolean isBorrowed;
     protected final UUID Id;
+
+    protected BorrowableItem(List<Borrowing> borrowings, Instant enteredTime, boolean isBorrowed, UUID id) {
+        this.borrowings = borrowings;
+        this.enteredTime = enteredTime;
+        this.isBorrowed = isBorrowed;
+        Id = id;
+    }
 }
