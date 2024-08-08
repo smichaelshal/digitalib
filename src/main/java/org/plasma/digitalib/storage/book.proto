@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package protobuf;
+import "google/protobuf/timestamp.proto";
+
+option java_package = "org.plasma.digitalib";
+option java_outer_classname = "BookBuilder";
+
+message BookIdentifier {
+  string name = 1;
+  string author = 2;
+}
+
+message User {
+  string id = 1;
+}
+
+message Borrowing {
+  User user = 1;
+  google.protobuf.Timestamp borrowingTime = 2;
+  optional google.protobuf.Timestamp returnTime = 3;
+  google.protobuf.Timestamp expiredTime = 4;
+}
+
+message BorrowableItem {
+  repeated BorrowableItem borrowings = 1;
+  google.protobuf.Timestamp enteredTime = 2;
+  bool isBorrowed = 3;
+  string id = 4;
+}
+
+message Book {
+  BorrowableItem borrowableItem = 1;
+  string genre = 2;
+  string summary = 3;
+  BookIdentifier bookIdentifier = 4;
+}
