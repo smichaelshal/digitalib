@@ -30,7 +30,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable> im
     }
 
     public List<T> readAll(Function<T, Boolean> filter) {
-        if (filter == null) {
+        if (filter != null) {
             return this.items.stream().filter(filter::apply).collect(Collectors.toList());
         }
         return new LinkedList<T>();
