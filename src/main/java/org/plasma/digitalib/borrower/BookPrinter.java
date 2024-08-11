@@ -8,10 +8,10 @@ import java.util.function.Consumer;
 public class BookPrinter implements Consumer<Book> {
     public void accept(Book book) {
         BookIdentifier bookIdentifier = book.getBookIdentifier();
-        System.out.println(String.format("%s\n%s\n%s\n%s\n",
+        System.out.printf("%s\n%s\n%s\n%s\n%n",
                 bookIdentifier.getName(),
                 bookIdentifier.getAuthor(),
                 book.getGenre(),
-                book.getSummary()));
+                book.getSummary());
     }
 }
