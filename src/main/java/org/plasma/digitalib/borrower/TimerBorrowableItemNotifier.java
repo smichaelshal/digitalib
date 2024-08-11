@@ -7,9 +7,7 @@ import org.plasma.digitalib.filters.IdFilter;
 import org.plasma.digitalib.storage.Storage;
 
 import java.time.Instant;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -70,8 +68,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements Bo
             if (this.mapTimeId.containsKey(expiredTime)) {
                 this.mapTimeId.get(expiredTime).add(id);
             } else {
-                List<UUID> ids = new LinkedList<>();
-                ids.add(id);
+                List<UUID> ids = Collections.singletonList(id);
                 this.mapTimeId.put(expiredTime, ids);
             }
             return true;
