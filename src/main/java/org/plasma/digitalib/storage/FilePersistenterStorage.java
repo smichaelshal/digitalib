@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.plasma.digitalib.dtos.BorrowableItem;
 
@@ -31,6 +32,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable> im
 
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new Jdk8Module());
         this.recover();
     }
 
@@ -77,9 +79,9 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable> im
         try (Stream<Path> paths = Files.walk(this.directoryPath)) {
             paths.forEach(path -> {
                 try {
-                    this.items.add((T)objectMapper.readValue(path.toFile(), new TypeReference<T>() {}));
+                    this.items.add((T)this.objectMapper.readValue(path.toFile(), new TypeReference<T>() {}));
                 } catch (IOException e) {
-                    System.out.println(e.toString());
+                    System.out.println(path + e.toString());
                     // log
                 }
             });
@@ -87,5 +89,6 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable> im
             System.out.println(e.toString());
             // log
         }
+        System.out.println("done recover");
     }
 }
