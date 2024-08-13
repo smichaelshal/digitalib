@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.plasma.digitalib.dtos.Book;
 import org.plasma.digitalib.dtos.BorrowableItem;
 
 import java.io.File;
@@ -79,7 +80,11 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable> im
         try (Stream<Path> paths = Files.walk(this.directoryPath)) {
             paths.forEach(path -> {
                 try {
-                    this.items.add((T)this.objectMapper.readValue(path.toFile(), new TypeReference<T>() {}));
+//                    String input = """
+//                            {"borrowings":[{"user":{"id":"1234"},"borrowingTime":1723531612.463434700,"returnTime":null,"expiredTime":1723531619.463434700}],"enteredTime":1723531612.463434700,"genre":"summary","summary":"bla bla","bookIdentifier":{"name":"book2","author":"kaki"},"id":"3ad4f526-1a19-4191-8b25-666bb18c1b91","borrowed":false}
+//                            """;
+                    this.items.add((T)this.objectMapper.readValue(path.toFile(), Book.class));
+//                    this.objectMapper.readValue(input, Book.class);
                 } catch (IOException e) {
                     System.out.println(path + e.toString());
                     // log

@@ -1,13 +1,16 @@
 package org.plasma.digitalib.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
+@NoArgsConstructor
 public class Id implements Serializable {
-    protected final UUID id;
+    protected UUID id;
 }
