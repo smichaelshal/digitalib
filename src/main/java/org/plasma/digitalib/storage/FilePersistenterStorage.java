@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.plasma.digitalib.dtos.Book;
@@ -12,6 +14,7 @@ import org.plasma.digitalib.dtos.BorrowableItem;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
@@ -26,14 +29,20 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable> im
     private final Path directoryPath;
     private final ObjectMapper objectMapper;
 
-
     public FilePersistenterStorage(List<T> items, Path directoryPath) {
         this.items = items;
         this.directoryPath = directoryPath;
-
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.registerModule(new Jdk8Module());
+        this.objectMapper.registerModule(new Jdk8Module());
+
+
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType("org.plasma.digitalib")
+                .allowIfSubType("java.util.LinkedList")
+                .build();
+        this.objectMapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL);
+        this.objectMapper.registerSubtypes(BorrowableItem.class);
         this.recover();
     }
 
@@ -80,10 +89,9 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable> im
         try (Stream<Path> paths = Files.walk(this.directoryPath)) {
             paths.forEach(path -> {
                 try {
-//                    String input = """
-//                            {"borrowings":[{"user":{"id":"1234"},"borrowingTime":1723531612.463434700,"returnTime":null,"expiredTime":1723531619.463434700}],"enteredTime":1723531612.463434700,"genre":"summary","summary":"bla bla","bookIdentifier":{"name":"book2","author":"kaki"},"id":"3ad4f526-1a19-4191-8b25-666bb18c1b91","isBorrowed":false}
-//                            """;
-                    this.items.add((T)this.objectMapper.readValue(path.toFile(), Book.class));
+                    this.items.add(this.objectMapper.readValue(path.toFile(), new TypeReference<T>() {
+                    }));
+                     System.out.println("item");
 //                    this.objectMapper.readValue(input, Book.class);
                 } catch (IOException e) {
                     System.out.println(path + e.toString());
