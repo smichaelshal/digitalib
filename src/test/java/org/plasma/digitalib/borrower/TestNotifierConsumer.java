@@ -15,7 +15,7 @@ class TestNotifierConsumer<T> implements Consumer<T> {
     private final T expectedItem;
     private final Semaphore lock;
 
-    public void accept(T item) {
+    public void accept(final T item) {
         Instant currentTime = Instant.now();
         lock.release();
         assertEquals(item, this.expectedItem);

@@ -4,8 +4,9 @@ import org.plasma.digitalib.dtos.BorrowableItem;
 
 import java.util.function.Function;
 
-public class BorrowingFilter<T extends BorrowableItem> implements Function<T, Boolean> {
-    public Boolean apply(T item) {
+public final class BorrowingFilter<T extends BorrowableItem>
+        implements Function<T, Boolean> {
+    public Boolean apply(final T item) {
         return item.getIsBorrowed();
     }
 }

@@ -37,9 +37,9 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
     private final Lock lock;
 
     public TimerBorrowableItemNotifier(
-            ScheduledExecutorService scheduler,
-            Storage<T> storage,
-            Consumer<T> consumer) {
+            final ScheduledExecutorService scheduler,
+            final Storage<T> storage,
+            final Consumer<T> consumer) {
 
         this.scheduler = scheduler;
         this.storage = storage;
@@ -79,7 +79,10 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             executor.shutdown();
         };
 
-        this.scheduler.schedule(schedulerTask, duration.toMillis(), TimeUnit.MILLISECONDS);
+        this.scheduler.schedule(
+                schedulerTask,
+                duration.toMillis(),
+                TimeUnit.MILLISECONDS);
     }
 
     private void fetchAllExpiredItems() {
@@ -91,7 +94,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
     }
 
 
-    private void addScheduleTime(Instant expiredTime) {
+    private void addScheduleTime(final Instant expiredTime) {
         this.lock.lock();
         if (!this.times.contains(expiredTime)) {
             this.times.add(expiredTime);
@@ -112,7 +115,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         return Optional.of(currentTime);
     }
 
-    public boolean add(T item) {
+    public final boolean add(final T item) {
         try {
             List<Borrowing> borrowings = item.getBorrowings();
             Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
@@ -135,7 +138,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         }
     }
 
-    public boolean delete(T item) {
+    public final boolean delete(final T item) {
         try {
             List<Borrowing> borrowings = item.getBorrowings();
             Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
