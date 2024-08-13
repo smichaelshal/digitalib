@@ -8,13 +8,27 @@ import org.plasma.digitalib.storage.Storage;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.UUID;
+import java.util.Optional;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
-public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements BorrowableItemNotifier<T> {
+public class TimerBorrowableItemNotifier<T extends BorrowableItem>
+        implements BorrowableItemNotifier<T> {
     private final ConcurrentMap<Instant, List<UUID>> mapTimeId;
     private final Storage<T> storage;
     private final Consumer<T> consumer;
