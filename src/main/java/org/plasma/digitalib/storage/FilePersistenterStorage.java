@@ -58,7 +58,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     }
 
     public final List<T> readAll(final Function<T, Boolean> filter) {
-        if (filter == null) {
+        if (filter != null) {
             return this.items.stream()
                     .filter(filter::apply).
                     collect(Collectors.toList());
