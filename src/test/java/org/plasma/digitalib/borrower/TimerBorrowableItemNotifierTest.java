@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TimerBorrowableItemNotifierTest {
 
     @Test
-    public void test() throws InternalException {
+    public void notifyTest() throws InternalException {
         Book book = new Book("genre", "summary", new BookIdentifier("name", "author"));
         Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
         User user = new User("1234");
@@ -42,13 +42,13 @@ class TimerBorrowableItemNotifierTest {
             throw new InternalException();
         }
 
-        TestConsumer testConsumer = new TestConsumer(expiredTime, book, lock);
+        TestNotifierConsumer<Book> testNotifierConsumer = new TestNotifierConsumer<>(expiredTime, book, lock);
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
         TimerBorrowableItemNotifier<Book> timerBorrowableItemNotifier = new TimerBorrowableItemNotifier<>(
                 scheduler,
                 storage,
-                testConsumer);
+                testNotifierConsumer);
 
         timerBorrowableItemNotifier.add(book);
         Duration duration = java.time.Duration.between(Instant.now(), expiredTime);
