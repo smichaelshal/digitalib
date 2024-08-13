@@ -1,6 +1,7 @@
 package org.plasma.digitalib.dtos;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -15,7 +16,10 @@ public class BorrowableItem implements Serializable {
     protected Boolean isBorrowed;
     protected UUID id;
 
-    public BorrowableItem(List<Borrowing> borrowings, Instant enteredTime, boolean isBorrowed, UUID id) {
+    public BorrowableItem(final List<Borrowing> borrowings,
+                          final Instant enteredTime,
+                          final Boolean isBorrowed,
+                          final UUID id) {
         this.borrowings = borrowings;
         this.enteredTime = enteredTime;
         this.isBorrowed = isBorrowed;
