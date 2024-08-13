@@ -65,7 +65,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements Bo
             executor.shutdown();
         };
 
-        this.scheduler.schedule(schedulerTask, duration.toSeconds() - 1, TimeUnit.SECONDS);
+        this.scheduler.schedule(schedulerTask, duration.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     private void fetchAllExpiredItems() {

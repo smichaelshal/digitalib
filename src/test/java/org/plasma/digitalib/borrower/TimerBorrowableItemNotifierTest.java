@@ -27,6 +27,7 @@ class TimerBorrowableItemNotifierTest {
     public void test() {
         Book book = new Book("genre", "summary", new BookIdentifier("name", "author"));
         Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
+        System.out.println("expiredTime: " + expiredTime.getEpochSecond());
         User user = new User("1234");
 
         book.getBorrowings().add(
@@ -38,7 +39,7 @@ class TimerBorrowableItemNotifierTest {
         storage.create(book);
 
 
-//        Consumer<Book> mockConsumer = Mockito.mock(Consumer.class);
+        Consumer<Book> mockConsumer = Mockito.mock(Consumer.class);
 
         Semaphore lock = new Semaphore(1);
         boolean isLocked = lock.tryAcquire();

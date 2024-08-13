@@ -22,9 +22,9 @@ class TestConsumer<T> implements Consumer<T> {
         Instant currentTime = Instant.now();
         lock.release();
 
-//        assertEquals(item, this.expectedItem);
-        System.out.println(currentTime.getEpochSecond());
-        System.out.println(this.expectedTime.getEpochSecond());
+        System.out.println("run - currentTime: " + currentTime.getEpochSecond());
+        System.out.println("run - expectedTime: " + this.expectedTime.getEpochSecond());
+        assertEquals(item, this.expectedItem);
         assertEquals(currentTime.getEpochSecond(), this.expectedTime.getEpochSecond());
     }
 }
