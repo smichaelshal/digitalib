@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.commons.lang3.SerializationUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.plasma.digitalib.dtos.*;
 
@@ -14,64 +16,83 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
-import org.apache.commons.lang3.SerializationUtils;
-
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FilePersistenterStorageTest {
 
     private List<Book> listStorage;
+    private Storage<Book> storage;
+    private Book book;
 
-    @Test
-    public void addBookTest() throws IOException {
-        Storage<Book> storage = this.createStorage();
-        Book book = this.createBook();
-        storage.create(book);
-
-        assertEquals(1, this.listStorage.size());
-        Book bookResult = this.listStorage.get(0);
-        assertTrue(this.compare(book, bookResult));
+    @BeforeEach
+    public void setup() throws IOException {
+        this.listStorage = new LinkedList<Book>();
+        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
+        this.storage = new FilePersistenterStorage<>(this.listStorage, path);
+        this.book = new Book(
+                "genre",
+                "summary",
+                new BookIdentifier("name", "author"));
     }
 
     @Test
-    public void readBookTest() throws IOException {
-        Storage<Book> storage = this.createStorage();
-        Book book = this.createBook();
-        storage.create(book);
+    public void add_with_book_should_add_to_list() {
+        // arrange
+        int sizeListBefore = this.listStorage.size();
 
-        BookByIdFilter bookByIdFilter = new BookByIdFilter(book.getId());
+        // act
+        this.storage.create(this.book);
+        Book bookResult = this.listStorage.get(sizeListBefore);
+        int sizeListAfter = this.listStorage.size();
+        boolean isEquals = this.compare(book, bookResult);
 
-        List<Book> books = storage.readAll(bookByIdFilter);
-        assertEquals(1, books.size());
-
-        Book bookResult = books.get(0);
-        assertTrue(this.compare(book, bookResult));
+        // assert
+        assertEquals(sizeListBefore + 1, sizeListAfter);
+        assertTrue(isEquals);
     }
 
     @Test
-    public void updateBookTest() throws IOException {
-        Storage<Book> storage = this.createStorage();
-        Book book = this.createBook();
-        storage.create(book);
+    public void read_with_id_filter_should_return_book() {
+        // arrange
+        BookByIdFilter bookByIdFilter = new BookByIdFilter(this.book.getId());
+        this.storage.create(this.book);
 
-        Book bookCopy = SerializationUtils.clone(book);
+        // act
+        List<Book> bookResults = this.storage.readAll(bookByIdFilter);
+        int sizeResult = bookResults.size();
+        boolean isEquals = this.compare(this.book, bookResults.get(0));
 
-        Instant expiredTime = Instant.now().plus(1000, ChronoUnit.SECONDS);
-        Borrowing borrowing = new Borrowing(new User("5678"), Instant.now(), expiredTime);
+        // assert
+        assertEquals(1, sizeResult);
+        assertTrue(isEquals);
+    }
+
+    @Test
+    public void update_with_new_borrowing_return_updated_book() {
+        // arrange
+        this.storage.create(this.book);
+        Book bookCopy = SerializationUtils.clone(this.book);
+        Borrowing borrowing = new Borrowing(
+                new User("5678"),
+                Instant.now(),
+                Instant.now().plus(1000, ChronoUnit.SECONDS));
         bookCopy.getBorrowings().add(borrowing);
-        assertEquals(book.getId().toString(), bookCopy.getId().toString());
-        storage.update(book, bookCopy);
 
-        assertEquals(1, this.listStorage.size());
-        Book bookResult = this.listStorage.get(0);
-        List<Borrowing> borrowingsResult = bookResult.getBorrowings();
+        // act
+        this.storage.update(this.book, bookCopy);
+        Book bookResult = this.listStorage.stream()
+                .filter(book -> book.getId().equals(this.book.getId()))
+                .findFirst().get();
+        boolean isEquals = this.compare(bookCopy, bookResult);
 
-        assertEquals(1, borrowingsResult.size());
-
-        assertTrue(this.compare(borrowingsResult.get(0), bookCopy.getBorrowings().get(0)));
+        // assert
+        assertTrue(isEquals);
     }
 
     private <T> boolean compare(T fistItem, T secondItem) {
@@ -96,15 +117,5 @@ class FilePersistenterStorageTest {
             // log
             return false;
         }
-    }
-
-    private Storage<Book> createStorage() throws IOException {
-        this.listStorage = new LinkedList<Book>();
-        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
-        return new FilePersistenterStorage<>(this.listStorage, path);
-    }
-
-    private Book createBook() {
-        return new Book("genre", "summary", new BookIdentifier("name", "author"));
     }
 }
