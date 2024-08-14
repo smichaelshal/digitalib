@@ -29,7 +29,11 @@ class TimerBorrowableItemNotifierTest {
 
     @Test
     public void notifyTest() throws InternalException, IOException {
-        Book book = new Book("genre", "summary", new BookIdentifier("name", "author"));
+        Book book = new Book(
+                "genre",
+                "summary",
+                new BookIdentifier("name", "author"),
+                true);
         Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
         User user = new User("1234");
 
