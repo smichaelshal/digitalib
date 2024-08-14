@@ -9,12 +9,15 @@ import org.plasma.digitalib.dtos.User;
 import org.plasma.digitalib.storage.FilePersistenterStorage;
 import org.plasma.digitalib.storage.Storage;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
@@ -25,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TimerBorrowableItemNotifierTest {
 
     @Test
-    public void notifyTest() throws InternalException {
+    public void notifyTest() throws InternalException, IOException {
         Book book = new Book("genre", "summary", new BookIdentifier("name", "author"));
         Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
         User user = new User("1234");
@@ -33,7 +36,7 @@ class TimerBorrowableItemNotifierTest {
         book.getBorrowings().add(
                 new Borrowing(user, Instant.now(), Optional.empty(), expiredTime));
 
-        Storage<Book> storage = new FilePersistenterStorage<Book>(new LinkedList<Book>(), Path.of(""));
+        Storage<Book> storage = this.createStorage();
         storage.create(book);
 
         Semaphore lock = new Semaphore(1);
@@ -60,5 +63,10 @@ class TimerBorrowableItemNotifierTest {
             System.out.println(e);
         }
         assertTrue(lock.tryAcquire());
+    }
+
+    private Storage<Book> createStorage() throws IOException {
+        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
+        return new FilePersistenterStorage<>(new LinkedList<Book>(), path);
     }
 }
