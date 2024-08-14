@@ -1,7 +1,7 @@
 package org.plasma.digitalib.dtos;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -10,15 +10,38 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Setter
 public class Book extends BorrowableItem implements Serializable {
-    private final String genre;
-    private final String summary;
-    private final BookIdentifier bookIdentifier;
+    private String genre;
+    private String summary;
+    private BookIdentifier bookIdentifier;
 
-    public Book(String genre, String summary, BookIdentifier bookIdentifier) {
-        super(new LinkedList<Borrowing>(), Instant.now(), true, UUID.randomUUID());
-        this.genre = genre;
-        this.summary = summary;
-        this.bookIdentifier = bookIdentifier;
+    public Book() {
+        super(null, null, false, null);
+    }
+
+    public Book(final List<Borrowing> borrowingsBook,
+                final UUID idBook,
+                final Instant enteredTimeBook,
+                final Boolean isBorrowedBook,
+                final String genreBook,
+                final String summaryBook,
+                final BookIdentifier bookIdentifierBook) {
+        super(borrowingsBook, enteredTimeBook, isBorrowedBook, idBook);
+        this.genre = genreBook;
+        this.summary = summaryBook;
+        this.bookIdentifier = bookIdentifierBook;
+    }
+
+    public Book(final String genreBook,
+                final String summaryBook,
+                final BookIdentifier bookIdentifierBook) {
+        super(new LinkedList<Borrowing>(),
+                Instant.now(),
+                false,
+                UUID.randomUUID());
+        this.genre = genreBook;
+        this.summary = summaryBook;
+        this.bookIdentifier = bookIdentifierBook;
     }
 }

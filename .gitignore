@@ -37,3 +37,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+<<<<<<< HEAD
+=======
+
+### other ###
+myTest.java
+src/db/
+>>>>>>> feature/storage

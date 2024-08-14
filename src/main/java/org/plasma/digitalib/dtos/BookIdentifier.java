@@ -1,13 +1,15 @@
 package org.plasma.digitalib.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class BookIdentifier implements Serializable {
-    private final String name;
-    private final String author;
+    private String name;
+    private String author;
 }
