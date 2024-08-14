@@ -23,11 +23,11 @@ public class Book extends BorrowableItem implements Serializable {
     public Book(final List<Borrowing> borrowingsBook,
                 final UUID idBook,
                 final Instant enteredTimeBook,
-                final Boolean isBorrowedBook,
+                final Boolean isBorrowed,
                 final String genreBook,
                 final String summaryBook,
                 final BookIdentifier bookIdentifierBook) {
-        super(borrowingsBook, enteredTimeBook, isBorrowedBook, idBook);
+        super(borrowingsBook, enteredTimeBook, isBorrowed, idBook);
         this.genre = genreBook;
         this.summary = summaryBook;
         this.bookIdentifier = bookIdentifierBook;
@@ -39,6 +39,19 @@ public class Book extends BorrowableItem implements Serializable {
         super(new LinkedList<Borrowing>(),
                 Instant.now(),
                 false,
+                UUID.randomUUID());
+        this.genre = genreBook;
+        this.summary = summaryBook;
+        this.bookIdentifier = bookIdentifierBook;
+    }
+
+    public Book(final String genreBook,
+                final String summaryBook,
+                final BookIdentifier bookIdentifierBook,
+                final Boolean isBorrowed) {
+        super(new LinkedList<Borrowing>(),
+                Instant.now(),
+                isBorrowed,
                 UUID.randomUUID());
         this.genre = genreBook;
         this.summary = summaryBook;
