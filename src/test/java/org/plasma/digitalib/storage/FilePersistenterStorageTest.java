@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FilePersistenterStorageTest {
 
@@ -47,14 +46,29 @@ class FilePersistenterStorageTest {
         int sizeListBefore = this.listStorage.size();
 
         // act
-        this.storage.create(this.book);
+        boolean addResult = this.storage.create(this.book);
         Book bookResult = this.listStorage.get(sizeListBefore);
         int sizeListAfter = this.listStorage.size();
         boolean isEquals = this.compare(book, bookResult);
 
         // assert
+        assertTrue(addResult);
         assertEquals(sizeListBefore + 1, sizeListAfter);
         assertTrue(isEquals);
+    }
+
+    @Test
+    public void add_with_null_should_return_false() {
+        // arrange
+        int sizeListBefore = this.listStorage.size();
+
+        // act
+        boolean addResult = this.storage.create(null);
+        int sizeListAfter = this.listStorage.size();
+
+        // assert
+        assertFalse(addResult);
+        assertEquals(sizeListBefore, sizeListAfter);
     }
 
     @Test
@@ -74,7 +88,7 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void update_with_new_borrowing_return_updated_book() {
+    public void update_with_new_borrowing_should_return_updated_book() {
         // arrange
         this.storage.create(this.book);
         Book bookCopy = SerializationUtils.clone(this.book);
@@ -85,14 +99,27 @@ class FilePersistenterStorageTest {
         bookCopy.getBorrowings().add(borrowing);
 
         // act
-        this.storage.update(this.book, bookCopy);
+        boolean updateResult = this.storage.update(this.book, bookCopy);
         Book bookResult = this.listStorage.stream()
                 .filter(book -> book.getId().equals(this.book.getId()))
                 .findFirst().get();
         boolean isEquals = this.compare(bookCopy, bookResult);
 
         // assert
+        assertTrue(updateResult);
         assertTrue(isEquals);
+    }
+
+    @Test
+    public void update_with_null_should_return_false() {
+        // arrange
+        this.storage.create(this.book);
+
+        // act
+        boolean updateResult = this.storage.update(this.book, null);
+
+        // assert
+        assertFalse(updateResult);
     }
 
     private <T> boolean compare(T fistItem, T secondItem) {

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.plasma.digitalib.dtos.Book;
 import org.plasma.digitalib.dtos.BorrowableItem;
 
 import java.io.File;
@@ -48,6 +49,9 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     }
 
     public final boolean create(final T item) {
+        if (item == null) {
+            return false;
+        }
         try {
             this.items.add(item);
             this.saveItem(item);
@@ -66,16 +70,20 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         return new LinkedList<T>();
     }
 
-    public final void update(final T oldItem, final T newItem) {
+    public final boolean update(final T oldItem, final T newItem) {
         if (oldItem == null || newItem == null) {
-            return;
+            return false;
         }
+        boolean isFind = false;
         for (int i = 0; i < this.items.size(); i++) {
-            if (oldItem.getId().equals(newItem.getId())) {
+            if (oldItem.getId().equals(this.items.get(i).getId())) {
                 this.items.set(i, newItem);
+                isFind = true;
+                break;
             }
         }
         this.saveItem(newItem);
+        return isFind;
     }
 
     private void saveItem(final T item) {

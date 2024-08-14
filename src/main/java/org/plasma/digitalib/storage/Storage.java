@@ -8,5 +8,5 @@ public interface Storage<T> {
 
     List<T> readAll(Function<T, Boolean> filter);
 
-    void update(T oldItem, T newItem);
+    boolean update(T oldItem, T newItem);
 }
