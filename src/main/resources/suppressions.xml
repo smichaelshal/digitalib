@@ -13,4 +13,5 @@
               files="."/>
     <suppress checks="JavadocVariable"
               files="."/>
+    <suppress checks="VisibilityModifier" files="BorrowableItem.java"/>
 </suppressions>

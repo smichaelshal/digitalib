@@ -20,28 +20,28 @@ public class Book extends BorrowableItem implements Serializable {
         super(null, null, false, null);
     }
 
-    public Book(final List<Borrowing> borrowings,
-                final UUID id,
-                final Instant enteredTime,
-                final Boolean isBorrowed,
-                final String genre,
-                final String summary,
-                final BookIdentifier bookIdentifier) {
-        super(borrowings, enteredTime, isBorrowed, id);
-        this.genre = genre;
-        this.summary = summary;
-        this.bookIdentifier = bookIdentifier;
+    public Book(final List<Borrowing> borrowingsBook,
+                final UUID idBook,
+                final Instant enteredTimeBook,
+                final Boolean isBorrowedBook,
+                final String genreBook,
+                final String summaryBook,
+                final BookIdentifier bookIdentifierBook) {
+        super(borrowingsBook, enteredTimeBook, isBorrowedBook, idBook);
+        this.genre = genreBook;
+        this.summary = summaryBook;
+        this.bookIdentifier = bookIdentifierBook;
     }
 
-    public Book(final String genre,
-                final String summary,
-                final BookIdentifier bookIdentifier) {
+    public Book(final String genreBook,
+                final String summaryBook,
+                final BookIdentifier bookIdentifierBook) {
         super(new LinkedList<Borrowing>(),
                 Instant.now(),
                 false,
                 UUID.randomUUID());
-        this.genre = genre;
-        this.summary = summary;
-        this.bookIdentifier = bookIdentifier;
+        this.genre = genreBook;
+        this.summary = summaryBook;
+        this.bookIdentifier = bookIdentifierBook;
     }
 }

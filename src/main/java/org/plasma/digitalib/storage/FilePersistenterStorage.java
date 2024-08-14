@@ -27,10 +27,10 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     private final ObjectMapper objectMapper;
 
     public FilePersistenterStorage(
-            final List<T> items,
-            final Path directoryPath) {
-        this.items = items;
-        this.directoryPath = directoryPath;
+            final List<T> borrowableItems,
+            final Path directoryPersistenterPath) {
+        this.items = borrowableItems;
+        this.directoryPath = directoryPersistenterPath;
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.registerModule(new Jdk8Module());

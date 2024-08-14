@@ -16,13 +16,13 @@ public class BorrowableItem implements Serializable {
     protected Boolean isBorrowed;
     protected UUID id;
 
-    public BorrowableItem(final List<Borrowing> borrowings,
-                          final Instant enteredTime,
-                          final Boolean isBorrowed,
-                          final UUID id) {
-        this.borrowings = borrowings;
-        this.enteredTime = enteredTime;
-        this.isBorrowed = isBorrowed;
-        this.id = id;
+    public BorrowableItem(final List<Borrowing> borrowingsItem,
+                          final Instant enteredTimeItem,
+                          final Boolean isBorrowedItem,
+                          final UUID idItem) {
+        this.borrowings = borrowingsItem;
+        this.enteredTime = enteredTimeItem;
+        this.isBorrowed = isBorrowedItem;
+        this.id = idItem;
     }
 }
