@@ -37,13 +37,13 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
     private final Lock lock;
 
     public TimerBorrowableItemNotifier(
-            final ScheduledExecutorService scheduler,
-            final Storage<T> storage,
-            final Consumer<T> consumer) {
+            final ScheduledExecutorService scheduledExecutorService,
+            final Storage<T> itemStorage,
+            final Consumer<T> notifyConsumer) {
 
-        this.scheduler = scheduler;
-        this.storage = storage;
-        this.consumer = consumer;
+        this.scheduler = scheduledExecutorService;
+        this.storage = itemStorage;
+        this.consumer = notifyConsumer;
         this.mapTimeId = new ConcurrentHashMap<>();
         this.times = new LinkedList<>();
         this.lock = new ReentrantLock();
