@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
-public class IdFilter<T extends BorrowableItem> implements Function<T, Boolean> {
+public class IdFilter<T extends BorrowableItem>
+        implements Function<T, Boolean> {
     private final List<UUID> ids;
 
-    public IdFilter(List<UUID> ids) {
-        this.ids = ids;
+    public IdFilter(final List<UUID> uuids) {
+        this.ids = uuids;
     }
 
-    public Boolean apply(T item) {
+    public final Boolean apply(final T item) {
         return ids.contains(item.getId());
     }
 }
