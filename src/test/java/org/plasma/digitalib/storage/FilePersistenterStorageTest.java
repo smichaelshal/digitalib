@@ -25,47 +25,6 @@ class FilePersistenterStorageTest {
 
     private List<Book> listStorage;
 
-    private <T> boolean compare(T fistItem, T secondItem) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.registerModule(new Jdk8Module());
-
-        PolymorphicTypeValidator polymorphicTypeValidator =
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType("org.plasma.digitalib")
-                        .allowIfSubType("java.util.LinkedList")
-                        .build();
-        objectMapper.activateDefaultTyping(
-                polymorphicTypeValidator,
-                ObjectMapper.DefaultTyping.NON_FINAL);
-        objectMapper.registerSubtypes(BorrowableItem.class);
-
-        try {
-            return Objects.equals(objectMapper.writeValueAsString(fistItem),
-                    objectMapper.writeValueAsString(secondItem));
-        } catch (JsonProcessingException e) {
-            // log
-            return false;
-        }
-    }
-
-    private Storage<Book> createStorage() throws IOException {
-        this.listStorage = new LinkedList<Book>();
-        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
-        return new FilePersistenterStorage<>(this.listStorage, path);
-    }
-
-    private Book createBook() {
-        return new Book("genre", "summary", new BookIdentifier("name", "author"));
-    }
-
-    private Book createBookWithBorroing() {
-        Book book = this.createBook();
-        Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
-        book.getBorrowings().add(new Borrowing(new User("1234"), Instant.now(), expiredTime));
-        return book;
-    }
-
     @Test
     public void addBookTest() throws IOException {
         Storage<Book> storage = this.createStorage();
@@ -113,5 +72,39 @@ class FilePersistenterStorageTest {
         assertEquals(1, borrowingsResult.size());
 
         assertTrue(this.compare(borrowingsResult.get(0), bookCopy.getBorrowings().get(0)));
+    }
+
+    private <T> boolean compare(T fistItem, T secondItem) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new Jdk8Module());
+
+        PolymorphicTypeValidator polymorphicTypeValidator =
+                BasicPolymorphicTypeValidator.builder()
+                        .allowIfSubType("org.plasma.digitalib")
+                        .allowIfSubType("java.util.LinkedList")
+                        .build();
+        objectMapper.activateDefaultTyping(
+                polymorphicTypeValidator,
+                ObjectMapper.DefaultTyping.NON_FINAL);
+        objectMapper.registerSubtypes(BorrowableItem.class);
+
+        try {
+            return Objects.equals(objectMapper.writeValueAsString(fistItem),
+                    objectMapper.writeValueAsString(secondItem));
+        } catch (JsonProcessingException e) {
+            // log
+            return false;
+        }
+    }
+
+    private Storage<Book> createStorage() throws IOException {
+        this.listStorage = new LinkedList<Book>();
+        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
+        return new FilePersistenterStorage<>(this.listStorage, path);
+    }
+
+    private Book createBook() {
+        return new Book("genre", "summary", new BookIdentifier("name", "author"));
     }
 }
