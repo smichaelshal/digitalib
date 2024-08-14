@@ -15,17 +15,50 @@ import java.time.Duration;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 class TimerBorrowableItemNotifierTest {
+
+    private Book book;
+    private TimerBorrowableItemNotifier<Book> notifier;
+
+    public void setup() {
+        Storage<Book> storage = mock(Storage.class);
+        Function<Book, Boolean> filter = mock(Function.class);
+        this.book = new Book(
+                "genre",
+                "summary",
+                new BookIdentifier("name", "author"));
+        List<Book> books = List.of(this.book);
+
+        when(storage.readAll(filter)).thenReturn(books);
+
+//        TestNotifierConsumer<Book> testNotifierConsumer = new TestNotifierConsumer<>(expiredTime, book, lock);
+
+//        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+//
+//        this.notifier = new TimerBorrowableItemNotifier<>(
+//                scheduler,
+//                storage,
+//                testNotifierConsumer);
+
+//        when(entityManager.find(Customer.class,1L)).thenReturn(sampleCustomer);
+    }
+
+    @Test
+    public void add_notify_with_book_should_call_with_book() {
+
+
+    }
 
     @Test
     public void notifyTest() throws InternalException, IOException {
