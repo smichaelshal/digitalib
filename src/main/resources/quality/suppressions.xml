@@ -5,13 +5,6 @@
         "https://checkstyle.org/dtds/suppressions_1_0.dtd">
 
 <suppressions>
-    <suppress checks="HideUtilityClassConstructor"
-              files="."/>
-    <suppress checks="JavadocPackage"
-              files="."/>
-    <suppress checks="MissingJavadocMethod"
-              files="."/>
-    <suppress checks="JavadocVariable"
-              files="."/>
+    <suppress checks="HideUtilityClassConstructor" files="Application.java"/>
     <suppress checks="VisibilityModifier" files="BorrowableItem.java"/>
 </suppressions>
