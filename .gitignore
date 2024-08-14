@@ -38,7 +38,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
-
 ### other ###
 myTest.java
 src/db/
