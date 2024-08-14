@@ -13,7 +13,8 @@ public class StorageBookAdder implements ItemAdder<Book> {
     private final Function<Book, Boolean> bookIdentifierFilter;
 
     public final boolean add(final Book book) {
-        List<Book> bookResults = this.storage.readAll(this.bookIdentifierFilter);
+        List<Book> bookResults = this.storage
+                .readAll(this.bookIdentifierFilter);
         for (Book bookResult : bookResults) {
             if (!bookResult.getSummary().equals(book.getSummary())
                     || !bookResult.getGenre().equals(book.getGenre())) {
