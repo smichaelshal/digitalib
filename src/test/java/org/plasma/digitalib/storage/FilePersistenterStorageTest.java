@@ -1,21 +1,21 @@
 package org.plasma.digitalib.storage;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
-import org.plasma.digitalib.dtos.Book;
-import org.plasma.digitalib.dtos.BookIdentifier;
-import org.plasma.digitalib.dtos.Borrowing;
-import org.plasma.digitalib.dtos.User;
+import org.plasma.digitalib.dtos.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
 import org.apache.commons.lang3.SerializationUtils;
 
 
@@ -23,9 +23,36 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilePersistenterStorageTest {
 
+    private List<Book> listStorage;
+
+    private boolean compare(Book fistBook, Book secondBook) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new Jdk8Module());
+
+        PolymorphicTypeValidator polymorphicTypeValidator =
+                BasicPolymorphicTypeValidator.builder()
+                        .allowIfSubType("org.plasma.digitalib")
+                        .allowIfSubType("java.util.LinkedList")
+                        .build();
+        objectMapper.activateDefaultTyping(
+                polymorphicTypeValidator,
+                ObjectMapper.DefaultTyping.NON_FINAL);
+        objectMapper.registerSubtypes(BorrowableItem.class);
+
+        try{
+            return Objects.equals(objectMapper.writeValueAsString(fistBook),
+                    objectMapper.writeValueAsString(secondBook));
+        } catch (JsonProcessingException e) {
+            // log
+            return false;
+        }
+    }
+
     private Storage<Book> createStorage() throws IOException {
+        this.listStorage = new LinkedList<Book>();
         Path path = Files.createTempDirectory(UUID.randomUUID().toString());
-        return new FilePersistenterStorage<>(new LinkedList<Book>(), path);
+        return new FilePersistenterStorage<>(this.listStorage, path);
     }
 
     private Book createBook() {
@@ -41,14 +68,9 @@ class FilePersistenterStorageTest {
         Book book = this.createBook();
         storage.create(book);
 
-        AnyBookFilter anyBookFilter = new AnyBookFilter();
-//        BookByIdFilter bookByIdFilter = new BookByIdFilter(book.getId());
-
-        List<Book> books = storage.readAll(anyBookFilter);
-        assertEquals(1, books.size());
-
-        Book bookFromStorage = books.get(0);
-        assertEquals(book.getBookIdentifier(), bookFromStorage.getBookIdentifier());
+        assertEquals(1, this.listStorage.size());
+        Book bookResult = this.listStorage.get(0);
+        assertTrue(this.compare(book, bookResult));
     }
 
     @Test

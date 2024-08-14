@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Optional;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Borrowing {
+public class Borrowing implements Serializable {
     private User user;
     private Instant borrowingTime;
     private Optional<Instant> returnTime;
