@@ -1,0 +1,1 @@
+["org.plasma.digitalib.dtos.Book",{"borrowings":["java.util.LinkedList",[]],"enteredTime":1723559236.044878800,"isBorrowed":false,"id":"11f42794-c946-4997-967b-b08957f5628e","genre":"a","summary":"b","bookIdentifier":["org.plasma.digitalib.dtos.BookIdentifier",{"name":"c","author":"d"}]}]
