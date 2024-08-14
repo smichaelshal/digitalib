@@ -71,7 +71,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
             return;
         }
         for (int i = 0; i < this.items.size(); i++) {
-            if (oldItem.getId() == newItem.getId()) {
+            if (oldItem.getId().equals(newItem.getId())) {
                 this.items.set(i, newItem);
             }
         }

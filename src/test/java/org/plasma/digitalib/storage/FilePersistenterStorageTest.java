@@ -25,7 +25,7 @@ class FilePersistenterStorageTest {
 
     private List<Book> listStorage;
 
-    private boolean compare(Book fistBook, Book secondBook) {
+    private <T> boolean compare(T fistItem, T secondItem) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
@@ -40,9 +40,9 @@ class FilePersistenterStorageTest {
                 ObjectMapper.DefaultTyping.NON_FINAL);
         objectMapper.registerSubtypes(BorrowableItem.class);
 
-        try{
-            return Objects.equals(objectMapper.writeValueAsString(fistBook),
-                    objectMapper.writeValueAsString(secondBook));
+        try {
+            return Objects.equals(objectMapper.writeValueAsString(fistItem),
+                    objectMapper.writeValueAsString(secondItem));
         } catch (JsonProcessingException e) {
             // log
             return false;
@@ -56,7 +56,11 @@ class FilePersistenterStorageTest {
     }
 
     private Book createBook() {
-        Book book = new Book("genre", "summary", new BookIdentifier("name", "author"));
+        return new Book("genre", "summary", new BookIdentifier("name", "author"));
+    }
+
+    private Book createBookWithBorroing() {
+        Book book = this.createBook();
         Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
         book.getBorrowings().add(new Borrowing(new User("1234"), Instant.now(), expiredTime));
         return book;
@@ -74,8 +78,18 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void readBookTest() {
+    public void readBookTest() throws IOException {
+        Storage<Book> storage = this.createStorage();
+        Book book = this.createBook();
+        storage.create(book);
 
+        BookByIdFilter bookByIdFilter = new BookByIdFilter(book.getId());
+
+        List<Book> books = storage.readAll(bookByIdFilter);
+        assertEquals(1, books.size());
+
+        Book bookResult = books.get(0);
+        assertTrue(this.compare(book, bookResult));
     }
 
     @Test
@@ -89,16 +103,15 @@ class FilePersistenterStorageTest {
         Instant expiredTime = Instant.now().plus(1000, ChronoUnit.SECONDS);
         Borrowing borrowing = new Borrowing(new User("5678"), Instant.now(), expiredTime);
         bookCopy.getBorrowings().add(borrowing);
+        assertEquals(book.getId().toString(), bookCopy.getId().toString());
         storage.update(book, bookCopy);
 
-        BookByIdFilter bookByIdFilter = new BookByIdFilter(book.getId());
-
-        List<Book> books = storage.readAll(bookByIdFilter);
-        // fix check if size > 0
-
-        Book bookResult = books.get(0);
+        assertEquals(1, this.listStorage.size());
+        Book bookResult = this.listStorage.get(0);
         List<Borrowing> borrowingsResult = bookResult.getBorrowings();
-        // fix equal between borrowings
-//        assertEquals(borrowings.get(borrowings.size() - 1), bookFromStorage.getBookIdentifier());
+
+        assertEquals(1, borrowingsResult.size());
+
+        assertTrue(this.compare(borrowingsResult.get(0), bookCopy.getBorrowings().get(0)));
     }
 }
