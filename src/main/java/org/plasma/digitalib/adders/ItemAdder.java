@@ -1,4 +1,4 @@
-package org.plasma.digitalib.Adder;
+package org.plasma.digitalib.adders;
 
 public interface ItemAdder<T> {
     boolean add(T item);
