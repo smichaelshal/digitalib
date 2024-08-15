@@ -1,30 +1,25 @@
 package org.plasma.digitalib.borrower;
 
-import com.sun.jdi.InternalException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.plasma.digitalib.dtos.Book;
-import org.plasma.digitalib.dtos.BookIdentifier;
-import org.plasma.digitalib.dtos.Borrowing;
-import org.plasma.digitalib.dtos.User;
-import org.plasma.digitalib.storage.FilePersistenterStorage;
+import org.plasma.digitalib.models.Book;
+import org.plasma.digitalib.models.BookIdentifier;
+import org.plasma.digitalib.models.Borrowing;
+import org.plasma.digitalib.models.User;
 import org.plasma.digitalib.storage.Storage;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.time.Duration;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 
@@ -82,7 +77,7 @@ class TimerBorrowableItemNotifierTest {
 
     @Test
     public void delete_withBook_shouldNotCall() {
-        // arrange
+        // Arrange
         long expiredTime = this.book.getBorrowings().get(0).getExpiredTime().toEpochMilli();
         long deltaTime = Duration.between(Instant.now(), this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 

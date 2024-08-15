@@ -1,6 +1,6 @@
 package org.plasma.digitalib.filters;
 
-import org.plasma.digitalib.dtos.BorrowableItem;
+import org.plasma.digitalib.models.BorrowableItem;
 
 import java.util.List;
 import java.util.UUID;

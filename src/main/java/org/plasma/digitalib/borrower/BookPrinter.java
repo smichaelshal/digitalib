@@ -1,7 +1,7 @@
 package org.plasma.digitalib.borrower;
 
-import org.plasma.digitalib.dtos.Book;
-import org.plasma.digitalib.dtos.BookIdentifier;
+import org.plasma.digitalib.models.Book;
+import org.plasma.digitalib.models.BookIdentifier;
 
 import java.util.function.Consumer;
 

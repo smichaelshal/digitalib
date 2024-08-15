@@ -1,10 +1,13 @@
 package org.plasma.digitalib.borrower;
 
-import org.plasma.digitalib.dtos.BorrowableItem;
-import org.plasma.digitalib.dtos.Borrowing;
+import org.plasma.digitalib.models.BorrowableItem;
+import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.filters.BorrowingFilter;
 import org.plasma.digitalib.filters.IdFilter;
+import org.plasma.digitalib.storage.FilePersistenterStorage;
 import org.plasma.digitalib.storage.Storage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -35,11 +38,14 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
     private final ScheduledExecutorService scheduler;
     private final List<Instant> times;
     private final Lock lock;
+    private final Logger logger = LoggerFactory.getLogger(
+            FilePersistenterStorage.class);
 
     public TimerBorrowableItemNotifier(
             final ScheduledExecutorService scheduledExecutorService,
             final Storage<T> itemStorage,
             final Consumer<T> notifyConsumer) {
+
 
         this.scheduler = scheduledExecutorService;
         this.storage = itemStorage;
@@ -71,6 +77,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             this.addScheduleTime(expiredTime);
             return true;
         } catch (NullPointerException e) {
+            logger.error(e.toString());
             return false;
         }
     }
@@ -83,6 +90,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             List<UUID> ids = this.mapTimeId.get(expiredTime);
             return ids.remove(item.getId());
         } catch (NullPointerException e) {
+            logger.error(e.toString());
             return false;
         }
     }
@@ -104,7 +112,6 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                     List<T> items = this.storage.readAll(new IdFilter<>(ids));
                     for (T item : items) {
                         this.consumer.accept(item);
-                        System.out.println("running");
                     }
                     this.mapTimeId.remove(currentTime);
                 }
