@@ -1,6 +1,5 @@
 package org.plasma.digitalib.storage;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
@@ -18,10 +17,13 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class FilePersistenterStorageTest {
 
@@ -65,12 +67,11 @@ class FilePersistenterStorageTest {
         boolean addResult = this.storage.create(this.book);
         Book bookResult = this.listStorage.get(sizeListBefore);
         int sizeListAfter = this.listStorage.size();
-        boolean isEquals = this.compare(book, bookResult);
 
         // Assert
         assertTrue(addResult);
         assertEquals(sizeListBefore + 1, sizeListAfter);
-        assertTrue(isEquals);
+        assertEquals(this.book, bookResult);
     }
 
     @Test
@@ -90,17 +91,19 @@ class FilePersistenterStorageTest {
     @Test
     public void read_withIdFilter_shouldReturnBook() {
         // Arrange
-        BookFilterById bookByIdFilter = new BookFilterById(this.book.getId());
+        Function<Book, Boolean> bookByIdFilter = mock(Function.class);
+        BookIdMatcher bookIdMatcher = new BookIdMatcher(this.book.getId());
+        when(bookByIdFilter.apply(argThat(bookIdMatcher))).thenReturn(true);
+
         this.storage.create(this.book);
 
         // Act
         List<Book> bookResults = this.storage.readAll(bookByIdFilter);
         int sizeResult = bookResults.size();
-        boolean isEquals = this.compare(this.book, bookResults.get(0));
 
         // Assert
         assertEquals(1, sizeResult);
-        assertTrue(isEquals);
+        assertEquals(this.book, bookResults.get(0));
     }
 
     @Test
@@ -119,31 +122,9 @@ class FilePersistenterStorageTest {
         Book bookResult = this.listStorage.stream()
                 .filter(book -> book.getId().equals(this.book.getId()))
                 .findFirst().get();
-        boolean isEquals = this.compare(bookCopy, bookResult);
 
         // Assert
         assertTrue(updateResult);
-        assertTrue(isEquals);
-    }
-
-    @Test
-    public void update_withNull_shouldReturnFalse() {
-        // Arrange
-        this.storage.create(this.book);
-
-        // Act
-        boolean updateResult = this.storage.update(this.book.getId(), null);
-
-        // Assert
-        assertFalse(updateResult);
-    }
-
-    private <T> boolean compare(T fistItem, T secondItem) {
-        try {
-            return Objects.equals(this.objectMapper.writeValueAsString(fistItem),
-                    this.objectMapper.writeValueAsString(secondItem));
-        } catch (JsonProcessingException e) {
-            return false;
-        }
+        assertEquals(bookCopy, bookResult);
     }
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import org.plasma.digitalib.models.BorrowableItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +24,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     private final List<T> items;
     private final Path directoryPath;
     private final ObjectMapper objectMapper;
+    private final static Logger logger = LoggerFactory.getLogger(FilePersistenterStorage.class);
 
     public FilePersistenterStorage(
             final List<T> items,
@@ -41,7 +44,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 return false;
             }
         } catch (Exception e) {
-            // log
+            logger.error(e.toString());
             return false;
         }
         return true;
@@ -75,13 +78,29 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         try {
             this.objectMapper.writeValue(file, item);
         } catch (Exception e) {
-            // log
+            logger.error(e.toString());
             return false;
         }
         return true;
     }
 
+    private boolean isDirectoryEmpty(final Path path) throws IOException {
+        if (Files.isDirectory(path)) {
+            try (Stream<Path> entries = Files.list(path)) {
+                return !entries.findFirst().isPresent();
+            }
+        }
+        return false;
+    }
+
     private void recover() {
+        try {
+            if(this.isDirectoryEmpty(this.directoryPath)) {
+                return;
+            }
+        } catch (Exception e) {
+            logger.error(e.toString());
+        }
         try (Stream<Path> paths = Files.walk(this.directoryPath)) {
             paths.forEach(path -> {
                 try {
@@ -90,11 +109,11 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                             new TypeReference<T>() {
                             }));
                 } catch (IOException e) {
-                    // log
+                    logger.error(e.toString());
                 }
             });
         } catch (IOException e) {
-            // log
+            logger.error(e.toString());
         }
     }
 }
