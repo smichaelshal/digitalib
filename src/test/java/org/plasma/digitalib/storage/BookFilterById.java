@@ -7,10 +7,10 @@ import java.util.UUID;
 import java.util.function.Function;
 
 @AllArgsConstructor
-public class BookByIdFilter implements Function<Book, Boolean> {
+public class BookFilterById implements Function<Book, Boolean> {
     private final UUID id;
 
     public Boolean apply(Book book) {
-        return this.id == book.getId();
+        return this.id.equals(book.getId());
     }
 }

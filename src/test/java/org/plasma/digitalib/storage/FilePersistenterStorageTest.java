@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilePersistenterStorageTest {
 
     private List<Book> listStorage;
-    private Storage<Book> storage;
+    private FilePersistenterStorage<Book> storage;
     private Book book;
     private ObjectMapper objectMapper;
 
@@ -57,7 +57,7 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void add_with_book_should_add_to_list() {
+    public void add_withBook_shouldAddToList() {
         // Arrange
         int sizeListBefore = this.listStorage.size();
 
@@ -74,7 +74,7 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void add_with_null_should_return_false() {
+    public void add_withNull_shouldReturnFalse() {
         // Arrange
         int sizeListBefore = this.listStorage.size();
 
@@ -88,9 +88,9 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void read_with_id_filter_should_return_book() {
+    public void read_withIdFilter_shouldReturnBook() {
         // Arrange
-        BookByIdFilter bookByIdFilter = new BookByIdFilter(this.book.getId());
+        BookFilterById bookByIdFilter = new BookFilterById(this.book.getId());
         this.storage.create(this.book);
 
         // Act
@@ -104,7 +104,7 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void update_with_new_borrowing_should_return_updated_book() {
+    public void update_withNewBorrowing_shouldReturnUpdatedBook() {
         // Arrange
         this.storage.create(this.book);
         Book bookCopy = SerializationUtils.clone(this.book);
@@ -115,7 +115,7 @@ class FilePersistenterStorageTest {
         bookCopy.getBorrowings().add(borrowing);
 
         // Act
-        boolean updateResult = this.storage.update(this.book, bookCopy);
+        boolean updateResult = this.storage.update(this.book.getId(), bookCopy);
         Book bookResult = this.listStorage.stream()
                 .filter(book -> book.getId().equals(this.book.getId()))
                 .findFirst().get();
@@ -127,12 +127,12 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void update_with_null_should_return_false() {
+    public void update_withNull_shouldReturnFalse() {
         // Arrange
         this.storage.create(this.book);
 
         // Act
-        boolean updateResult = this.storage.update(this.book, null);
+        boolean updateResult = this.storage.update(this.book.getId(), null);
 
         // Assert
         assertFalse(updateResult);

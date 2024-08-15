@@ -17,12 +17,12 @@ public class Borrowing implements Serializable {
     private Optional<Instant> returnTime;
     private Instant expiredTime;
 
-    public Borrowing(final User userBorrowed,
-                     final Instant startBorrowingTime,
-                     final Instant expiredTimeBorrowing) {
-        this.user = userBorrowed;
-        this.borrowingTime = startBorrowingTime;
+    public Borrowing(final User user,
+                     final Instant borrowingTime,
+                     final Instant expiredTime) {
+        this.user = user;
+        this.borrowingTime = borrowingTime;
         this.returnTime = Optional.ofNullable(null);
-        this.expiredTime = expiredTimeBorrowing;
+        this.expiredTime = expiredTime;
     }
 }

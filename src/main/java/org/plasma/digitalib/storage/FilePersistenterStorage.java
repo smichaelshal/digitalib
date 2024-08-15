@@ -2,10 +2,6 @@ package org.plasma.digitalib.storage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.NonNull;
 import org.plasma.digitalib.models.BorrowableItem;
 
@@ -14,8 +10,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,46 +24,42 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     private final ObjectMapper objectMapper;
 
     public FilePersistenterStorage(
-            final List<T> borrowableItems,
-            final Path directoryPersistenterPath,
+            final List<T> items,
+            final Path directoryPath,
             final ObjectMapper objectMapper) {
-        this.items = borrowableItems;
-        this.directoryPath = directoryPersistenterPath;
+        this.items = items;
+        this.directoryPath = directoryPath;
         this.objectMapper = objectMapper;
         this.recover();
     }
 
-    public final boolean create(final T item) {
-        if (item == null) {
-            return false;
-        }
-
+    public final boolean create(@NonNull final T item) {
         try {
             this.items.add(item);
-            this.saveItem(item);
-        } catch (ClassCastException | NullPointerException e) {
+            if (!this.saveItem(item)) {
+                this.items.remove(item);
+                return false;
+            }
+        } catch (Exception e) {
+            // log
             return false;
         }
         return true;
     }
-//    @NonNull
-    public final List<T> readAll(final Function<T, Boolean> filter) {
-        if (filter != null) {
-            return this.items.stream()
-                    .filter(filter::apply).
-                    collect(Collectors.toList());
-        }
-        return new LinkedList<T>();
+
+    public final List<T> readAll(@NonNull final Function<T, Boolean> filter) {
+        return this.items.stream()
+                .filter(filter::apply).
+                collect(Collectors.toList());
     }
 
-    // oldItem -> id >>>>
-    public final boolean update(final T oldItem, final T newItem) {
-        if (oldItem == null || newItem == null) {
-            return false;
-        }
+    public final boolean update(
+            @NonNull final UUID id,
+            @NonNull final T newItem) {
+
         boolean isFind = false;
         for (int i = 0; i < this.items.size(); i++) {
-            if (oldItem.getId().equals(this.items.get(i).getId())) {
+            if (id.equals(this.items.get(i).getId())) {
                 this.items.set(i, newItem);
                 isFind = true;
                 break;
@@ -77,14 +69,16 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         return isFind;
     }
 
-    private void saveItem(final T item) {
+    private boolean saveItem(final T item) {
         File file = Path.of(this.directoryPath.toString(),
                 item.getId().toString()).toFile();
         try {
             this.objectMapper.writeValue(file, item);
         } catch (Exception e) {
             // log
+            return false;
         }
+        return true;
     }
 
     private void recover() {
