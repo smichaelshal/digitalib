@@ -3,11 +3,13 @@ package org.plasma.digitalib.models;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Optional;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
