@@ -21,10 +21,13 @@ import java.util.stream.Stream;
 
 public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         implements Storage<T> {
+    private final Logger logger = LoggerFactory.getLogger(
+            FilePersistenterStorage.class);
+
     private final List<T> items;
     private final Path directoryPath;
     private final ObjectMapper objectMapper;
-    private final static Logger logger = LoggerFactory.getLogger(FilePersistenterStorage.class);
+
 
     public FilePersistenterStorage(
             final List<T> items,
@@ -95,7 +98,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
 
     private void recover() {
         try {
-            if(this.isDirectoryEmpty(this.directoryPath)) {
+            if (this.isDirectoryEmpty(this.directoryPath)) {
                 return;
             }
         } catch (Exception e) {
