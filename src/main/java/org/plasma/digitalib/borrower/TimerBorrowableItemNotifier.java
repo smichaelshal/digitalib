@@ -99,7 +99,8 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                 Instant currentTime = nextTime.get();
 
                 List<UUID> ids = this.mapTimeId.get(currentTime);
-                if (ids != null) {
+
+                if (!ids.isEmpty()) {
                     List<T> items = this.storage.readAll(new IdFilter<>(ids));
                     for (T item : items) {
                         this.consumer.accept(item);

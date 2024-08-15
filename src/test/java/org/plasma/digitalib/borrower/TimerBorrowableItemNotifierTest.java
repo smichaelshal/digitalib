@@ -36,9 +36,8 @@ class TimerBorrowableItemNotifierTest {
 
     @BeforeEach
     public void setup() throws IOException {
-//        Storage<Book> storage = mock(Storage.class);
-//        Function<Book, Boolean> filter = mock(Function.class);
-        Storage<Book> storage = this.createStorage();
+        Storage<Book> storage = mock(Storage.class);
+
         this.book = new Book(
                 "genre",
                 "summary",
@@ -52,9 +51,7 @@ class TimerBorrowableItemNotifierTest {
 
         List<Book> books = List.of(this.book);
 
-        when(storage.readAll(any())).thenReturn(books);
-
-//        TestNotifierConsumer<Book> testNotifierConsumer = new TestNotifierConsumer<>(expiredTime, book, lock);
+        when(storage.readAll(any(Function.class))).thenReturn(books);
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
@@ -64,72 +61,36 @@ class TimerBorrowableItemNotifierTest {
                 scheduler,
                 storage,
                 this.consumer);
-
-//        when(entityManager.find(Customer.class,1L)).thenReturn(sampleCustomer);
     }
 
     @Test
-    public void add_notify_with_book_should_call_with_book() {
-
+    public void add_notify_with_book_should_call_with_book_on_time() {
         // arrange
-//        Runnable schedulerTask = () -> {
-//
-//        };
-        long expiredTime = Duration.between(Instant.now(), this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
-        System.out.println(expiredTime);
-        this.notifier.add(this.book);
-        verify(this.consumer, timeout(expiredTime + 10000).times(1 )).accept(this.book);
+        long expiredTime = this.book.getBorrowings().get(0).getExpiredTime().toEpochMilli();
+        long deltaTime = Duration.between(Instant.now(), this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
+        // Act
+        this.notifier.add(this.book);
+
+        // Assert
+        verify(this.consumer, timeout(deltaTime + 1000).times(1)).accept(this.book);
+
+        long endTime = Instant.now().toEpochMilli();
+        boolean isEndTimeBigThanExpiredTime = endTime >= expiredTime;
+        assertTrue(isEndTimeBigThanExpiredTime);
     }
 
     @Test
-    public void notifyTest() throws InternalException, IOException {
-        Book book = new Book(
-                "genre",
-                "summary",
-                new BookIdentifier("name", "author"),
-                true);
-        Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
-        User user = new User("1234");
+    public void delete_notify_with_book_should_not_call() {
+        // arrange
+        long expiredTime = this.book.getBorrowings().get(0).getExpiredTime().toEpochMilli();
+        long deltaTime = Duration.between(Instant.now(), this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
-        book.getBorrowings().add(
-                new Borrowing(user, Instant.now(), Optional.empty(), expiredTime));
+        // Act
+        this.notifier.add(this.book);
+        this.notifier.delete(this.book);
 
-        Storage<Book> storage = this.createStorage();
-        storage.create(book);
-
-//        Storage<Book> storage = mock(Storage.class);
-//        Function<Book, Boolean> filter = mock(Function.class);
-//        when(storage.readAll(any())).thenReturn(List.of(book));
-
-        Semaphore lock = new Semaphore(1);
-        boolean isLocked = lock.tryAcquire();
-        if (!isLocked) {
-            throw new InternalException();
-        }
-
-        TestNotifierConsumer<Book> testNotifierConsumer = new TestNotifierConsumer<>(expiredTime, book, lock);
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
-        TimerBorrowableItemNotifier<Book> timerBorrowableItemNotifier = new TimerBorrowableItemNotifier<>(
-                scheduler,
-                storage,
-                testNotifierConsumer);
-
-        timerBorrowableItemNotifier.add(book);
-        Duration duration = java.time.Duration.between(Instant.now(), expiredTime);
-
-        try {
-            Thread.sleep(duration.toMillis() + 1000);
-
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        assertTrue(lock.tryAcquire());
-    }
-
-    private Storage<Book> createStorage() throws IOException {
-        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
-        return new FilePersistenterStorage<>(new LinkedList<Book>(), path);
+        // Assert
+        verify(this.consumer, after(deltaTime + 1000).never()).accept(this.book);
     }
 }
