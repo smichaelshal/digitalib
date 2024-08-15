@@ -1,6 +1,6 @@
 package org.plasma.digitalib.storage;
 
-import org.plasma.digitalib.dtos.Book;
+import org.plasma.digitalib.models.Book;
 
 import java.util.function.Function;
 

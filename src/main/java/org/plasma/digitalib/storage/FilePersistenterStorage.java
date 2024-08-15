@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.plasma.digitalib.dtos.Book;
-import org.plasma.digitalib.dtos.BorrowableItem;
+import lombok.NonNull;
+import org.plasma.digitalib.models.BorrowableItem;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,22 +29,11 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
 
     public FilePersistenterStorage(
             final List<T> borrowableItems,
-            final Path directoryPersistenterPath) {
+            final Path directoryPersistenterPath,
+            final ObjectMapper objectMapper) {
         this.items = borrowableItems;
         this.directoryPath = directoryPersistenterPath;
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
-        this.objectMapper.registerModule(new Jdk8Module());
-
-        PolymorphicTypeValidator polymorphicTypeValidator =
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType("org.plasma.digitalib")
-                        .allowIfSubType("java.util.LinkedList")
-                        .build();
-        this.objectMapper.activateDefaultTyping(
-                polymorphicTypeValidator,
-                ObjectMapper.DefaultTyping.NON_FINAL);
-        this.objectMapper.registerSubtypes(BorrowableItem.class);
+        this.objectMapper = objectMapper;
         this.recover();
     }
 
@@ -52,6 +41,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         if (item == null) {
             return false;
         }
+
         try {
             this.items.add(item);
             this.saveItem(item);
@@ -60,7 +50,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         }
         return true;
     }
-
+//    @NonNull
     public final List<T> readAll(final Function<T, Boolean> filter) {
         if (filter != null) {
             return this.items.stream()
@@ -70,6 +60,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         return new LinkedList<T>();
     }
 
+    // oldItem -> id >>>>
     public final boolean update(final T oldItem, final T newItem) {
         if (oldItem == null || newItem == null) {
             return false;

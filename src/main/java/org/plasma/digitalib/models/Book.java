@@ -1,4 +1,4 @@
-package org.plasma.digitalib.dtos;
+package org.plasma.digitalib.models;
 
 import lombok.Getter;
 import lombok.Setter;
