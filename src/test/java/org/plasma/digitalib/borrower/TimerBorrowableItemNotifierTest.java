@@ -64,7 +64,7 @@ class TimerBorrowableItemNotifierTest {
     }
 
     @Test
-    public void add_notify_with_book_should_call_with_book_on_time() {
+    public void add_withBook_shouldCallWithBookOnTime() {
         // arrange
         long expiredTime = this.book.getBorrowings().get(0).getExpiredTime().toEpochMilli();
         long deltaTime = Duration.between(Instant.now(), this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
@@ -81,7 +81,7 @@ class TimerBorrowableItemNotifierTest {
     }
 
     @Test
-    public void delete_notify_with_book_should_not_call() {
+    public void delete_withBook_shouldNotCall() {
         // arrange
         long expiredTime = this.book.getBorrowings().get(0).getExpiredTime().toEpochMilli();
         long deltaTime = Duration.between(Instant.now(), this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
