@@ -22,6 +22,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
     private final UpdaterBookBorrower updater;
     private final BorrowableItemNotifier<Book> notifier;
     private final Storage<Book> storage;
+    
     private final Logger logger = LoggerFactory.getLogger(
             FilePersistenterStorage.class);
 

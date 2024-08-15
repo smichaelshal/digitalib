@@ -34,7 +34,13 @@ public class UpdaterBookBorrower implements UpdaterBorrower
                 Optional.empty(),
                 expiredTime));
 
-        return storage.update(book.getId(), book);
+        book.setIsBorrowed(true);
+
+        boolean storageResult = storage.update(book.getId(), book);
+        if (!storageResult) {
+            book.setIsBorrowed(false);
+        }
+        return storageResult;
     }
 
     public final boolean returnItem(
@@ -45,6 +51,12 @@ public class UpdaterBookBorrower implements UpdaterBorrower
         borrowings.get(borrowings.size() - 1)
                 .setReturnTime(Optional.of(Instant.now()));
 
-        return storage.update(book.getId(), book);
+        book.setIsBorrowed(false);
+
+        boolean storageResult = storage.update(book.getId(), book);
+        if (!storageResult) {
+            book.setIsBorrowed(false);
+        }
+        return storageResult;
     }
 }
