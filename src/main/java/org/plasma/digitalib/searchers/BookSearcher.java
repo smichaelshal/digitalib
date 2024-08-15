@@ -12,7 +12,8 @@ import java.util.function.Function;
 public class BookSearcher implements Searcher<Book> {
     private final Storage<Book> storage;
 
-    public final List<Book> search(@NonNull final Function<Book, Boolean> filter) {
+    public final List<Book> search(
+            @NonNull final Function<Book, Boolean> filter) {
         return this.storage.readAll(filter);
     }
 }
