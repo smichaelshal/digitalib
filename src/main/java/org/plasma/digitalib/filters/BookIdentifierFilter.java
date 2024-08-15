@@ -1,8 +1,8 @@
 package org.plasma.digitalib.filters;
 
 import lombok.AllArgsConstructor;
-import org.plasma.digitalib.dtos.Book;
-import org.plasma.digitalib.dtos.BookIdentifier;
+import org.plasma.digitalib.models.Book;
+import org.plasma.digitalib.models.BookIdentifier;
 
 import java.util.function.Function;
 
