@@ -10,7 +10,10 @@ import org.plasma.digitalib.models.OrderRequest;
 import org.plasma.digitalib.models.User;
 import org.plasma.digitalib.models.Borrowing;
 
+import org.plasma.digitalib.storage.FilePersistenterStorage;
 import org.plasma.digitalib.storage.Storage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -19,6 +22,8 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
     private final UpdaterBookBorrower updater;
     private final BorrowableItemNotifier<Book> notifier;
     private final Storage<Book> storage;
+    private final Logger logger = LoggerFactory.getLogger(
+            FilePersistenterStorage.class);
 
     public final BorrowingResult borrowItem(
             @NonNull final OrderRequest<BookIdentifier> request) {
@@ -97,6 +102,9 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             return false;
         }
         Book book = matchBooks.get(0);
+        if (!this.notifier.delete(book)) {
+            logger.error("delete notify failed of {}", book.getId());
+        }
         return this.updater.returnItem(new ImmutablePair<>(book, request));
     }
 }
