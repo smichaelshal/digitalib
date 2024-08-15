@@ -4,7 +4,9 @@
         "-//Checkstyle//DTD SuppressionFilter Configuration 1.0//EN"
         "https://checkstyle.org/dtds/suppressions_1_0.dtd">
 
+
 <suppressions>
     <suppress checks="HideUtilityClassConstructor" files="Application.java"/>
     <suppress checks="VisibilityModifier" files="BorrowableItem.java"/>
+    <suppress checks="HiddenField" files="FilePersistenterStorage.java|Book.java|Borrowing.java"/>
 </suppressions>
