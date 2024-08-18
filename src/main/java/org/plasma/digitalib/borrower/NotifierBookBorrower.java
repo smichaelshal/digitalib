@@ -5,8 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.plasma.digitalib.filters.BookIdentifierFilter;
-import org.plasma.digitalib.models.*;
-
+import org.plasma.digitalib.models.Book;
+import org.plasma.digitalib.models.BookIdentifier;
+import org.plasma.digitalib.models.Borrowing;
+import org.plasma.digitalib.models.BorrowingResult;
+import org.plasma.digitalib.models.OrderRequest;
+import org.plasma.digitalib.models.User;
 import org.plasma.digitalib.storage.FilePersistenterStorage;
 import org.plasma.digitalib.storage.Storage;
 import org.slf4j.Logger;
@@ -33,7 +37,9 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
         List<Book> books = this.filterBooks(request);
         if (books.isEmpty()) {
-            log.info("No matching books at all were found for the borrow request");
+            log.error(
+                    "No matching books at all "
+                            + "were found for the borrow request");
             return BorrowingResult.NOT_EXIST;
         }
 
@@ -41,7 +47,9 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                 .filter((book) -> !book.getIsBorrowed())
                 .toList();
         if (availableBooks.isEmpty()) {
-            log.info("No matching books present were found for the borrow request");
+            log.error(
+                    "No matching books present were"
+                            + " found for the borrow request");
             return BorrowingResult.OUT_OF_STOCK;
         }
 
@@ -102,16 +110,14 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                 })
                 .toList();
         if (matchBooks.isEmpty()) {
-            log.info("No matching borrowed books  were found for the return request");
             return false;
         }
 
         Book book = matchBooks.get(0);
         if (!this.notifier.delete(book)) {
-            log.info("delete notify failed of {}", book.toString());
+            logger.error("delete notify failed of {}", book.getId());
         }
 
-        log.info("success return book: {}", book.toString());
         return this.updater.returnItem(new ImmutablePair<>(book, request));
     }
 }
