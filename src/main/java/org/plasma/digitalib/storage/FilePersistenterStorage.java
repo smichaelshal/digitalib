@@ -103,7 +103,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 try {
                     this.items.add(this.objectMapper.readValue(
                             path.toFile(),
-                            new TypeReference<T>() {}));
+                            new TypeReference<T>() { }));
                 } catch (IOException e) {
                     log.error(e.toString());
                 }
