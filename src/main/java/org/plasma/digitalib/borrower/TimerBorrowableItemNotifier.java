@@ -99,12 +99,15 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
 
         Duration duration = Duration.between(Instant.now(), nextTime.get());
         Runnable schedulerTask = () -> {
+            log.info("start schedule");
             Runnable runner = () -> {
+                log.info("start runner");
                 Instant currentTime = nextTime.get();
                 List<UUID> ids = this.mapTimeId.get(currentTime);
                 if (!ids.isEmpty()) {
                     List<T> items = this.storage.readAll(new IdsFilter<>(ids));
                     for (T item : items) {
+                        log.info("send notify with {}", item);
                         this.consumer.accept(item);
                     }
 
