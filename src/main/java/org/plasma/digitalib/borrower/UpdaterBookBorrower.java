@@ -20,10 +20,10 @@ import java.util.Optional;
 public class UpdaterBookBorrower implements UpdaterBorrower
         <Pair<Book, OrderRequest<BookIdentifier>>> {
     private final Storage<Book> storage;
-    private final Duration borrowingDuration;
 
     public final boolean borrowItem(
-            @NonNull final Pair<Book, OrderRequest<BookIdentifier>> request) {
+            @NonNull final Pair<Book, OrderRequest<BookIdentifier>> request,
+            Duration borrowingDuration) {
         Book book = request.getLeft();
         OrderRequest<BookIdentifier> order = request.getRight();
         Instant borrowingTime = Instant.now();
@@ -34,7 +34,7 @@ public class UpdaterBookBorrower implements UpdaterBorrower
                 Optional.empty(),
                 expiredTime));
         book.setIsBorrowed(true);
-        if (!storage.update(book.getId(), book)) {
+        if (!this.storage.update(book.getId(), book)) {
             log.info("failed add borrowing to book: {}", book);
             book.setIsBorrowed(false);
         }
@@ -50,7 +50,7 @@ public class UpdaterBookBorrower implements UpdaterBorrower
         borrowings.get(borrowings.size() - 1)
                 .setReturnTime(Optional.of(Instant.now()));
         book.setIsBorrowed(false);
-        if (!storage.update(book.getId(), book)) {
+        if (!this.storage.update(book.getId(), book)) {
             log.info("failed return borrowing to book: {}", book);
             book.setIsBorrowed(false);
         }

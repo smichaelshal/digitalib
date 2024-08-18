@@ -16,6 +16,7 @@ import org.plasma.digitalib.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.List;
 
 @Slf4j
@@ -24,20 +25,20 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
     private final UpdaterBookBorrower updater;
     private final BorrowableItemNotifier<Book> notifier;
     private final Storage<Book> storage;
-    private final Logger logger = LoggerFactory.getLogger(
-            FilePersistenterStorage.class);
+    private final Duration borrowingDuration;
+
 
     public final BorrowingResult borrowItem(
             @NonNull final OrderRequest<BookIdentifier> request) {
         BookIdentifier bookIdentifier = request.getItemIdentifier();
         if (bookIdentifier == null) {
-            log.error("get null bookIdentifier of borrow request");
+            log.info("get null bookIdentifier of borrow request");
             return BorrowingResult.INVALID_REQUEST;
         }
 
         List<Book> books = this.filterBooks(request);
         if (books.isEmpty()) {
-            log.error(
+            log.info(
                     "No matching books at all "
                             + "were found for the borrow request");
             return BorrowingResult.NOT_EXIST;
@@ -47,7 +48,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                 .filter((book) -> !book.getIsBorrowed())
                 .toList();
         if (availableBooks.isEmpty()) {
-            log.error(
+            log.info(
                     "No matching books present were"
                             + " found for the borrow request");
             return BorrowingResult.OUT_OF_STOCK;
@@ -55,14 +56,14 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
         Book book = availableBooks.get(0);
         boolean updaterResult = this.updater.borrowItem(
-                new ImmutablePair<>(book, request));
+                new ImmutablePair<>(book, request), this.borrowingDuration);
         if (!updaterResult) {
             return BorrowingResult.INVALID_REQUEST; // ???
         }
 
         boolean notifierResult = this.notifier.add(book);
         if (!notifierResult) {
-            log.error("notifier failed");
+            log.info("notifier failed");
             this.deleteLastBorrowing(book);
             return BorrowingResult.INVALID_REQUEST; // ???
         }
@@ -87,7 +88,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             @NonNull final OrderRequest<BookIdentifier> request) {
         BookIdentifier bookIdentifier = request.getItemIdentifier();
         if (bookIdentifier == null) {
-            log.error("get null bookIdentifier of return request");
+            log.info("get null bookIdentifier of return request");
             return false;
         }
 
@@ -115,7 +116,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
         Book book = matchBooks.get(0);
         if (!this.notifier.delete(book)) {
-            logger.error("delete notify failed of {}", book.getId());
+            log.info("delete notify failed of {}", book.getId());
         }
 
         return this.updater.returnItem(new ImmutablePair<>(book, request));
