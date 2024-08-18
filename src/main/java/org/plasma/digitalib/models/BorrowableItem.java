@@ -1,8 +1,8 @@
 package org.plasma.digitalib.models;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
