@@ -59,16 +59,14 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
             @NonNull final UUID id,
             @NonNull final T newItem) {
 
-        boolean isFind = false;
         for (int i = 0; i < this.items.size(); i++) {
             if (id.equals(this.items.get(i).getId())) {
                 this.items.set(i, newItem);
-                isFind = true;
-                break;
+                this.saveItem(newItem);
+                return true;
             }
         }
-        this.saveItem(newItem);
-        return isFind;
+        return false;
     }
 
     private boolean saveItem(final T item) {
