@@ -3,8 +3,6 @@ package org.plasma.digitalib.borrower;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.plasma.digitalib.filters.BookIdentifierFilter;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
@@ -12,10 +10,7 @@ import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.models.BorrowingResult;
 import org.plasma.digitalib.models.OrderRequest;
 import org.plasma.digitalib.models.User;
-import org.plasma.digitalib.storage.FilePersistenterStorage;
 import org.plasma.digitalib.storage.Storage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -130,7 +125,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
     private boolean updateBorrowBook(
             @NonNull final Book book,
             @NonNull final OrderRequest<BookIdentifier> request,
-            @NonNull Duration borrowingDuration) {
+            final @NonNull Duration duration) {
         Instant borrowingTime = Instant.now();
         Instant expiredTime = Instant.now().plus(borrowingDuration);
         book.getBorrowings().add(new Borrowing(
