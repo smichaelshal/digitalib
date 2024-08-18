@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.plasma.digitalib.filters.BookIdentifierFilter;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
@@ -17,12 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 public class NotifierBookBorrower implements Borrower<BookIdentifier> {
-    private final UpdaterBookBorrower updater;
     private final BorrowableItemNotifier<Book> notifier;
     private final Storage<Book> storage;
     private final Duration borrowingDuration;
@@ -55,9 +57,12 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
         }
 
         Book book = availableBooks.get(0);
-        boolean updaterResult = this.updater.borrowItem(
-                new ImmutablePair<>(book, request), this.borrowingDuration);
-        if (!updaterResult) {
+        boolean updateResult = this.updateBorrowBook(
+                book,
+                request,
+                this.borrowingDuration);
+
+        if (!updateResult) {
             return BorrowingResult.INVALID_REQUEST; // ???
         }
 
@@ -119,6 +124,42 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             log.info("delete notify failed of {}", book.getId());
         }
 
-        return this.updater.returnItem(new ImmutablePair<>(book, request));
+        return this.updateReturnBook(book);
+    }
+
+    private boolean updateBorrowBook(
+            @NonNull final Book book,
+            @NonNull final OrderRequest<BookIdentifier> request,
+            @NonNull Duration borrowingDuration) {
+        Instant borrowingTime = Instant.now();
+        Instant expiredTime = Instant.now().plus(borrowingDuration);
+        book.getBorrowings().add(new Borrowing(
+                request.getUser(),
+                borrowingTime,
+                Optional.empty(),
+                expiredTime));
+        book.setIsBorrowed(true);
+        if (!this.storage.update(book.getId(), book)) {
+            log.info("failed add borrowing to book: {}", book);
+            book.setIsBorrowed(false);
+        }
+
+        log.info("success add borrowing to book: {}", book);
+        return true;
+    }
+
+    private boolean updateReturnBook(
+            @NonNull final Book book) {
+        List<Borrowing> borrowings = book.getBorrowings();
+        borrowings.get(borrowings.size() - 1)
+                .setReturnTime(Optional.of(Instant.now()));
+        book.setIsBorrowed(false);
+        if (!this.storage.update(book.getId(), book)) {
+            log.info("failed return borrowing to book: {}", book);
+            book.setIsBorrowed(false);
+        }
+
+        log.info("success return borrowing to book: {}", book);
+        return true;
     }
 }

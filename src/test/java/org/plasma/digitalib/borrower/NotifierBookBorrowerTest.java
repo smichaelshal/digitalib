@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 
 class NotifierBookBorrowerTest {
     private NotifierBookBorrower borrower;
-    private UpdaterBookBorrower updater;
     private Book book;
     private OrderRequest<BookIdentifier> orderRequest;
     private Storage<Book> storage;
@@ -40,9 +39,8 @@ class NotifierBookBorrowerTest {
 
         BorrowableItemNotifier<Book> notifier =
                 mock(BorrowableItemNotifier.class);
-        this.updater = new UpdaterBookBorrower(this.storage);
         this.borrower =
-                new NotifierBookBorrower(this.updater, notifier, this.storage,
+                new NotifierBookBorrower(notifier, this.storage,
                         Duration.of(1, ChronoUnit.DAYS));
 
         when(notifier.add(any(Book.class))).thenReturn(true);
@@ -97,7 +95,7 @@ class NotifierBookBorrowerTest {
     }
 
     @Test
-    void return_withAValidBookIdentifier_shouldReturnTrue() {
+    void return_withAvalidBookIdentifier_shouldReturnTrue() {
         // Arrange
         this.book.getBorrowings().add(new Borrowing(
                 this.user,
