@@ -77,7 +77,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         try {
             this.objectMapper.writeValue(file, item);
         } catch (Exception e) {
-            log.error(e.toString());
+            log.error("save item failed: ", e);
             return false;
         }
         return true;

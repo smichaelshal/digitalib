@@ -109,6 +109,7 @@ class FilePersistenterStorageTest {
     @Test
     public void update_withNewBorrowing_shouldReturnUpdatedBook() {
         // Arrange
+        List<Book> books = new LinkedList<>();
         this.storage.create(this.book);
         Book bookCopy = SerializationUtils.clone(this.book);
         Borrowing borrowing = new Borrowing(
@@ -116,15 +117,14 @@ class FilePersistenterStorageTest {
                 Instant.now(),
                 Instant.now().plus(1000, ChronoUnit.SECONDS));
         bookCopy.getBorrowings().add(borrowing);
+        books.add(bookCopy);
 
         // Act
         boolean updateResult = this.storage.update(this.book.getId(), bookCopy);
-        Book bookResult = this.listStorage.stream()
-                .filter(book -> book.getId().equals(this.book.getId()))
-                .findFirst().get();
+
 
         // Assert
         assertTrue(updateResult);
-        assertEquals(bookCopy, bookResult);
+        assertEquals(books, this.listStorage);
     }
 }
