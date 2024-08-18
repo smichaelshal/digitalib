@@ -28,12 +28,14 @@ import static org.mockito.Mockito.when;
 class FilePersistenterStorageTest {
 
     private List<Book> listStorage;
+    private List<Book> books;
     private FilePersistenterStorage<Book> storage;
     private Book book;
     private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setup() throws IOException {
+        this.books = new LinkedList<>();
         this.listStorage = new LinkedList<Book>();
         Path path = Files.createTempDirectory(UUID.randomUUID().toString());
 
@@ -61,18 +63,16 @@ class FilePersistenterStorageTest {
     @Test
     public void add_withBook_shouldAddToList() {
         // Arrange
-        int sizeListBefore = this.listStorage.size();
+        this.books.add(this.book);
 
         // Act
         boolean addResult = this.storage.create(this.book);
-        Book bookResult = this.listStorage.get(sizeListBefore);
-        int sizeListAfter = this.listStorage.size();
 
         // Assert
         assertTrue(addResult);
-        assertEquals(sizeListBefore + 1, sizeListAfter);
-        assertEquals(this.book, bookResult);
+        assertEquals(this.books, this.listStorage);
     }
+
 
     @Test
     public void add_withNull_shouldReturnFalse() {
@@ -109,7 +109,7 @@ class FilePersistenterStorageTest {
     @Test
     public void update_withNewBorrowing_shouldReturnUpdatedBook() {
         // Arrange
-        List<Book> books = new LinkedList<>();
+
         this.storage.create(this.book);
         Book bookCopy = SerializationUtils.clone(this.book);
         Borrowing borrowing = new Borrowing(
@@ -117,7 +117,7 @@ class FilePersistenterStorageTest {
                 Instant.now(),
                 Instant.now().plus(1000, ChronoUnit.SECONDS));
         bookCopy.getBorrowings().add(borrowing);
-        books.add(bookCopy);
+        this.books.add(bookCopy);
 
         // Act
         boolean updateResult = this.storage.update(this.book.getId(), bookCopy);
@@ -125,6 +125,6 @@ class FilePersistenterStorageTest {
 
         // Assert
         assertTrue(updateResult);
-        assertEquals(books, this.listStorage);
+        assertEquals(this.books, this.listStorage);
     }
 }
