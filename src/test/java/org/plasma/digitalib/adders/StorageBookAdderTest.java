@@ -30,7 +30,6 @@ class StorageBookAdderTest {
         List<Book> books = List.of(this.book);
         this.storage = mock(Storage.class);
         when(this.storage.readAll(any(Function.class))).thenReturn(books);
-
         this.storageBookAdder = new StorageBookAdder(this.storage);
         when(this.storage.create(any(Book.class))).thenReturn(true);
     }
