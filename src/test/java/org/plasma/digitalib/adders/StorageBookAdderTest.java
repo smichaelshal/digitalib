@@ -43,11 +43,11 @@ class StorageBookAdderTest {
         when(this.storage.readAll(any(Function.class))).thenReturn(books);
 
 
-        Function<Book, Boolean> bookByIdFilter = mock(Function.class);
-        BookIdMatcher bookIdMatcher = new BookIdMatcher(this.book.getId());
-        when(bookByIdFilter.apply(argThat(bookIdMatcher))).thenReturn(true);
+//        Function<Book, Boolean> bookByIdFilter = mock(Function.class);
+//        BookIdMatcher bookIdMatcher = new BookIdMatcher(this.book.getId());
+//        when(bookByIdFilter.apply(argThat(bookIdMatcher))).thenReturn(true);
 
-        this.storageBookAdder = new StorageBookAdder(this.storage, bookByIdFilter);
+        this.storageBookAdder = new StorageBookAdder(this.storage);
         when(this.storage.create(any(Book.class))).thenReturn(true);
     }
 
@@ -94,5 +94,23 @@ class StorageBookAdderTest {
 
         // Assert
         assertFalse(adderResult);
+    }
+
+    @Test
+    public void add_withExistBookWithEmptySummary_should_returnTrue() {
+        // Arrange
+        Book secondBook = new Book(
+                this.book.getGenre(),
+                "",
+                new BookIdentifier(
+                        this.book.getBookIdentifier().getName(),
+                        this.book.getBookIdentifier().getAuthor()));
+
+        // Act
+        this.storageBookAdder.add(this.book);
+        boolean adderResult = this.storageBookAdder.add(secondBook);
+
+        // Assert
+        assertTrue(adderResult);
     }
 }
