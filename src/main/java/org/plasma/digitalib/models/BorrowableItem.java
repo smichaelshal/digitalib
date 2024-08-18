@@ -1,6 +1,7 @@
 package org.plasma.digitalib.models;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class BorrowableItem implements Serializable {
     protected List<Borrowing> borrowings;
     protected Instant enteredTime;
