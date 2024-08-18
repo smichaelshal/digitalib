@@ -2,6 +2,7 @@ package org.plasma.digitalib.borrower;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.plasma.digitalib.filters.BookIdentifierFilter;
 import org.plasma.digitalib.models.*;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 public class NotifierBookBorrower implements Borrower<BookIdentifier> {
     private final UpdaterBookBorrower updater;
@@ -25,6 +27,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             @NonNull final OrderRequest<BookIdentifier> request) {
         BookIdentifier bookIdentifier = request.getItemIdentifier();
         if (bookIdentifier == null) {
+            log.error("get null bookIdentifier of borrow request");
             return BorrowingResult.INVALID_REQUEST;
         }
 
@@ -73,6 +76,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             @NonNull final OrderRequest<BookIdentifier> request) {
         BookIdentifier bookIdentifier = request.getItemIdentifier();
         if (bookIdentifier == null) {
+            log.error("get null bookIdentifier of return request");
             return false;
         }
         User user = request.getUser();
