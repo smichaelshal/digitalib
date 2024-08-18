@@ -4,11 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.plasma.digitalib.filters.BookIdentifierFilter;
-import org.plasma.digitalib.models.Book;
-import org.plasma.digitalib.models.BookIdentifier;
-import org.plasma.digitalib.models.OrderRequest;
-import org.plasma.digitalib.models.User;
-import org.plasma.digitalib.models.Borrowing;
+import org.plasma.digitalib.models.*;
 
 import org.plasma.digitalib.storage.FilePersistenterStorage;
 import org.plasma.digitalib.storage.Storage;
@@ -33,7 +29,6 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
         }
 
         List<Book> books = this.filterBooks(request);
-
         if (books.isEmpty()) {
             return BorrowingResult.NOT_EXIST;
         }
@@ -41,7 +36,6 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
         List<Book> availableBooks = books.stream()
                 .filter((book) -> !book.getIsBorrowed())
                 .toList();
-
         if (availableBooks.isEmpty()) {
             return BorrowingResult.OUT_OF_STOCK;
         }
@@ -58,6 +52,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             this.deleteLastBorrowing(book);
             return BorrowingResult.INVALID_REQUEST; // ???
         }
+
         return BorrowingResult.SUCCESS;
     }
 
@@ -82,29 +77,31 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
         }
         User user = request.getUser();
         List<Book> books = this.filterBooks(request);
-
         List<Book> matchBooks = books.stream()
                 .filter((book) -> {
                     if (!book.getIsBorrowed()) {
                         return false;
                     }
+
                     List<Borrowing> borrowings = book.getBorrowings();
                     if (borrowings.isEmpty()) {
                         return false;
                     }
+
                     Borrowing lastBorrowing = borrowings.get(
                             borrowings.size() - 1);
                     return lastBorrowing.getUser().equals(user);
                 })
                 .toList();
-
         if (matchBooks.isEmpty()) {
             return false;
         }
+
         Book book = matchBooks.get(0);
         if (!this.notifier.delete(book)) {
             logger.error("delete notify failed of {}", book.getId());
         }
+
         return this.updater.returnItem(new ImmutablePair<>(book, request));
     }
 }

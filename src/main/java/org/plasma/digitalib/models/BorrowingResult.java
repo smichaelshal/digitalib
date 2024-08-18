@@ -1,4 +1,4 @@
-package org.plasma.digitalib.borrower;
+package org.plasma.digitalib.models;
 
 public enum BorrowingResult {
     SUCCESS,
