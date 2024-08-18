@@ -2,13 +2,14 @@ package org.plasma.digitalib.adders;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.plasma.digitalib.filters.BookIdentifierFilter;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.storage.Storage;
 
 import java.util.List;
-import java.util.function.Function;
 
+@Slf4j
 @AllArgsConstructor
 public class StorageBookAdder implements ItemAdder<Book> {
     private final Storage<Book> storage;
@@ -35,6 +36,7 @@ public class StorageBookAdder implements ItemAdder<Book> {
             }
         }
 
+        log.info("try add {} to storage", book.toString());
         return this.storage.create(book);
     }
 }
