@@ -46,6 +46,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
             log.error(e.toString());
             return false;
         }
+        log.info("success created {}", item.toString());
         return true;
     }
 
@@ -63,6 +64,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
             if (id.equals(this.items.get(i).getId())) {
                 this.items.set(i, newItem);
                 this.saveItem(newItem);
+                log.info("success updated {}", newItem.toString());
                 return true;
             }
         }
@@ -91,8 +93,10 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     }
 
     private void recover() {
+        log.info("start recover");
         try {
             if (this.isDirectoryEmpty(this.directoryPath)) {
+                log.info("source directory of recover is empty: {}", this.directoryPath);
                 return;
             }
         } catch (Exception e) {
@@ -101,9 +105,11 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         try (Stream<Path> paths = Files.walk(this.directoryPath)) {
             paths.forEach(path -> {
                 try {
-                    this.items.add(this.objectMapper.readValue(
+                    T item = this.objectMapper.readValue(
                             path.toFile(),
-                            new TypeReference<T>() { }));
+                            new TypeReference<T>() { });
+                    this.items.add(item);
+                    log.info("success recover: {}", item.toString());
                 } catch (IOException e) {
                     log.error(e.toString());
                 }

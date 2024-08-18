@@ -2,6 +2,7 @@ package org.plasma.digitalib.models;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@ToString(callSuper = true)
 public class Book extends BorrowableItem implements Serializable {
     private String genre;
     private String summary;
