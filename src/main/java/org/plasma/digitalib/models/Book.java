@@ -1,7 +1,7 @@
 package org.plasma.digitalib.models;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class Book extends BorrowableItem implements Serializable {
     private String genre;
     private String summary;
