@@ -96,7 +96,9 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         log.info("start recover");
         try {
             if (this.isDirectoryEmpty(this.directoryPath)) {
-                log.info("source directory of recover is empty: {}", this.directoryPath);
+                log.info(
+                        "source directory of recover is empty: {}",
+                        this.directoryPath);
                 return;
             }
         } catch (Exception e) {
