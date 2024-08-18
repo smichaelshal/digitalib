@@ -24,7 +24,6 @@ import static org.mockito.Mockito.*;
 
 
 class TimerBorrowableItemNotifierTest {
-
     private Book book;
     private TimerBorrowableItemNotifier<Book> notifier;
     private Consumer<Book> consumer;
@@ -32,26 +31,18 @@ class TimerBorrowableItemNotifierTest {
     @BeforeEach
     public void setup() throws IOException {
         Storage<Book> storage = mock(Storage.class);
-
         this.book = new Book(
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
-
         Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
         User user = new User("1234");
-
         this.book.getBorrowings().add(
                 new Borrowing(user, Instant.now(), Optional.empty(), expiredTime));
-
         List<Book> books = List.of(this.book);
-
         when(storage.readAll(any(Function.class))).thenReturn(books);
-
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
-
         this.consumer = mock(Consumer.class);
-
         this.notifier = new TimerBorrowableItemNotifier<>(
                 scheduler,
                 storage,
@@ -60,7 +51,7 @@ class TimerBorrowableItemNotifierTest {
 
     @Test
     public void add_withBook_shouldCallWithBookOnTime() {
-        // arrange
+        // Arrange
         long expiredTime = this.book.getBorrowings().get(0).getExpiredTime().toEpochMilli();
         long deltaTime = Duration.between(Instant.now(), this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 

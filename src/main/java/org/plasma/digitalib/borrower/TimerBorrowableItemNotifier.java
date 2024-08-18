@@ -1,13 +1,11 @@
 package org.plasma.digitalib.borrower;
 
+import lombok.extern.slf4j.Slf4j;
 import org.plasma.digitalib.models.BorrowableItem;
 import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.filters.BorrowingFilter;
-import org.plasma.digitalib.filters.IdFilter;
-import org.plasma.digitalib.storage.FilePersistenterStorage;
+import org.plasma.digitalib.filters.IdsFilter;
 import org.plasma.digitalib.storage.Storage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,11 +23,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
+@Slf4j
 public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         implements BorrowableItemNotifier<T> {
     private final ConcurrentMap<Instant, List<UUID>> mapTimeId;
@@ -38,8 +36,6 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
     private final ScheduledExecutorService scheduler;
     private final List<Instant> times;
     private final Lock lock;
-    private final Logger logger = LoggerFactory.getLogger(
-            FilePersistenterStorage.class);
 
     public TimerBorrowableItemNotifier(
             final ScheduledExecutorService scheduledExecutorService,
@@ -54,7 +50,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         this.times = new LinkedList<>();
         this.lock = new ReentrantLock();
 
-        this.fetchAllExpiredItems();
+        this.fetchAllBorrowedItems();
         this.schedule();
     }
 
@@ -74,10 +70,10 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                 List<UUID> ids = new ArrayList<>(Collections.singletonList(id));
                 this.mapTimeId.put(expiredTime, ids);
             }
-            this.addScheduleTime(expiredTime);
+            this.addTimeToSchedule(expiredTime);
             return true;
         } catch (NullPointerException e) {
-            logger.error(e.toString());
+            log.error(e.toString());
             return false;
         }
     }
@@ -90,7 +86,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             List<UUID> ids = this.mapTimeId.get(expiredTime);
             return ids.remove(item.getId());
         } catch (NullPointerException e) {
-            logger.error(e.toString());
+            log.error(e.toString());
             return false;
         }
     }
@@ -100,21 +96,24 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         if (nextTime.isEmpty()) {
             return;
         }
+
         Duration duration = Duration.between(Instant.now(), nextTime.get());
-
         Runnable schedulerTask = () -> {
+            log.info("start schedule");
             Runnable runner = () -> {
+                log.info("start runner");
                 Instant currentTime = nextTime.get();
-
                 List<UUID> ids = this.mapTimeId.get(currentTime);
-
                 if (!ids.isEmpty()) {
-                    List<T> items = this.storage.readAll(new IdFilter<>(ids));
+                    List<T> items = this.storage.readAll(new IdsFilter<>(ids));
                     for (T item : items) {
+                        log.info("send notify with {}", item);
                         this.consumer.accept(item);
                     }
+
                     this.mapTimeId.remove(currentTime);
                 }
+
                 this.schedule();
             };
 
@@ -129,7 +128,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                 TimeUnit.MILLISECONDS);
     }
 
-    private void fetchAllExpiredItems() {
+    private void fetchAllBorrowedItems() {
         BorrowingFilter<T> borrowingFilter = new BorrowingFilter<>();
         List<T> items = this.storage.readAll(borrowingFilter);
         for (T item : items) {
@@ -138,12 +137,13 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
     }
 
 
-    private void addScheduleTime(final Instant expiredTime) {
+    private void addTimeToSchedule(final Instant expiredTime) {
         this.lock.lock();
         if (!this.times.contains(expiredTime)) {
             this.times.add(expiredTime);
             Collections.sort(this.times);
         }
+
         this.lock.unlock();
     }
 
@@ -153,8 +153,8 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             this.lock.unlock();
             return Optional.empty();
         }
-        Instant currentTime = this.times.remove(0);
 
+        Instant currentTime = this.times.remove(0);
         this.lock.unlock();
         return Optional.of(currentTime);
     }
