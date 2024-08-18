@@ -3,9 +3,8 @@ package org.plasma.digitalib.storage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.plasma.digitalib.models.BorrowableItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +17,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
+@Slf4j
 public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         implements Storage<T> {
-    private final Logger logger = LoggerFactory.getLogger(
-            FilePersistenterStorage.class);
-
     private final List<T> items;
     private final Path directoryPath;
     private final ObjectMapper objectMapper;
@@ -47,7 +43,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 return false;
             }
         } catch (Exception e) {
-            logger.error(e.toString());
+            log.error(e.toString());
             return false;
         }
         return true;
@@ -81,7 +77,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         try {
             this.objectMapper.writeValue(file, item);
         } catch (Exception e) {
-            logger.error(e.toString());
+            log.error(e.toString());
             return false;
         }
         return true;
@@ -102,21 +98,20 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 return;
             }
         } catch (Exception e) {
-            logger.error(e.toString());
+            log.error(e.toString());
         }
         try (Stream<Path> paths = Files.walk(this.directoryPath)) {
             paths.forEach(path -> {
                 try {
                     this.items.add(this.objectMapper.readValue(
                             path.toFile(),
-                            new TypeReference<T>() {
-                            }));
+                            new TypeReference<T>() {}));
                 } catch (IOException e) {
-                    logger.error(e.toString());
+                    log.error(e.toString());
                 }
             });
         } catch (IOException e) {
-            logger.error(e.toString());
+            log.error(e.toString());
         }
     }
 }
