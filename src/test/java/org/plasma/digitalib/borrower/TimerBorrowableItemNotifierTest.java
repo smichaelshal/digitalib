@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -27,10 +28,12 @@ class TimerBorrowableItemNotifierTest {
     private Book book;
     private TimerBorrowableItemNotifier<Book> notifier;
     private Consumer<Book> consumer;
+    private Storage<Book> storage;
+    private ScheduledExecutorService scheduler;
 
     @BeforeEach
     public void setup() throws IOException {
-        Storage<Book> storage = mock(Storage.class);
+        this.storage = mock(Storage.class);
         this.book = new Book(
                 "genre",
                 "summary",
@@ -38,28 +41,39 @@ class TimerBorrowableItemNotifierTest {
         Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
         User user = new User("1234");
         this.book.getBorrowings().add(
-                new Borrowing(user, Instant.now(), Optional.empty(), expiredTime));
-        List<Book> books = List.of(this.book);
-        when(storage.readAll(any(Function.class))).thenReturn(books);
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+                new Borrowing(user, Instant.now(), Optional.empty(),
+                        expiredTime));
+        this.scheduler = Executors.newScheduledThreadPool(10);
         this.consumer = mock(Consumer.class);
+    }
+
+    private void createNotifier() {
         this.notifier = new TimerBorrowableItemNotifier<>(
-                scheduler,
-                storage,
+                this.scheduler,
+                this.storage,
                 this.consumer);
     }
 
     @Test
-    public void add_withBook_shouldCallWithBookOnTime() {
+    public void constructor_withExistBookOnStorage_shouldCallWithBookOnTime() {
         // Arrange
-        long expiredTime = this.book.getBorrowings().get(0).getExpiredTime().toEpochMilli();
-        long deltaTime = Duration.between(Instant.now(), this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
+        this.book.setSummary("p2");
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        long expiredTime = this.book.getBorrowings().get(0).getExpiredTime()
+                .toEpochMilli();
+        long deltaTime = Duration.between(Instant.now(),
+                this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
         // Act
-        this.notifier.add(this.book);
+        new TimerBorrowableItemNotifier<>(
+                this.scheduler,
+                this.storage,
+                this.consumer);
 
         // Assert
-        verify(this.consumer, timeout(deltaTime + 1000).times(1)).accept(this.book);
+        verify(this.consumer, timeout(deltaTime + 1000).times(1)).accept(
+                this.book);
 
         long endTime = Instant.now().toEpochMilli();
         boolean isEndTimeBigThanExpiredTime = endTime >= expiredTime;
@@ -67,16 +81,82 @@ class TimerBorrowableItemNotifierTest {
     }
 
     @Test
-    public void delete_withBook_shouldNotCall() {
+    public void add_withBook_shouldCallWithBookOnTime() {
         // Arrange
-        long expiredTime = this.book.getBorrowings().get(0).getExpiredTime().toEpochMilli();
-        long deltaTime = Duration.between(Instant.now(), this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
+        this.book.setSummary("p0");
+        this.createNotifier();
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        long expiredTime = this.book.getBorrowings().get(0).getExpiredTime()
+                .toEpochMilli();
+        long deltaTime = Duration.between(Instant.now(),
+                this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
         // Act
-        this.notifier.add(this.book);
-        this.notifier.delete(this.book);
+        boolean notifierResult = this.notifier.add(this.book);
 
         // Assert
-        verify(this.consumer, after(deltaTime + 1000).never()).accept(this.book);
+        verify(this.consumer, timeout(deltaTime + 1000).times(1)).accept(
+                this.book);
+
+        long endTime = Instant.now().toEpochMilli();
+        boolean isEndTimeBigThanExpiredTime = endTime >= expiredTime;
+        assertTrue(isEndTimeBigThanExpiredTime);
+        assertTrue(notifierResult);
+    }
+
+    @Test
+    public void add_withExistBookOnStorage_shouldReturnFalse() {
+        // Arrange
+        this.createNotifier();
+        this.book.setSummary("p1");
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        TimerBorrowableItemNotifier<Book> timerBorrowableItemNotifier =
+                new TimerBorrowableItemNotifier<>(
+                        Executors.newScheduledThreadPool(10),
+                        this.storage,
+                        this.consumer);
+
+        // Act
+        boolean addResult = timerBorrowableItemNotifier.add(this.book);
+
+        // Assert
+        assertFalse(addResult);
+    }
+
+    @Test
+    public void delete_withBook_shouldNotCall() {
+        // Arrange
+        this.createNotifier();
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        long deltaTime = Duration.between(Instant.now(),
+                this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
+
+        // Act
+        boolean addResult = this.notifier.add(this.book);
+        boolean deleteResult = this.notifier.delete(this.book);
+
+        // Assert
+        verify(this.consumer, after(deltaTime + 1000).never()).accept(
+                this.book);
+        assertTrue(addResult);
+        assertTrue(deleteResult);
+    }
+
+    @Test
+    public void delete_withNotExistBook_shouldReturnFalse() {
+        // Arrange
+
+        this.createNotifier();
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+
+        // Act
+        boolean deleteResult = this.notifier.delete(this.book);
+
+        // Assert
+        assertFalse(deleteResult);
     }
 }
