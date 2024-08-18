@@ -2,6 +2,7 @@ package org.plasma.digitalib.borrower;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Slf4j
 public class UpdaterBookBorrower implements UpdaterBorrower
         <Pair<Book, OrderRequest<BookIdentifier>>> {
     private final Storage<Book> storage;
@@ -24,39 +26,36 @@ public class UpdaterBookBorrower implements UpdaterBorrower
             @NonNull final Pair<Book, OrderRequest<BookIdentifier>> request) {
         Book book = request.getLeft();
         OrderRequest<BookIdentifier> order = request.getRight();
-
         Instant borrowingTime = Instant.now();
         Instant expiredTime = Instant.now().plus(borrowingDuration);
-
         book.getBorrowings().add(new Borrowing(
                 order.getUser(),
                 borrowingTime,
                 Optional.empty(),
                 expiredTime));
-
         book.setIsBorrowed(true);
-
-        boolean storageResult = storage.update(book.getId(), book);
-        if (!storageResult) {
+        if (!storage.update(book.getId(), book)) {
+            log.info("failed add borrowing to book: {}", book);
             book.setIsBorrowed(false);
         }
-        return storageResult;
+
+        log.info("success add borrowing to book: {}", book);
+        return true;
     }
 
     public final boolean returnItem(
             @NonNull final Pair<Book, OrderRequest<BookIdentifier>> request) {
         Book book = request.getLeft();
-
         List<Borrowing> borrowings = book.getBorrowings();
         borrowings.get(borrowings.size() - 1)
                 .setReturnTime(Optional.of(Instant.now()));
-
         book.setIsBorrowed(false);
-
-        boolean storageResult = storage.update(book.getId(), book);
-        if (!storageResult) {
+        if (!storage.update(book.getId(), book)) {
+            log.info("failed return borrowing to book: {}", book);
             book.setIsBorrowed(false);
         }
-        return storageResult;
+
+        log.info("success return borrowing to book: {}", book);
+        return true;
     }
 }

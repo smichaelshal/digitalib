@@ -33,6 +33,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
         List<Book> books = this.filterBooks(request);
         if (books.isEmpty()) {
+            log.info("No matching books at all were found for the borrow request");
             return BorrowingResult.NOT_EXIST;
         }
 
@@ -40,6 +41,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                 .filter((book) -> !book.getIsBorrowed())
                 .toList();
         if (availableBooks.isEmpty()) {
+            log.info("No matching books present were found for the borrow request");
             return BorrowingResult.OUT_OF_STOCK;
         }
 
@@ -52,6 +54,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
         boolean notifierResult = this.notifier.add(book);
         if (!notifierResult) {
+            log.error("notifier failed");
             this.deleteLastBorrowing(book);
             return BorrowingResult.INVALID_REQUEST; // ???
         }
@@ -79,6 +82,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             log.error("get null bookIdentifier of return request");
             return false;
         }
+
         User user = request.getUser();
         List<Book> books = this.filterBooks(request);
         List<Book> matchBooks = books.stream()
@@ -98,14 +102,16 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                 })
                 .toList();
         if (matchBooks.isEmpty()) {
+            log.info("No matching borrowed books  were found for the return request");
             return false;
         }
 
         Book book = matchBooks.get(0);
         if (!this.notifier.delete(book)) {
-            logger.error("delete notify failed of {}", book.getId());
+            log.info("delete notify failed of {}", book.toString());
         }
 
+        log.info("success return book: {}", book.toString());
         return this.updater.returnItem(new ImmutablePair<>(book, request));
     }
 }

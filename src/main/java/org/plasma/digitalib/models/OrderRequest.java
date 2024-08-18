@@ -1,10 +1,9 @@
 package org.plasma.digitalib.models;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-// T extends BorrowableItem ???
-@Getter
+@Data
 @RequiredArgsConstructor
 public class OrderRequest<T> {
     private final User user;

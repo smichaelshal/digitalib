@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 class NotifierBookBorrowerTest {
     private NotifierBookBorrower borrower;
     private UpdaterBookBorrower updater;
-
     private Book book;
     private OrderRequest<BookIdentifier> orderRequest;
     private Storage<Book> storage;
@@ -34,29 +33,22 @@ class NotifierBookBorrowerTest {
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
-
         this.user = new User("1234");
-
-
         this.orderRequest = new OrderRequest<>(user, this.book.getBookIdentifier());
-
         this.storage = mock(Storage.class);
-        BorrowableItemNotifier<Book> notifier = mock(BorrowableItemNotifier.class);
 
+        BorrowableItemNotifier<Book> notifier = mock(BorrowableItemNotifier.class);
         this.updater = new UpdaterBookBorrower(
                 this.storage,
                 Duration.of(1, ChronoUnit.DAYS));
-
         this.borrower = new NotifierBookBorrower(this.updater, notifier, this.storage);
-
-
 
         when(notifier.add(any(Book.class))).thenReturn(true);
         when(notifier.delete(any(Book.class))).thenReturn(true);
     }
 
     @Test
-    void borrow_withBookIdentifierNotExist_shouldReturnSuccess() {
+    void borrow_whenBookIdentifierExist_shouldReturnSuccess() {
         // Arrange
         List<Book> books = List.of(this.book);
         when(this.storage.readAll(any(Function.class))).thenReturn(books);
@@ -96,14 +88,13 @@ class NotifierBookBorrowerTest {
     }
 
     @Test
-    void return_withBookIdentifier_shouldReturnTrue() {
+    void return_withAValidBookIdentifier_shouldReturnTrue() {
         // Arrange
         this.book.getBorrowings().add(new Borrowing(
                 this.user,
                 Instant.now(),
                 Optional.of(Instant.now()),
                 Instant.now()));
-
         this.book.setIsBorrowed(true);
 
         when(this.storage.readAll(any(Function.class))).thenReturn(List.of(this.book));
@@ -125,7 +116,6 @@ class NotifierBookBorrowerTest {
                 Instant.now(),
                 Optional.of(Instant.now()),
                 Instant.now()));
-
         this.book.setIsBorrowed(true);
 
         when(this.storage.readAll(any(Function.class))).thenReturn(List.of(this.book));
@@ -137,5 +127,4 @@ class NotifierBookBorrowerTest {
         // Assert
         assertFalse(borrowingResult);
     }
-
 }
