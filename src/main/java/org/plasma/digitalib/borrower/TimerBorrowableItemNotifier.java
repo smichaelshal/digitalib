@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 @Slf4j
 public class TimerBorrowableItemNotifier<T extends BorrowableItem>
