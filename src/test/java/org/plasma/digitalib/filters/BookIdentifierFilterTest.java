@@ -24,7 +24,7 @@ class BookIdentifierFilterTest {
     }
 
     @Test
-    void apply_withEqualBookIdentifiers_shouldReturnTrue() {
+    void test_withEqualBookIdentifiers_shouldReturnTrue() {
         // Arrange
         Book secondBook = new Book(
                 "genre",
@@ -34,14 +34,14 @@ class BookIdentifierFilterTest {
                         this.bookIdentifier.getAuthor()));
 
         // Act
-        boolean filterResult = this.filter.apply(secondBook);
+        boolean filterResult = this.filter.test(secondBook);
 
         // Assert
         assertTrue(filterResult);
     }
 
     @Test
-    void apply_withDifferentNames_shouldReturnTrue() {
+    void test_withDifferentNames_shouldReturnTrue() {
         // Arrange
         Book secondBook = new Book(
                 "genre",
@@ -51,14 +51,14 @@ class BookIdentifierFilterTest {
                         this.bookIdentifier.getAuthor()));
 
         // Act
-        boolean filterResult = this.filter.apply(secondBook);
+        boolean filterResult = this.filter.test(secondBook);
 
         // Assert
         assertFalse(filterResult);
     }
 
     @Test
-    void apply_withDifferentAuthors_shouldReturnTrue() {
+    void test_withDifferentAuthors_shouldReturnTrue() {
         // Arrange
         Book secondBook = new Book(
                 "genre",
@@ -68,14 +68,14 @@ class BookIdentifierFilterTest {
                         this.bookIdentifier.getAuthor() + "_"));
 
         // Act
-        boolean filterResult = this.filter.apply(secondBook);
+        boolean filterResult = this.filter.test(secondBook);
 
         // Assert
         assertFalse(filterResult);
     }
 
     @Test
-    void apply_withDifferentNamesAndAuthors_shouldReturnTrue() {
+    void test_withDifferentNamesAndAuthors_shouldReturnTrue() {
         // Arrange
         Book secondBook = new Book(
                 "genre",
@@ -85,7 +85,7 @@ class BookIdentifierFilterTest {
                         this.bookIdentifier.getAuthor() + "_"));
 
         // Act
-        boolean filterResult = this.filter.apply(secondBook);
+        boolean filterResult = this.filter.test(secondBook);
 
         // Assert
         assertFalse(filterResult);

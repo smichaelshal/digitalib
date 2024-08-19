@@ -7,7 +7,7 @@ import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.storage.Storage;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class StorageBookAdderTest {
-    private Function<Book, Boolean> bookIdentifierFilter;
+    private Predicate<Book> bookIdentifierFilter;
     private Book book;
     private StorageBookAdder storageBookAdder;
     private Storage<Book> storage;
@@ -29,7 +29,7 @@ class StorageBookAdderTest {
                 new BookIdentifier("name", "author"));
         List<Book> books = List.of(this.book);
         this.storage = mock(Storage.class);
-        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
         this.storageBookAdder = new StorageBookAdder(this.storage);
         when(this.storage.create(any(Book.class))).thenReturn(true);
     }

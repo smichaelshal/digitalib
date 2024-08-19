@@ -5,14 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Slf4j
 @AllArgsConstructor
-public class BookIdentifierFilter implements Function<Book, Boolean> {
+public class BookIdentifierFilter implements Predicate<Book> {
     private final BookIdentifier expectedBookIdentifier;
 
-    public final Boolean apply(final Book book) {
+    public final boolean test(final Book book) {
         BookIdentifier bookIdentifier = book.getBookIdentifier();
 
         log.info(
