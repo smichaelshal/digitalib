@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,7 +58,7 @@ class TimerBorrowableItemNotifierTest {
     public void constructor_withExistBookOnStorage_shouldCallWithBookOnTime() {
         // Arrange
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
         long expiredTime = this.book.getBorrowings().get(0).getExpiredTime()
                 .toEpochMilli();
         long deltaTime = Duration.between(Instant.now(),
@@ -84,7 +84,7 @@ class TimerBorrowableItemNotifierTest {
         // Arrange
         this.createNotifier();
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
         long expiredTime = this.book.getBorrowings().get(0).getExpiredTime()
                 .toEpochMilli();
         long deltaTime = Duration.between(Instant.now(),
@@ -108,7 +108,7 @@ class TimerBorrowableItemNotifierTest {
         // Arrange
         this.createNotifier();
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
         TimerBorrowableItemNotifier<Book> timerBorrowableItemNotifier =
                 new TimerBorrowableItemNotifier<>(
                         Executors.newScheduledThreadPool(10),
@@ -127,7 +127,7 @@ class TimerBorrowableItemNotifierTest {
         // Arrange
         this.createNotifier();
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
         long deltaTime = Duration.between(Instant.now(),
                 this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
@@ -148,7 +148,7 @@ class TimerBorrowableItemNotifierTest {
 
         this.createNotifier();
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
 
         // Act
         boolean deleteResult = this.notifier.delete(this.book);
