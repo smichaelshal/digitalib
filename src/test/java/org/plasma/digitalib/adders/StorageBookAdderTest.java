@@ -6,6 +6,7 @@ import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.storage.Storage;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -20,6 +21,7 @@ class StorageBookAdderTest {
     private Book book;
     private StorageBookAdder storageBookAdder;
     private Storage<Book> storage;
+    private List<Book> books;
 
     @BeforeEach
     public void setup() {
@@ -27,15 +29,17 @@ class StorageBookAdderTest {
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
-        List<Book> books = List.of(this.book);
+        this.books = List.of(this.book);
         this.storage = mock(Storage.class);
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
         this.storageBookAdder = new StorageBookAdder(this.storage);
         when(this.storage.create(any(Book.class))).thenReturn(true);
     }
 
     @Test
     public void add_withNewBook_should_returnTrue() {
+        // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(this.books);
+
         // Act
         boolean adderResult = this.storageBookAdder.add(this.book);
 
@@ -46,6 +50,7 @@ class StorageBookAdderTest {
     @Test
     public void add_withTwoBooksWithDifferentAuthor_should_returnTrue() {
         // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(this.books);
         Book secondBook = new Book(
                 this.book.getGenre(),
                 this.book.getSummary(),
@@ -63,6 +68,9 @@ class StorageBookAdderTest {
 
     @Test
     public void add_withTwoBooksWithDifferentSummery_should_returnFalse() {
+        // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(this.books);
+
         // Arrange
         Book secondBook = new Book(
                 this.book.getGenre(),
@@ -82,6 +90,9 @@ class StorageBookAdderTest {
     @Test
     public void add_withExistBookWithEmptySummary_should_returnTrue() {
         // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(this.books);
+
+        // Arrange
         Book secondBook = new Book(
                 this.book.getGenre(),
                 "",
@@ -100,6 +111,7 @@ class StorageBookAdderTest {
     @Test
     public void add_withExistBookWithEmptyGenre_should_returnTrue() {
         // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(this.books);
         Book secondBook = new Book(
                 "",
                 this.book.getSummary(),
@@ -118,6 +130,7 @@ class StorageBookAdderTest {
     @Test
     public void add_withExistBookWithEmptySummaryAndGenre_should_returnTrue() {
         // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(this.books);
         Book secondBook = new Book(
                 "",
                 "",
@@ -136,6 +149,7 @@ class StorageBookAdderTest {
     @Test
     public void add_withExistBookWithEmptySummaryAndDifferentGenre_should_returnTrue() {
         // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(this.books);
         Book secondBook = new Book(
                 this.book.getGenre() + "_",
                 "",
@@ -154,6 +168,7 @@ class StorageBookAdderTest {
     @Test
     public void add_withExistBookWithDifferentSummaryAndEmptyGenre_should_returnTrue() {
         // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(this.books);
         Book secondBook = new Book(
                 "",
                 this.book.getSummary() + "_",
@@ -164,6 +179,25 @@ class StorageBookAdderTest {
         // Act
         this.storageBookAdder.add(this.book);
         boolean adderResult = this.storageBookAdder.add(secondBook);
+
+        // Assert
+        assertFalse(adderResult);
+    }
+
+    @Test
+    public void add_withNewBookWithEmptySummaryAndGenre_shouldReturnFalse() {
+        // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(
+                new LinkedList());
+        Book book = new Book(
+                "",
+                "",
+                new BookIdentifier(
+                        this.book.getBookIdentifier().getName() + "_",
+                        this.book.getBookIdentifier().getAuthor() + "_"));
+
+        // Act
+        boolean adderResult = this.storageBookAdder.add(book);
 
         // Assert
         assertFalse(adderResult);
