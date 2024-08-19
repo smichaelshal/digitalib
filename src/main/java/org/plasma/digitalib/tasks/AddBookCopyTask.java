@@ -5,12 +5,12 @@ import org.plasma.digitalib.adders.StorageBookAdder;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 
-public class AddNewBookTask extends Task {
+public class AddBookCopyTask extends Task {
     private final StorageBookAdder adder;
     private final ConsoleCreatorBookIdentifier creatorBookIdentifier;
     private final ConsoleUtils consoleUtils;
 
-    public AddNewBookTask(
+    public AddBookCopyTask(
             @NonNull final String name,
             @NonNull final StorageBookAdder adder,
             @NonNull final ConsoleCreatorBookIdentifier creatorBookIdentifier,
@@ -24,9 +24,9 @@ public class AddNewBookTask extends Task {
     @Override
     public final void run() {
         BookIdentifier bookIdentifier = this.creatorBookIdentifier.create();
-        String genre = this.consoleUtils.getNotEmptyParameter(
+        String genre = this.consoleUtils.getParameter(
                 "genre book");
-        String summary = this.consoleUtils.getNotEmptyParameter(
+        String summary = this.consoleUtils.getParameter(
                 "summary book");
 
         Book book = new Book(genre, summary, bookIdentifier);
