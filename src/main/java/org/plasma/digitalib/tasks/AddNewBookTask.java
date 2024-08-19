@@ -22,7 +22,7 @@ public class AddNewBookTask extends Task {
     }
 
     @Override
-    public void run() {
+    public final void run() {
         BookIdentifier bookIdentifier = this.creatorBookIdentifier.create();
         String genre = this.consoleUtils.getParameter(
                 "genre book");
@@ -33,7 +33,7 @@ public class AddNewBookTask extends Task {
         boolean adderResult = this.adder.add(book);
         if (adderResult) {
             System.out.println("success created book");
-        }else {
+        } else {
             System.out.println("failed created book, try again");
         }
     }

@@ -3,8 +3,6 @@ package org.plasma.digitalib.tasks;
 import lombok.RequiredArgsConstructor;
 import org.plasma.digitalib.models.BookIdentifier;
 
-import java.util.Scanner;
-
 @RequiredArgsConstructor
 public class ConsoleCreatorBookIdentifier {
     private final ConsoleUtils consoleUtils;
