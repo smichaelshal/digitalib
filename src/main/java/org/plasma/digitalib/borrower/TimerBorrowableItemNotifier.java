@@ -40,7 +40,8 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
     private final Consumer<T> consumer;
     private final ScheduledExecutorService scheduler;
     private final List<Instant> times;
-    private final Lock lock;
+    private final Lock lockTimes;
+    private final Lock lockMapTimeId;
 
     public TimerBorrowableItemNotifier(
             @NonNull final ScheduledExecutorService scheduledExecutorService,
@@ -53,7 +54,8 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         this.mapTimeId = new ConcurrentHashMap<>();
         this.mapIdFuture = new ConcurrentHashMap<>();
         this.times = new LinkedList<>();
-        this.lock = new ReentrantLock();
+        this.lockTimes = new ReentrantLock();
+        this.lockMapTimeId = new ReentrantLock();
 
         this.fetchAllBorrowedItems();
         this.schedule();
@@ -65,9 +67,10 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
             Instant expiredTime = lastBorrowing.getExpiredTime();
             UUID id = item.getId();
-
+            this.lockMapTimeId.lock();
             if (this.mapTimeId.containsKey(expiredTime)) {
                 if (this.mapTimeId.get(expiredTime).contains(id)) {
+                    this.lockMapTimeId.unlock();
                     return false;
                 }
                 this.mapTimeId.get(expiredTime).add(id);
@@ -75,6 +78,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                 List<UUID> ids = new ArrayList<>(Collections.singletonList(id));
                 this.mapTimeId.put(expiredTime, ids);
             }
+            this.lockMapTimeId.unlock();
             this.addTimeToSchedule(expiredTime);
             return true;
         } catch (NullPointerException e) {
@@ -88,19 +92,26 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             List<Borrowing> borrowings = item.getBorrowings();
             Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
             Instant expiredTime = lastBorrowing.getExpiredTime();
-            Future<?> future = this.mapIdFuture.get(item.getId());
-            if (future != null) {
-                this.mapIdFuture.remove(item.getId());
-                future.cancel(true);
-            }
-
+            this.lockMapTimeId.lock();
             List<UUID> ids = this.mapTimeId.get(expiredTime);
             if (ids == null) {
                 log.info("not found ids match to expired time: {}",
                         expiredTime.toString());
+                this.lockMapTimeId.unlock();
                 return false;
             }
-            return ids.remove(item.getId());
+
+            Future<?> future = this.mapIdFuture.get(item.getId());
+            if (future != null && ids.size() == 1) {
+                this.mapIdFuture.remove(item.getId());
+                future.cancel(true);
+            }
+            boolean removeResult = ids.remove(item.getId());
+            if (removeResult && ids.isEmpty()) {
+                this.mapTimeId.remove(expiredTime);
+            }
+            this.lockMapTimeId.unlock();
+            return removeResult;
         } catch (NullPointerException e) {
             log.error(e.toString());
             return false;
@@ -119,10 +130,16 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             Runnable runner = () -> {
                 log.info("start runner");
                 Instant currentTime = nextTime.get();
+                this.lockMapTimeId.lock();
                 List<UUID> ids = this.mapTimeId.get(currentTime);
                 if (!ids.isEmpty()) {
                     List<T> items = this.storage.readAll(new IdsFilter<>(ids));
                     for (T item : items) {
+                        if (item == null) {
+                            log.info("item in notify is null");
+                            continue;
+                        }
+
                         log.info("send notify with {}", item);
                         this.consumer.accept(item);
                         this.mapIdFuture.remove(item.getId());
@@ -133,6 +150,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                     log.info("running without items");
                 }
 
+                this.lockMapTimeId.unlock();
                 this.schedule();
             };
 
@@ -162,27 +180,27 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
 
 
     private void addTimeToSchedule(final Instant expiredTime) {
-        this.lock.lock();
+        this.lockTimes.lock();
         if (!this.times.contains(expiredTime)) {
             this.times.add(expiredTime);
             Collections.sort(this.times);
         }
-
-        if (this.times.size() == 1) {
+        int idsSize = this.times.size();
+        this.lockTimes.unlock();
+        if (idsSize == 1) {
             this.schedule();
         }
-        this.lock.unlock();
     }
 
     private Optional<Instant> getNextScheduledTime() {
-        this.lock.lock();
+        this.lockTimes.lock();
         if (this.times.isEmpty()) {
-            this.lock.unlock();
+            this.lockTimes.unlock();
             return Optional.empty();
         }
 
         Instant currentTime = this.times.remove(0);
-        this.lock.unlock();
+        this.lockTimes.unlock();
         return Optional.of(currentTime);
     }
 }
