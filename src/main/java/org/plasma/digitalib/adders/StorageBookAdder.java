@@ -36,7 +36,7 @@ public class StorageBookAdder implements ItemAdder<Book> {
             }
         }
 
-        log.info("try add {} to storage", book.toString());
+        log.debug("try add {} to storage", book);
         return this.storage.create(book);
     }
 }
