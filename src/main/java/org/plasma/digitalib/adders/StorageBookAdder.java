@@ -36,6 +36,13 @@ public class StorageBookAdder implements ItemAdder<Book> {
             }
         }
 
+        if (book.getBookIdentifier().getName().isEmpty()
+                || book.getBookIdentifier().getAuthor().isEmpty()
+                || book.getSummary().isEmpty()
+                || book.getGenre().isEmpty()) {
+            return false;
+        }
+
         log.debug("try add {} to storage", book);
         return this.storage.create(book);
     }
