@@ -49,7 +49,7 @@ class AddNewBookTaskTest {
         ConsoleUtils consoleUtils = new ConsoleUtils(scanner);
         ConsoleCreatorBookIdentifier creatorBookIdentifier =
                 new ConsoleCreatorBookIdentifier(consoleUtils);
-        Task task = new AddNewBookTask("add new book", storageBookAdder,
+        Task task = new AddBookCopyTask("add new book", storageBookAdder,
                 creatorBookIdentifier, consoleUtils);
 
         // Act
