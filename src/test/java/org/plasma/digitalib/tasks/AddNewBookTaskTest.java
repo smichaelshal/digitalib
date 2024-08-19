@@ -27,7 +27,6 @@ class AddNewBookTaskTest {
                 new ByteArrayInputStream("a\nb\nc\nd\n".getBytes());
         Scanner scanner = new Scanner(inputStream);
 
-
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
