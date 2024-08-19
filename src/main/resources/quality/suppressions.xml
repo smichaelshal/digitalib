@@ -6,4 +6,5 @@
 
 <suppressions>
     <suppress checks="HideUtilityClassConstructor" files="Application.java"/>
+    <suppress checks="VisibilityModifier" files="Task.java"/>
 </suppressions>
