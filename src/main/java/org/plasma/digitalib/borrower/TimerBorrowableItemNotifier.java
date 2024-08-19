@@ -1,5 +1,6 @@
 package org.plasma.digitalib.borrower;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.plasma.digitalib.models.BorrowableItem;
 import org.plasma.digitalib.models.Borrowing;
@@ -18,9 +19,11 @@ import java.util.Collections;
 
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import java.util.concurrent.locks.Lock;
@@ -31,6 +34,8 @@ import java.util.function.Consumer;
 public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         implements BorrowableItemNotifier<T> {
     private final ConcurrentMap<Instant, List<UUID>> mapTimeId;
+    private final ConcurrentMap<UUID, Future<?>> mapIdFuture;
+
     private final Storage<T> storage;
     private final Consumer<T> consumer;
     private final ScheduledExecutorService scheduler;
@@ -38,15 +43,15 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
     private final Lock lock;
 
     public TimerBorrowableItemNotifier(
-            final ScheduledExecutorService scheduledExecutorService,
-            final Storage<T> itemStorage,
-            final Consumer<T> notifyConsumer) {
-
+            @NonNull final ScheduledExecutorService scheduledExecutorService,
+            @NonNull final Storage<T> itemStorage,
+            @NonNull final Consumer<T> notifyConsumer) {
 
         this.scheduler = scheduledExecutorService;
         this.storage = itemStorage;
         this.consumer = notifyConsumer;
         this.mapTimeId = new ConcurrentHashMap<>();
+        this.mapIdFuture = new ConcurrentHashMap<>();
         this.times = new LinkedList<>();
         this.lock = new ReentrantLock();
 
@@ -54,7 +59,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         this.schedule();
     }
 
-    public final boolean add(final T item) {
+    public final boolean add(@NonNull final T item) {
         try {
             List<Borrowing> borrowings = item.getBorrowings();
             Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
@@ -78,12 +83,23 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         }
     }
 
-    public final boolean delete(final T item) {
+    public final boolean delete(@NonNull final T item) {
         try {
             List<Borrowing> borrowings = item.getBorrowings();
             Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
             Instant expiredTime = lastBorrowing.getExpiredTime();
+            Future<?> future = this.mapIdFuture.get(item.getId());
+            if (future != null) {
+                this.mapIdFuture.remove(item.getId());
+                future.cancel(true);
+            }
+
             List<UUID> ids = this.mapTimeId.get(expiredTime);
+            if (ids == null) {
+                log.info("not found ids match to expired time: {}",
+                        expiredTime.toString());
+                return false;
+            }
             return ids.remove(item.getId());
         } catch (NullPointerException e) {
             log.error(e.toString());
@@ -109,9 +125,12 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                     for (T item : items) {
                         log.info("send notify with {}", item);
                         this.consumer.accept(item);
+                        this.mapIdFuture.remove(item.getId());
                     }
 
                     this.mapTimeId.remove(currentTime);
+                } else {
+                    log.info("running without items");
                 }
 
                 this.schedule();
@@ -122,10 +141,15 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             executor.shutdown();
         };
 
-        this.scheduler.schedule(
+        ScheduledFuture<?> future = this.scheduler.schedule(
                 schedulerTask,
                 duration.toMillis(),
                 TimeUnit.MILLISECONDS);
+
+        List<UUID> ids = this.mapTimeId.get(nextTime.get());
+        for (UUID id : ids) {
+            this.mapIdFuture.put(id, future);
+        }
     }
 
     private void fetchAllBorrowedItems() {
@@ -144,6 +168,9 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             Collections.sort(this.times);
         }
 
+        if (this.times.size() == 1) {
+            this.schedule();
+        }
         this.lock.unlock();
     }
 
