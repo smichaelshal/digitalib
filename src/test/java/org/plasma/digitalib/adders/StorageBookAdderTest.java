@@ -202,4 +202,60 @@ class StorageBookAdderTest {
         // Assert
         assertFalse(adderResult);
     }
+
+    @Test
+    public void add_withNewBookWithEmptyNameAndAuthor_shouldReturnFalse() {
+        // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(
+                new LinkedList());
+        Book book = new Book(
+                this.book.getGenre(),
+                this.book.getSummary(),
+                new BookIdentifier(
+                        "",
+                        ""));
+
+        // Act
+        boolean adderResult = this.storageBookAdder.add(book);
+
+        // Assert
+        assertFalse(adderResult);
+    }
+
+    public void add_withNewBookWithEmptyAuthor_shouldReturnFalse() {
+        // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(
+                new LinkedList());
+        Book book = new Book(
+                this.book.getGenre(),
+                this.book.getSummary(),
+                new BookIdentifier(
+                        this.book.getBookIdentifier().getName(),
+                        ""));
+
+        // Act
+        boolean adderResult = this.storageBookAdder.add(book);
+
+        // Assert
+        assertFalse(adderResult);
+    }
+
+    public void add_withNewBookWithEmptyName_shouldReturnFalse() {
+        // Arrange
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(
+                new LinkedList());
+        Book book = new Book(
+                this.book.getGenre(),
+                this.book.getSummary(),
+                new BookIdentifier(
+                        "",
+                        this.book.getBookIdentifier().getName()));
+
+        // Act
+        boolean adderResult = this.storageBookAdder.add(book);
+
+        // Assert
+        assertFalse(adderResult);
+    }
 }
+
