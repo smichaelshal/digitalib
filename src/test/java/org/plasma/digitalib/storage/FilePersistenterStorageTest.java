@@ -21,7 +21,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -77,18 +76,15 @@ class FilePersistenterStorageTest {
     public void read_withIdFilter_shouldReturnBook() {
         // Arrange
         Predicate<Book> bookByIdFilter = mock(Predicate.class);
-        BookIdMatcher bookIdMatcher = new BookIdMatcher(this.book.getId());
-        when(bookByIdFilter.test(argThat(bookIdMatcher))).thenReturn(true);
+        when(bookByIdFilter.test(this.book)).thenReturn(true);
 
         this.storage.create(this.book);
 
         // Act
         List<Book> bookResults = this.storage.readAll(bookByIdFilter);
-        int sizeResult = bookResults.size();
 
         // Assert
-        assertEquals(1, sizeResult);
-        assertEquals(this.book, bookResults.get(0));
+        assertEquals(List.of(this.book), bookResults);
     }
 
     @Test
@@ -106,7 +102,6 @@ class FilePersistenterStorageTest {
 
         // Act
         boolean updateResult = this.storage.update(this.book.getId(), bookCopy);
-
 
         // Assert
         assertTrue(updateResult);
