@@ -8,5 +8,5 @@
 <suppressions>
     <suppress checks="HideUtilityClassConstructor" files="Application.java"/>
     <suppress checks="VisibilityModifier" files="BorrowableItem.java"/>
-    <suppress checks="HiddenField" files="FilePersistenterStorage.java|Book.java|Borrowing.java"/>
+    <suppress checks="HiddenField" files="FilePersistenterStorage.java|Book.java|Borrowing.java|Task.java"/>
 </suppressions>
