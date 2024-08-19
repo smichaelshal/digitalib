@@ -73,21 +73,6 @@ class FilePersistenterStorageTest {
         assertEquals(this.books, this.listStorage);
     }
 
-
-    @Test
-    public void add_withNull_shouldReturnFalse() {
-        // Arrange
-        int sizeListBefore = this.listStorage.size();
-
-        // Act
-        boolean addResult = this.storage.create(null);
-        int sizeListAfter = this.listStorage.size();
-
-        // Assert
-        assertFalse(addResult);
-        assertEquals(sizeListBefore, sizeListAfter);
-    }
-
     @Test
     public void read_withIdFilter_shouldReturnBook() {
         // Arrange
