@@ -57,7 +57,6 @@ class TimerBorrowableItemNotifierTest {
     @Test
     public void constructor_withExistBookOnStorage_shouldCallWithBookOnTime() {
         // Arrange
-        this.book.setSummary("p2");
         List<Book> books = List.of(this.book);
         when(this.storage.readAll(any(Function.class))).thenReturn(books);
         long expiredTime = this.book.getBorrowings().get(0).getExpiredTime()
@@ -83,7 +82,6 @@ class TimerBorrowableItemNotifierTest {
     @Test
     public void add_withBook_shouldCallWithBookOnTime() {
         // Arrange
-        this.book.setSummary("p0");
         this.createNotifier();
         List<Book> books = List.of(this.book);
         when(this.storage.readAll(any(Function.class))).thenReturn(books);
@@ -109,7 +107,6 @@ class TimerBorrowableItemNotifierTest {
     public void add_withExistBookOnStorage_shouldReturnFalse() {
         // Arrange
         this.createNotifier();
-        this.book.setSummary("p1");
         List<Book> books = List.of(this.book);
         when(this.storage.readAll(any(Function.class))).thenReturn(books);
         TimerBorrowableItemNotifier<Book> timerBorrowableItemNotifier =
