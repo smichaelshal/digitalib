@@ -8,7 +8,7 @@ import org.plasma.digitalib.storage.Storage;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,13 +18,13 @@ import static org.mockito.Mockito.when;
 
 class BookSearcherTest {
     private Storage<Book> storage;
-    private Function<Book, Boolean> filter;
+    private Predicate<Book> filter;
     private BookSearcher searcher;
 
     @BeforeEach
     void setup() {
         this.storage = mock(Storage.class);
-        this.filter = mock(Function.class);
+        this.filter = mock(Predicate.class);
         this.searcher = new BookSearcher(this.storage);
     }
 
@@ -32,7 +32,7 @@ class BookSearcherTest {
     void search() {
         // Arrange
         List<Book> expectedResult = new LinkedList();
-        when(this.storage.readAll(any(Function.class))).thenReturn(expectedResult);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(expectedResult);
 
         // Act
         List<Book> searchResult = this.searcher.search(this.filter);

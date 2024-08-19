@@ -6,14 +6,14 @@ import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.storage.Storage;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 public class BookSearcher implements Searcher<Book> {
     private final Storage<Book> storage;
 
     public final List<Book> search(
-            @NonNull final Function<Book, Boolean> filter) {
+            @NonNull final Predicate<Book> filter) {
         return this.storage.readAll(filter);
     }
 }
