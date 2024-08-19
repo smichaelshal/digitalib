@@ -21,21 +21,21 @@ class BorrowingFilterTest {
     }
 
     @Test
-    void apply_withPresentBook_shouldReturnFalse() {
+    void test_withPresentBook_shouldReturnFalse() {
         // Act
-        boolean filterResult = this.filter.apply(this.book);
+        boolean filterResult = this.filter.test(this.book);
 
         // Assert
         assertFalse(filterResult);
     }
 
     @Test
-    void apply_withBorrowedBook_shouldReturnTrue() {
+    void test_withBorrowedBook_shouldReturnTrue() {
         // Arrange
         this.book.setIsBorrowed(true);
 
         // Act
-        boolean filterResult = this.filter.apply(this.book);
+        boolean filterResult = this.filter.test(this.book);
 
         // Assert
         assertTrue(filterResult);

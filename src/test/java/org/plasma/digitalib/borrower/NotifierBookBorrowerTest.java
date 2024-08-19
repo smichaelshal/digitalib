@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,7 +51,7 @@ class NotifierBookBorrowerTest {
     void borrow_whenBookIdentifierExist_shouldReturnSuccess() {
         // Arrange
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Function.class))).thenReturn(books);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
         when(this.storage.update(any(UUID.class), any(Book.class))).thenReturn(
                 true);
 
@@ -66,7 +66,7 @@ class NotifierBookBorrowerTest {
     @Test
     void borrow_withBookIdentifierNotExist_shouldReturnNotExist() {
         // Arrange
-        when(this.storage.readAll(any(Function.class))).thenReturn(
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(
                 new LinkedList());
 
         // Act
@@ -80,7 +80,7 @@ class NotifierBookBorrowerTest {
     @Test
     void borrow_withBookIdentifierBorrowed_shouldReturnOutOfStock() {
         // Arrange
-        when(this.storage.readAll(any(Function.class))).thenReturn(
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(
                 List.of(this.book));
         when(this.storage.update(any(UUID.class), any(Book.class))).thenReturn(
                 true);
@@ -104,7 +104,7 @@ class NotifierBookBorrowerTest {
                 Instant.now()));
         this.book.setIsBorrowed(true);
 
-        when(this.storage.readAll(any(Function.class))).thenReturn(
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(
                 List.of(this.book));
         when(this.storage.update(any(UUID.class), any(Book.class))).thenReturn(
                 true);
@@ -127,7 +127,7 @@ class NotifierBookBorrowerTest {
                 Instant.now()));
         this.book.setIsBorrowed(true);
 
-        when(this.storage.readAll(any(Function.class))).thenReturn(
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(
                 List.of(this.book));
         when(this.storage.update(any(UUID.class), any(Book.class))).thenReturn(
                 true);

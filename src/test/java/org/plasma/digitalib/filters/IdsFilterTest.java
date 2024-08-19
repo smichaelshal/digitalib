@@ -26,16 +26,16 @@ class IdsFilterTest {
     }
 
     @Test
-    void apply_withContainId_shouldReturnTrue() {
+    void test_withContainId_shouldReturnTrue() {
         // Act
-        boolean filterResult = this.filter.apply(this.book);
+        boolean filterResult = this.filter.test(this.book);
 
         // Assert
         assertTrue(filterResult);
     }
 
     @Test
-    void apply_withNotContainId_shouldReturnFalse() {
+    void test_withNotContainId_shouldReturnFalse() {
         // Arrange
         Book secondBook = new Book(
                 "genre",
@@ -43,7 +43,7 @@ class IdsFilterTest {
                 new BookIdentifier("name", "author"));
 
         // Act
-        boolean filterResult = this.filter.apply(secondBook);
+        boolean filterResult = this.filter.test(secondBook);
 
         // Assert
         assertFalse(filterResult);
