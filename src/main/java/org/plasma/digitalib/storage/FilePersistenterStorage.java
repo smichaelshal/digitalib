@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,9 +50,9 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         return true;
     }
 
-    public final List<T> readAll(@NonNull final Function<T, Boolean> filter) {
+    public final List<T> readAll(@NonNull final Predicate<T> filter) {
         return this.items.stream()
-                .filter(filter::apply).
+                .filter(filter).
                 collect(Collectors.toList());
     }
 
