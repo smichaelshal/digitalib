@@ -108,7 +108,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
     }
 
     private void schedule() {
-        Optional<Instant> nextTime = this.getNextScheduleTime();
+        Optional<Instant> nextTime = this.getNextScheduledTime();
         if (nextTime.isEmpty()) {
             return;
         }
@@ -174,7 +174,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         this.lock.unlock();
     }
 
-    private Optional<Instant> getNextScheduleTime() {
+    private Optional<Instant> getNextScheduledTime() {
         this.lock.lock();
         if (this.times.isEmpty()) {
             this.lock.unlock();
