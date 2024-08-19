@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -76,9 +76,9 @@ class FilePersistenterStorageTest {
     @Test
     public void read_withIdFilter_shouldReturnBook() {
         // Arrange
-        Function<Book, Boolean> bookByIdFilter = mock(Function.class);
+        Predicate<Book> bookByIdFilter = mock(Predicate.class);
         BookIdMatcher bookIdMatcher = new BookIdMatcher(this.book.getId());
-        when(bookByIdFilter.apply(argThat(bookIdMatcher))).thenReturn(true);
+        when(bookByIdFilter.test(argThat(bookIdMatcher))).thenReturn(true);
 
         this.storage.create(this.book);
 
