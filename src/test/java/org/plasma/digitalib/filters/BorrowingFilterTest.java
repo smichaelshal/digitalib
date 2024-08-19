@@ -21,7 +21,7 @@ class BorrowingFilterTest {
     }
 
     @Test
-    void apply_withPresentBook_should() {
+    void apply_withPresentBook_shouldReturnFalse() {
         // Act
         boolean filterResult = this.filter.apply(this.book);
 
@@ -30,7 +30,7 @@ class BorrowingFilterTest {
     }
 
     @Test
-    void apply_withBorrowedBook_should() {
+    void apply_withBorrowedBook_shouldReturnTrue() {
         // Arrange
         this.book.setIsBorrowed(true);
 
