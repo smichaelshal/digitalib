@@ -90,7 +90,7 @@ class TimerBorrowableItemNotifierTest {
                 this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
         // Act
-        boolean notifierResult = this.notifier.add(this.book);
+        this.notifier.add(this.book);
 
         // Assert
         verify(this.consumer, timeout(deltaTime + 1000).times(1)).accept(
@@ -99,6 +99,19 @@ class TimerBorrowableItemNotifierTest {
         long endTime = Instant.now().toEpochMilli();
         boolean isEndTimeBigThanExpiredTime = endTime >= expiredTime;
         assertTrue(isEndTimeBigThanExpiredTime);
+    }
+
+    @Test
+    public void add_withBook_shouldReturnTrue() {
+        // Arrange
+        this.createNotifier();
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+
+        // Act
+        boolean notifierResult = this.notifier.add(this.book);
+
+        // Assert
         assertTrue(notifierResult);
     }
 
@@ -131,15 +144,30 @@ class TimerBorrowableItemNotifierTest {
                 this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
         // Act
-        boolean addResult = this.notifier.add(this.book);
-        boolean deleteResult = this.notifier.delete(this.book);
+        this.notifier.add(this.book);
+        this.notifier.delete(this.book);
 
         // Assert
         verify(this.consumer, after(deltaTime + 1000).never()).accept(
                 this.book);
+    }
+
+    @Test
+    public void delete_withBook_shouldReturnTrueTwice() {
+        // Arrange
+        this.createNotifier();
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+
+        // Act
+        boolean addResult = this.notifier.add(this.book);
+        boolean deleteResult = this.notifier.delete(this.book);
+
+        // Assert
         assertTrue(addResult);
         assertTrue(deleteResult);
     }
+
 
     @Test
     public void delete_withNotExistBook_shouldReturnFalse() {
