@@ -23,8 +23,6 @@ class BorrowedBookFilterTest {
 
     @Test
     void test_withPresentBook_shouldReturnFalse() {
-        // Arrange
-
         // Act
         boolean testResult = this.filter.test(this.book);
 

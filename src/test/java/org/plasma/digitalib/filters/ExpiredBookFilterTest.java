@@ -10,7 +10,8 @@ import org.plasma.digitalib.models.User;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ExpiredBookFilterTest {
     private ExpiredBookFilter filter;
