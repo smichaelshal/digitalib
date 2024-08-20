@@ -13,6 +13,10 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class ExpiredBookFilter implements Predicate<Book> {
     public final boolean test(final Book book) {
+        if (book.getIsBorrowed()) {
+            return false;
+        }
+
         List<Borrowing> borrowings = book.getBorrowings();
         if (borrowings.isEmpty()) {
             log.debug("0 borrowings of {}", book);
