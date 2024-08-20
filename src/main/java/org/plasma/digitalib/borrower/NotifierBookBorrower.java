@@ -29,7 +29,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             @NonNull final OrderRequest<BookIdentifier> request) {
         BookIdentifier bookIdentifier = request.getItemIdentifier();
         if (bookIdentifier == null) {
-            log.info("get null bookIdentifier of borrow request");
+            log.info("Get null bookIdentifier of borrow request");
             return BorrowingResult.INVALID_REQUEST;
         }
 
@@ -47,7 +47,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
         if (availableBooks.isEmpty()) {
             log.info(
                     "No matching books present were"
-                            + " found for the borrow request");
+                            + " found for the borrow request: {}", request);
             return BorrowingResult.OUT_OF_STOCK;
         }
 
@@ -63,7 +63,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
         boolean notifierResult = this.notifier.add(book);
         if (!notifierResult) {
-            log.info("notifier failed");
+            log.info("Add notify of book failed: {}", book);
             this.deleteLastBorrowing(book);
             return BorrowingResult.INVALID_REQUEST; // ???
         }
@@ -88,7 +88,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             @NonNull final OrderRequest<BookIdentifier> request) {
         BookIdentifier bookIdentifier = request.getItemIdentifier();
         if (bookIdentifier == null) {
-            log.info("get null bookIdentifier of return request");
+            log.info("Get null bookIdentifier of return request: {}", request);
             return false;
         }
 
@@ -116,7 +116,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
         Book book = matchBooks.get(0);
         if (!this.notifier.delete(book)) {
-            log.info("delete notify failed of {}", book.getId());
+            log.info("Delete notify failed of book: {}", book);
         }
 
         return this.updateReturnBook(book);
@@ -135,11 +135,11 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                 expiredTime));
         book.setIsBorrowed(true);
         if (!this.storage.update(book.getId(), book)) {
-            log.info("failed add borrowing to book: {}", book);
+            log.info("Failed add borrowing to book: {}", book);
             book.setIsBorrowed(false);
         }
 
-        log.info("success add borrowing to book: {}", book);
+        log.info("Success add borrowing to book: {}", book);
         return true;
     }
 
@@ -150,11 +150,11 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                 .setReturnTime(Optional.of(Instant.now()));
         book.setIsBorrowed(false);
         if (!this.storage.update(book.getId(), book)) {
-            log.info("failed return borrowing to book: {}", book);
+            log.info("Failed return borrowing to book: {}", book);
             book.setIsBorrowed(false);
         }
 
-        log.info("success return borrowing to book: {}", book);
+        log.info("Success return borrowing to book: {}", book);
         return true;
     }
 }
