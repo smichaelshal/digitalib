@@ -24,7 +24,6 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
     private final Storage<Book> storage;
     private final Duration borrowingDuration;
 
-
     public final BorrowingResult borrowItem(
             @NonNull final OrderRequest<BookIdentifier> request) {
         BookIdentifier bookIdentifier = request.getItemIdentifier();
@@ -35,7 +34,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
         List<Book> books = this.filterBooks(request);
         if (books.isEmpty()) {
-            log.info(
+            log.debug(
                     "No matching books at all "
                             + "were found for the borrow request");
             return BorrowingResult.NOT_EXIST;
@@ -102,6 +101,9 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
                     List<Borrowing> borrowings = book.getBorrowings();
                     if (borrowings.isEmpty()) {
+                        log.debug(
+                                "The book borrowed but its borrowings is empty: {}",
+                                book);
                         return false;
                     }
 
@@ -111,6 +113,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                 })
                 .toList();
         if (matchBooks.isEmpty()) {
+            log.debug("Not found match books to request: {}", request);
             return false;
         }
 
@@ -127,7 +130,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
             @NonNull final OrderRequest<BookIdentifier> request,
             final @NonNull Duration duration) {
         Instant borrowingTime = Instant.now();
-        Instant expiredTime = Instant.now().plus(borrowingDuration);
+        Instant expiredTime = Instant.now().plus(duration);
         book.getBorrowings().add(new Borrowing(
                 request.getUser(),
                 borrowingTime,
@@ -152,6 +155,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
         if (!this.storage.update(book.getId(), book)) {
             log.info("Failed return borrowing to book: {}", book);
             book.setIsBorrowed(false);
+            return false;
         }
 
         log.info("Success return borrowing to book: {}", book);
