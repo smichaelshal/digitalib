@@ -39,20 +39,20 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         try {
             this.items.add(item);
             if (!this.saveItem(item)) {
-                log.debug("failed to add item because failed save");
+                log.debug("Failed to add item because failed save: {}", item);
                 this.items.remove(item);
                 return false;
             }
         } catch (Exception e) {
-            log.error("failed to add item", e);
+            log.error("Failed to add item: {}", item, e);
             return false;
         }
-        log.debug("success created {}", item);
+        log.debug("Success created {}", item);
         return true;
     }
 
     public final List<T> readAll(@NonNull final Predicate<T> filter) {
-        log.debug("read all by filter: {}", filter);
+        log.debug("Read all by filter: {}", filter);
         return this.items.stream()
                 .filter(filter).
                 collect(Collectors.toList());
@@ -61,22 +61,21 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     public final boolean update(
             @NonNull final UUID id,
             @NonNull final T newItem) {
-
         for (int i = 0; i < this.items.size(); i++) {
             if (id.equals(this.items.get(i).getId())) {
                 T oldItem = this.items.get(i);
                 this.items.set(i, newItem);
                 boolean saveResult = this.saveItem(newItem);
                 if (!saveResult) {
-                    log.info("failed save update {}", oldItem);
+                    log.warn("Failed save update {}", oldItem);
                     this.items.set(i, oldItem);
                     return false;
                 }
-                log.debug("success updated {}", newItem);
+                log.debug("Success updated {}", newItem);
                 return true;
             }
         }
-        log.debug("id not found: {}", id);
+        log.debug("Id not found: {}", id);
         return false;
     }
 
@@ -94,17 +93,16 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     }
 
     private void recover() {
-        log.debug("start recover");
+        log.info("Start recovery");
         try (Stream<Path> paths = Files.walk(this.directoryPath)
                 .filter(Files::isRegularFile)) {
             paths.forEach(path -> {
                 try {
                     T item = this.objectMapper.readValue(
                             path.toFile(),
-                            new TypeReference<T>() {
-                            });
+                            new TypeReference<T>() {});
                     this.items.add(item);
-                    log.debug("success recover: {}", item);
+                    log.debug("Success recover item: {}", item);
                 } catch (IOException e) {
                     log.error("failed recover item at: {}", path, e);
                 }

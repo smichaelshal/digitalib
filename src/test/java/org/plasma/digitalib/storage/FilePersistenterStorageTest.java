@@ -30,7 +30,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class FilePersistenterStorageTest {
-
     private List<Book> listStorage;
     private List<Book> books;
     private FilePersistenterStorage<Book> storage;
