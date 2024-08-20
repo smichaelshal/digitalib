@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-
 class TimerBorrowableItemNotifierTest {
     private Book book;
     private TimerBorrowableItemNotifier<Book> notifier;
@@ -145,7 +144,6 @@ class TimerBorrowableItemNotifierTest {
     @Test
     public void delete_withNotExistBook_shouldReturnFalse() {
         // Arrange
-
         this.createNotifier();
         List<Book> books = List.of(this.book);
         when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
