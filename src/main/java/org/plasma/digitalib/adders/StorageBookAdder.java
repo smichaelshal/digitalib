@@ -16,8 +16,7 @@ public class StorageBookAdder implements ItemAdder<Book> {
 
     public final boolean add(@NonNull final Book book) {
         List<Book> bookResults = this.storage
-                .readAll(
-                        new BookIdentifierFilter(book.getBookIdentifier()));
+                .readAll(new BookIdentifierFilter(book.getBookIdentifier()));
         for (Book bookResult : bookResults) {
             if (!bookResult.getSummary().equals(book.getSummary())) {
                 if (book.getSummary().isEmpty()) {
@@ -43,7 +42,9 @@ public class StorageBookAdder implements ItemAdder<Book> {
             return false;
         }
 
-        log.debug("try add {} to storage", book);
-        return this.storage.create(book);
+        boolean addResult = this.storage.create(book);
+        log.debug("{} add {} to storage", addResult ? "Success" : "Failed",
+                book);
+        return addResult;
     }
 }

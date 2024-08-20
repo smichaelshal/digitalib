@@ -15,15 +15,8 @@ public class BookIdentifierFilter implements Predicate<Book> {
     public final boolean test(final Book book) {
         BookIdentifier bookIdentifier = book.getBookIdentifier();
 
-        log.debug(
-                "id: {}, name: {}, Author: {}",
-                book.getId().toString(),
-                bookIdentifier.getName(),
-                bookIdentifier.getAuthor());
+        log.debug("book: {}", book);
 
-        return bookIdentifier.getName()
-                .equals(this.expectedBookIdentifier.getName())
-                && bookIdentifier.getAuthor()
-                .equals(this.expectedBookIdentifier.getAuthor());
+        return bookIdentifier.equals(this.expectedBookIdentifier);
     }
 }
