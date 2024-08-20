@@ -68,7 +68,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 this.items.set(i, newItem);
                 boolean saveResult = this.saveItem(newItem);
                 if (!saveResult) {
-                    log.info("failed save update {}", oldItem);
+                    log.debug("failed save update {}", oldItem);
                     this.items.set(i, oldItem);
                     return false;
                 }
