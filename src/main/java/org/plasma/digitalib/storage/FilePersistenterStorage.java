@@ -39,14 +39,16 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         try {
             this.items.add(item);
             if (!this.saveItem(item)) {
-                log.debug("Failed to add item because failed save: {}", item);
+                log.error("Failed to add item because failed save: {}", item);
                 this.items.remove(item);
                 return false;
             }
+
         } catch (Exception e) {
             log.error("Failed to add item: {}", item, e);
             return false;
         }
+
         log.debug("Success created {}", item);
         return true;
     }
@@ -75,6 +77,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 return true;
             }
         }
+
         log.debug("Id not found: {}", id);
         return false;
     }
@@ -93,7 +96,6 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     }
 
     private void recover() {
-        log.info("Start recovery");
         try (Stream<Path> paths = Files.walk(this.directoryPath)
                 .filter(Files::isRegularFile)) {
             paths.forEach(path -> {
@@ -104,11 +106,11 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                     this.items.add(item);
                     log.debug("Success recover item: {}", item);
                 } catch (IOException e) {
-                    log.error("failed recover item at: {}", path, e);
+                    log.error("Failed recover item at: {}", path, e);
                 }
             });
         } catch (IOException e) {
-            log.error("failed recover storage from: {}", this.directoryPath, e);
+            log.error("Failed recover storage from: {}", this.directoryPath, e);
         }
     }
 }
