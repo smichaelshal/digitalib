@@ -132,11 +132,12 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                 Instant currentTime = nextTime.get();
                 this.lockMapTimeId.lock();
                 List<UUID> ids = this.mapTimeId.get(currentTime);
-                if(ids == null) {
+                if (ids == null) {
                     log.error("ids is null");
                     this.lockMapTimeId.unlock();
                     this.schedule();
                 }
+
                 if (!ids.isEmpty()) {
                     List<T> items = this.storage.readAll(new IdsFilter<>(ids));
                     for (T item : items) {
