@@ -58,14 +58,14 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                 this.borrowingDuration);
 
         if (!updateResult) {
-            return BorrowingResult.INVALID_REQUEST; // ???
+            return BorrowingResult.BORROWER_ERROR;
         }
 
         boolean notifierResult = this.notifier.add(book);
         if (!notifierResult) {
             log.info("Add notify of book failed: {}", book);
             this.deleteLastBorrowing(book);
-            return BorrowingResult.INVALID_REQUEST; // ???
+            return BorrowingResult.BORROWER_ERROR;
         }
 
         return BorrowingResult.SUCCESS;
