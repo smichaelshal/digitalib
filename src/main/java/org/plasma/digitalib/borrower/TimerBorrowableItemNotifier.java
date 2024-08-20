@@ -47,7 +47,6 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             @NonNull final ScheduledExecutorService scheduledExecutorService,
             @NonNull final Storage<T> itemStorage,
             @NonNull final Consumer<T> notifyConsumer) {
-
         this.scheduler = scheduledExecutorService;
         this.storage = itemStorage;
         this.consumer = notifyConsumer;
@@ -56,7 +55,6 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         this.times = new LinkedList<>();
         this.lockTimes = new ReentrantLock();
         this.lockMapTimeId = new ReentrantLock();
-
         this.fetchAllBorrowedItems();
         this.schedule();
     }
@@ -70,19 +68,24 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             this.lockMapTimeId.lock();
             if (this.mapTimeId.containsKey(expiredTime)) {
                 if (this.mapTimeId.get(expiredTime).contains(id)) {
+                    log.debug("Item with same id already exist: {}", item);
                     this.lockMapTimeId.unlock();
                     return false;
                 }
+
                 this.mapTimeId.get(expiredTime).add(id);
             } else {
                 List<UUID> ids = new ArrayList<>(Collections.singletonList(id));
                 this.mapTimeId.put(expiredTime, ids);
+                log.debug("Add item to mapTimeId at new schedule time: {} {}",
+                        expiredTime, item);
             }
+
             this.lockMapTimeId.unlock();
             this.addTimeToSchedule(expiredTime);
             return true;
-        } catch (NullPointerException e) {
-            log.error(e.toString());
+        } catch (Exception e) {
+            log.error("Failed to add item: {}", item, e);
             return false;
         }
     }
@@ -106,14 +109,19 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                 this.mapIdFuture.remove(item.getId());
                 future.cancel(true);
             }
+
             boolean removeResult = ids.remove(item.getId());
+            log.debug("Delete item {}", item);
             if (removeResult && ids.isEmpty()) {
+                log.debug("The item is last from this expired time: {} {}",
+                        expiredTime, item);
                 this.mapTimeId.remove(expiredTime);
             }
+
             this.lockMapTimeId.unlock();
             return removeResult;
-        } catch (NullPointerException e) {
-            log.error(e.toString());
+        } catch (Exception e) {
+            log.error("Failed to delete item: {}", item, e);
             return false;
         }
     }
@@ -184,13 +192,13 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         }
     }
 
-
     private void addTimeToSchedule(final Instant expiredTime) {
         this.lockTimes.lock();
         if (!this.times.contains(expiredTime)) {
             this.times.add(expiredTime);
             Collections.sort(this.times);
         }
+
         int idsSize = this.times.size();
         this.lockTimes.unlock();
         if (idsSize == 1) {
