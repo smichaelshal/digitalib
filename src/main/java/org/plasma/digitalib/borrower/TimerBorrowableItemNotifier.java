@@ -95,8 +95,8 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             this.lockMapTimeId.lock();
             List<UUID> ids = this.mapTimeId.get(expiredTime);
             if (ids == null) {
-                log.debug("not found ids match to expired time: {}",
-                        expiredTime.toString());
+                log.debug("Not found ids match to expired time: {}",
+                        expiredTime);
                 this.lockMapTimeId.unlock();
                 return false;
             }
@@ -126,14 +126,14 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
 
         Duration duration = Duration.between(Instant.now(), nextTime.get());
         Runnable schedulerTask = () -> {
-            log.debug("start schedule");
+            log.debug("Start schedule");
             Runnable runner = () -> {
-                log.debug("start runner");
+                log.debug("Start runner");
                 Instant currentTime = nextTime.get();
                 this.lockMapTimeId.lock();
                 List<UUID> ids = this.mapTimeId.get(currentTime);
                 if (ids == null) {
-                    log.error("ids is null");
+                    log.error("Ids is null to currentTime: {}", currentTime);
                     this.lockMapTimeId.unlock();
                     this.schedule();
                 }
@@ -142,18 +142,18 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                     List<T> items = this.storage.readAll(new IdsFilter<>(ids));
                     for (T item : items) {
                         if (item == null) {
-                            log.debug("item in notify is null");
+                            log.debug("Item in notify is null");
                             continue;
                         }
 
-                        log.debug("send notify with {}", item);
+                        log.debug("Send notify with {}", item);
                         this.consumer.accept(item);
                         this.mapIdFuture.remove(item.getId());
                     }
 
                     this.mapTimeId.remove(currentTime);
                 } else {
-                    log.debug("running without items");
+                    log.debug("Running without items");
                 }
 
                 this.lockMapTimeId.unlock();
