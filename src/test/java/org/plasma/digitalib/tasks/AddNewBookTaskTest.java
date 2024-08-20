@@ -25,6 +25,7 @@ class AddNewBookTaskTest {
         // Arrange
         ByteArrayInputStream inputStream =
                 new ByteArrayInputStream("a\nb\nc\nd\n".getBytes());
+
         Scanner scanner = new Scanner(inputStream);
 
         ObjectMapper objectMapper = new ObjectMapper();
