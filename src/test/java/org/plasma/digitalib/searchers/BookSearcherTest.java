@@ -2,6 +2,8 @@ package org.plasma.digitalib.searchers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.storage.BookIdMatcher;
 import org.plasma.digitalib.storage.Storage;
@@ -17,14 +19,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class BookSearcherTest {
-    private Storage<Book> storage;
-    private Predicate<Book> filter;
     private BookSearcher searcher;
+
+    @Mock
+    private Storage<Book> storage;
+
+    @Mock
+    private Predicate<Book> filter;
 
     @BeforeEach
     void setup() {
-        this.storage = mock(Storage.class);
-        this.filter = mock(Predicate.class);
+        MockitoAnnotations.initMocks(this);
         this.searcher = new BookSearcher(this.storage);
     }
 
@@ -32,7 +37,7 @@ class BookSearcherTest {
     void search() {
         // Arrange
         List<Book> expectedResult = new LinkedList();
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(expectedResult);
+        when(this.storage.readAll(this.filter)).thenReturn(expectedResult);
 
         // Act
         List<Book> searchResult = this.searcher.search(this.filter);
