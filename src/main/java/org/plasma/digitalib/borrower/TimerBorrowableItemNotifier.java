@@ -119,6 +119,49 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         }
     }
 
+    private void runConsumer(final Instant currentTime) {
+        log.debug("Start run consumer the current time: {}", currentTime);
+        synchronized (this.mapTimeId) {
+            List<UUID> ids = this.mapTimeId.get(currentTime);
+            if (ids == null) {
+                log.error("Ids is null to currentTime: {}",
+                        currentTime);
+            } else {
+                if (!ids.isEmpty()) {
+                    List<T> items =
+                            this.storage.readAll(new IdsFilter<>(ids));
+                    for (T item : items) {
+                        if (item == null) {
+                            log.debug("Item in notify is null");
+                            continue;
+                        }
+
+                        log.debug("Send notify with {}", item);
+                        this.consumer.accept(item);
+                        this.mapIdFuture.remove(item.getId());
+                    }
+
+                    this.mapTimeId.remove(currentTime);
+                } else {
+                    log.debug("Running without items");
+                }
+            }
+        }
+
+        this.schedule();
+    }
+
+    private void dispatchRunner(final Instant nextTime) {
+        log.debug("Start schedule the next time: {}", nextTime);
+        Runnable runner = () -> {
+            this.runConsumer(nextTime);
+        };
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(runner);
+        executor.shutdown();
+    }
+
     private void schedule() {
         Optional<Instant> nextTime = this.getNextScheduledTime();
         if (nextTime.isEmpty()) {
@@ -127,43 +170,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
 
         Duration duration = Duration.between(Instant.now(), nextTime.get());
         Runnable schedulerTask = () -> {
-            log.debug("Start schedule");
-            Runnable runner = () -> {
-                log.debug("Start runner");
-                Instant currentTime = nextTime.get();
-                synchronized (this.mapTimeId) {
-                    List<UUID> ids = this.mapTimeId.get(currentTime);
-                    if (ids == null) {
-                        log.error("Ids is null to currentTime: {}",
-                                currentTime);
-                    } else {
-                        if (!ids.isEmpty()) {
-                            List<T> items =
-                                    this.storage.readAll(new IdsFilter<>(ids));
-                            for (T item : items) {
-                                if (item == null) {
-                                    log.debug("Item in notify is null");
-                                    continue;
-                                }
-
-                                log.debug("Send notify with {}", item);
-                                this.consumer.accept(item);
-                                this.mapIdFuture.remove(item.getId());
-                            }
-
-                            this.mapTimeId.remove(currentTime);
-                        } else {
-                            log.debug("Running without items");
-                        }
-                    }
-                }
-
-                this.schedule();
-            };
-
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.execute(runner);
-            executor.shutdown();
+            this.dispatchRunner(nextTime.get());
         };
 
         ScheduledFuture<?> future = this.scheduler.schedule(
