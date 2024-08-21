@@ -8,6 +8,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.models.BorrowableItem;
@@ -26,7 +28,6 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class FilePersistenterStorageTest {
@@ -37,6 +38,7 @@ class FilePersistenterStorageTest {
 
     @BeforeEach
     public void setup() throws IOException {
+        MockitoAnnotations.initMocks(this);
         this.books = new LinkedList<>();
         this.listStorage = new LinkedList<Book>();
         Path path = Files.createTempDirectory(UUID.randomUUID().toString());
@@ -87,10 +89,12 @@ class FilePersistenterStorageTest {
         assertTrue(addResult);
     }
 
+    @Mock
+    Predicate<Book> bookByIdFilter;
+
     @Test
     public void read_withIdFilter_shouldReturnBook() {
         // Arrange
-        Predicate<Book> bookByIdFilter = mock(Predicate.class);
         when(bookByIdFilter.test(this.book)).thenReturn(true);
 
         this.storage.create(this.book);
