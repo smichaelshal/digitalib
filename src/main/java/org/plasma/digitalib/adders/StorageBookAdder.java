@@ -14,7 +14,7 @@ import java.util.List;
 public class StorageBookAdder implements ItemAdder<Book> {
     private final Storage<Book> storage;
 
-    public final boolean add(@NonNull final Book book) {
+    public final boolean add(final Book book) {
         List<Book> bookResults = this.storage
                 .readAll(
                         new BookIdentifierFilter(book.getBookIdentifier()));
