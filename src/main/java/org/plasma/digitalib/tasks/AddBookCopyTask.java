@@ -2,7 +2,6 @@ package org.plasma.digitalib.tasks;
 
 import lombok.NonNull;
 import org.plasma.digitalib.adders.ItemAdder;
-import org.plasma.digitalib.adders.StorageBookAdder;
 import org.plasma.digitalib.inputs.Input;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
