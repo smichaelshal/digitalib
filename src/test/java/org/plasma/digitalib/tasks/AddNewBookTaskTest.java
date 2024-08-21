@@ -1,62 +1,87 @@
 package org.plasma.digitalib.tasks;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.plasma.digitalib.adders.StorageBookAdder;
-import org.plasma.digitalib.inputs.ConsoleInput;
+import org.plasma.digitalib.inputs.Input;
 import org.plasma.digitalib.models.Book;
-import org.plasma.digitalib.models.BorrowableItem;
-import org.plasma.digitalib.storage.FilePersistenterStorage;
+import org.plasma.digitalib.models.BookIdentifier;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.LinkedList;
-import java.util.Scanner;
-import java.util.UUID;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+//@RunWith(MockitoJUnitRunner.class)
 class AddNewBookTaskTest {
 
+    private Task task;
+    private Input consoleInput;
+    private StorageBookAdder storageBookAdder;
+
+
+//    @Mock
+//    StorageBookAdder storageBookAdder;
+
+//    @Mock
+//    Input consoleInput;
+
+
+//    @BeforeEach
+    public void setup() {
+//        MockitoAnnotations.initMocks(this);
+
+    }
+
+//    @Captor
+//    ArgumentCaptor<Book> bookCaptor;
+
+    private boolean isValidBook(
+            final Book book,
+            final Book expectedBook) {
+
+        return book.getSummary().equals(expectedBook.getSummary())
+                && book.getGenre().equals(expectedBook.getGenre())
+                && book.getBookIdentifier()
+                .equals(expectedBook.getBookIdentifier());
+    }
+
     @Test
-    public void run() throws IOException {
-        // Arrange
-        ByteArrayInputStream inputStream =
-                new ByteArrayInputStream("a\nb\nc\nd\n".getBytes());
+    public void test() {
 
-        Scanner scanner = new Scanner(inputStream);
+        this.consoleInput = mock(Input.class);
+        this.storageBookAdder = mock(StorageBookAdder.class);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.registerModule(new Jdk8Module());
-
-        PolymorphicTypeValidator polymorphicTypeValidator =
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType("org.plasma.digitalib")
-                        .allowIfSubType("java.util.LinkedList")
-                        .build();
-        objectMapper.activateDefaultTyping(
-                polymorphicTypeValidator,
-                ObjectMapper.DefaultTyping.NON_FINAL);
-        objectMapper.registerSubtypes(BorrowableItem.class);
-
-        FilePersistenterStorage<Book> storage = new FilePersistenterStorage(
-                new LinkedList(),
-                Files.createTempDirectory(UUID.randomUUID().toString()),
-                objectMapper);
-        StorageBookAdder storageBookAdder = new StorageBookAdder(storage);
-        ConsoleInput consoleUtils = new ConsoleInput(scanner);
         ConsoleCreatorBookIdentifier creatorBookIdentifier =
-                new ConsoleCreatorBookIdentifier(consoleUtils);
-        Task task = new AddBookCopyTask("add new book", storageBookAdder,
-                creatorBookIdentifier, consoleUtils);
+                new ConsoleCreatorBookIdentifier(this.consoleInput);
+
+        this.task = new AddNewBookTask("add new book", this.storageBookAdder,
+                creatorBookIdentifier, this.consoleInput);
+
+        // Arrange
+//        this.consoleInput = mock(Input.class);
+        ArgumentCaptor bookCaptor = ArgumentCaptor.forClass(Book.class);
+
+        Book expectedBook = new Book(
+                "genre",
+                "summary",
+                new BookIdentifier("name", "author"));
+
+        when(this.consoleInput.getNotEmptyParameter("summary book"))
+                .thenReturn(expectedBook.getSummary());
+        when(this.consoleInput.getNotEmptyParameter("genre book"))
+                .thenReturn(expectedBook.getGenre());
+        when(this.consoleInput.getNotEmptyParameter("book name"))
+                .thenReturn(expectedBook.getBookIdentifier().getName());
+        when(this.consoleInput.getNotEmptyParameter("book author"))
+                .thenReturn(expectedBook.getBookIdentifier().getAuthor());
+
+        verify(this.storageBookAdder).add((Book) bookCaptor.capture());
 
         // Act
-        task.run();
+//        this.task.run();
 
         // Assert
+        assertTrue(this.isValidBook((Book) bookCaptor.getValue(), expectedBook));
     }
 }

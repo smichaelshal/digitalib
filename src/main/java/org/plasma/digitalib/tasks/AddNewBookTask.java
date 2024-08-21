@@ -1,21 +1,22 @@
 package org.plasma.digitalib.tasks;
 
 import lombok.NonNull;
+import org.plasma.digitalib.adders.ItemAdder;
 import org.plasma.digitalib.adders.StorageBookAdder;
-import org.plasma.digitalib.inputs.ConsoleInput;
+import org.plasma.digitalib.inputs.Input;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 
 public class AddNewBookTask extends Task {
-    private final StorageBookAdder adder;
+    private final ItemAdder<Book> adder;
     private final ConsoleCreatorBookIdentifier creatorBookIdentifier;
-    private final ConsoleInput consoleUtils;
+    private final Input consoleUtils;
 
     public AddNewBookTask(
             @NonNull final String name,
-            @NonNull final StorageBookAdder adder,
+            @NonNull final ItemAdder<Book> adder,
             @NonNull final ConsoleCreatorBookIdentifier creatorBookIdentifier,
-            @NonNull final ConsoleInput consoleUtils) {
+            @NonNull final Input consoleUtils) {
         super(name);
         this.adder = adder;
         this.creatorBookIdentifier = creatorBookIdentifier;
