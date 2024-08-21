@@ -39,18 +39,22 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         try {
             this.items.add(item);
             if (!this.saveItem(item)) {
+                log.error("Failed to add item because failed save: {}", item);
                 this.items.remove(item);
                 return false;
             }
+
         } catch (Exception e) {
-            log.error(e.toString());
+            log.error("Failed to add item: {}", item, e);
             return false;
         }
-        log.info("success created {}", item.toString());
+
+        log.debug("Success created {}", item);
         return true;
     }
 
     public final List<T> readAll(@NonNull final Predicate<T> filter) {
+        log.debug("Read all by filter: {}", filter);
         return this.items.stream()
                 .filter(filter).
                 collect(Collectors.toList());
@@ -59,15 +63,22 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     public final boolean update(
             @NonNull final UUID id,
             @NonNull final T newItem) {
-
         for (int i = 0; i < this.items.size(); i++) {
             if (id.equals(this.items.get(i).getId())) {
+                T oldItem = this.items.get(i);
                 this.items.set(i, newItem);
-                this.saveItem(newItem);
-                log.info("success updated {}", newItem.toString());
+                boolean saveResult = this.saveItem(newItem);
+                if (!saveResult) {
+                    log.warn("Failed save update {}", oldItem);
+                    this.items.set(i, oldItem);
+                    return false;
+                }
+                log.debug("Success updated {}", newItem);
                 return true;
             }
         }
+
+        log.debug("Id not found: {}", id);
         return false;
     }
 
@@ -80,44 +91,26 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
             log.error("save item failed: ", e);
             return false;
         }
+
         return true;
     }
 
-    private boolean isDirectoryEmpty(final Path path) throws IOException {
-        if (Files.isDirectory(path)) {
-            try (Stream<Path> entries = Files.list(path)) {
-                return !entries.findFirst().isPresent();
-            }
-        }
-        return false;
-    }
-
     private void recover() {
-        log.info("start recover");
-        try {
-            if (this.isDirectoryEmpty(this.directoryPath)) {
-                log.info(
-                        "source directory of recover is empty: {}",
-                        this.directoryPath);
-                return;
-            }
-        } catch (Exception e) {
-            log.error(e.toString());
-        }
-        try (Stream<Path> paths = Files.walk(this.directoryPath)) {
+        try (Stream<Path> paths = Files.walk(this.directoryPath)
+                .filter(Files::isRegularFile)) {
             paths.forEach(path -> {
                 try {
                     T item = this.objectMapper.readValue(
                             path.toFile(),
-                            new TypeReference<T>() { });
+                            new TypeReference<T>() {});
                     this.items.add(item);
-                    log.info("success recover: {}", item.toString());
+                    log.debug("Success recover item: {}", item);
                 } catch (IOException e) {
-                    log.error(e.toString());
+                    log.error("Failed recover item at: {}", path, e);
                 }
             });
         } catch (IOException e) {
-            log.error(e.toString());
+            log.error("Failed recover storage from: {}", this.directoryPath, e);
         }
     }
 }

@@ -8,7 +8,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.plasma.digitalib.models.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.plasma.digitalib.models.Book;
+import org.plasma.digitalib.models.BookIdentifier;
+import org.plasma.digitalib.models.BorrowableItem;
+import org.plasma.digitalib.models.Borrowing;
+import org.plasma.digitalib.models.User;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,40 +26,39 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 class FilePersistenterStorageTest {
-
     private List<Book> listStorage;
     private List<Book> books;
     private FilePersistenterStorage<Book> storage;
     private Book book;
-    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setup() throws IOException {
+        MockitoAnnotations.initMocks(this);
         this.books = new LinkedList<>();
         this.listStorage = new LinkedList<Book>();
         Path path = Files.createTempDirectory(UUID.randomUUID().toString());
 
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
-        this.objectMapper.registerModule(new Jdk8Module());
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new Jdk8Module());
 
         PolymorphicTypeValidator polymorphicTypeValidator =
                 BasicPolymorphicTypeValidator.builder()
                         .allowIfSubType("org.plasma.digitalib")
                         .allowIfSubType("java.util.LinkedList")
                         .build();
-        this.objectMapper.activateDefaultTyping(
+        objectMapper.activateDefaultTyping(
                 polymorphicTypeValidator,
                 ObjectMapper.DefaultTyping.NON_FINAL);
-        this.objectMapper.registerSubtypes(BorrowableItem.class);
+        objectMapper.registerSubtypes(BorrowableItem.class);
 
-        this.storage = new FilePersistenterStorage<>(this.listStorage, path, this.objectMapper);
+        this.storage = new FilePersistenterStorage<>(this.listStorage, path,
+                objectMapper);
         this.book = new Book(
                 "genre",
                 "summary",
@@ -66,35 +71,63 @@ class FilePersistenterStorageTest {
         this.books.add(this.book);
 
         // Act
-        boolean addResult = this.storage.create(this.book);
+        this.storage.create(this.book);
 
         // Assert
-        assertTrue(addResult);
         assertEquals(this.books, this.listStorage);
     }
 
     @Test
+    public void add_withBook_shouldReturnTrue() {
+        // Arrange
+        this.books.add(this.book);
+
+        // Act
+        boolean addResult = this.storage.create(this.book);
+
+        // Assert
+        assertTrue(addResult);
+    }
+
+    @Mock
+    Predicate<Book> bookByIdFilter;
+
+    @Test
     public void read_withIdFilter_shouldReturnBook() {
         // Arrange
-        Predicate<Book> bookByIdFilter = mock(Predicate.class);
-        BookIdMatcher bookIdMatcher = new BookIdMatcher(this.book.getId());
-        when(bookByIdFilter.test(argThat(bookIdMatcher))).thenReturn(true);
+        when(bookByIdFilter.test(this.book)).thenReturn(true);
 
         this.storage.create(this.book);
 
         // Act
         List<Book> bookResults = this.storage.readAll(bookByIdFilter);
-        int sizeResult = bookResults.size();
 
         // Assert
-        assertEquals(1, sizeResult);
-        assertEquals(this.book, bookResults.get(0));
+        assertEquals(List.of(this.book), bookResults);
     }
 
     @Test
-    public void update_withNewBorrowing_shouldReturnUpdatedBook() {
+    public void update_withNewBorrowing_shouldUpdatedBookInList() {
         // Arrange
+        this.storage.create(this.book);
+        Book bookCopy = SerializationUtils.clone(this.book);
+        Borrowing borrowing = new Borrowing(
+                new User("5678"),
+                Instant.now(),
+                Instant.now().plus(1000, ChronoUnit.SECONDS));
+        bookCopy.getBorrowings().add(borrowing);
+        this.books.add(bookCopy);
 
+        // Act
+        this.storage.update(this.book.getId(), bookCopy);
+
+        // Assert
+        assertEquals(this.books, this.listStorage);
+    }
+
+    @Test
+    public void update_withNewBorrowing_shouldReturnTrue() {
+        // Arrange
         this.storage.create(this.book);
         Book bookCopy = SerializationUtils.clone(this.book);
         Borrowing borrowing = new Borrowing(
@@ -107,9 +140,7 @@ class FilePersistenterStorageTest {
         // Act
         boolean updateResult = this.storage.update(this.book.getId(), bookCopy);
 
-
         // Assert
         assertTrue(updateResult);
-        assertEquals(this.books, this.listStorage);
     }
 }
