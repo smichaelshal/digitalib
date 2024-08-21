@@ -25,8 +25,13 @@ public class PrintBooksByFilterTask extends Task {
 
     public void run() {
         List<Book> books = this.searcher.search(this.filter);
+
         for (Book book : books) {
             System.out.println(this.formatBook(book));
+        }
+
+        if (books.isEmpty()) {
+            System.out.println("No books matching your search were found");
         }
     }
 
