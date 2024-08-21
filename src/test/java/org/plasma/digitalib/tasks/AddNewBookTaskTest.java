@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.plasma.digitalib.adders.StorageBookAdder;
+import org.plasma.digitalib.inputs.ConsoleInput;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BorrowableItem;
 import org.plasma.digitalib.storage.FilePersistenterStorage;
@@ -47,7 +48,7 @@ class AddNewBookTaskTest {
                 Files.createTempDirectory(UUID.randomUUID().toString()),
                 objectMapper);
         StorageBookAdder storageBookAdder = new StorageBookAdder(storage);
-        ConsoleUtils consoleUtils = new ConsoleUtils(scanner);
+        ConsoleInput consoleUtils = new ConsoleInput(scanner);
         ConsoleCreatorBookIdentifier creatorBookIdentifier =
                 new ConsoleCreatorBookIdentifier(consoleUtils);
         Task task = new AddBookCopyTask("add new book", storageBookAdder,
