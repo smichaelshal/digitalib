@@ -1,4 +1,4 @@
-package org.plasma.digitalib.tasks;
+package org.plasma.digitalib.inputs;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Scanner;
 
 @RequiredArgsConstructor
-public class ConsoleUtils {
+public class ConsoleInput implements Input {
     private final Scanner scanner;
 
     public final String getNotEmptyParameter(
