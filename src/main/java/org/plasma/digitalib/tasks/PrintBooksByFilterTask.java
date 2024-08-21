@@ -23,7 +23,7 @@ public class PrintBooksByFilterTask extends Task {
         this.filter = filter;
     }
 
-    public void run() {
+    public final void run() {
         List<Book> books = this.searcher.search(this.filter);
 
         for (Book book : books) {
@@ -53,7 +53,7 @@ public class PrintBooksByFilterTask extends Task {
                 + StringUtils.join(borrowings, "\n");
     }
 
-    private String formatBorrowing(Borrowing borrowing) {
+    private String formatBorrowing(final Borrowing borrowing) {
         return String.format(
                 "User: %s\nBorrowing time: %s\nExpired time: %s\n%s\n",
                 borrowing.getUser(),
