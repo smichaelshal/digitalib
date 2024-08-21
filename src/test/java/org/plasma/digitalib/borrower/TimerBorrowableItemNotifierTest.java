@@ -2,6 +2,8 @@ package org.plasma.digitalib.borrower;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.models.Borrowing;
@@ -21,18 +23,26 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.after;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class TimerBorrowableItemNotifierTest {
     private Book book;
     private TimerBorrowableItemNotifier<Book> notifier;
-    private Consumer<Book> consumer;
-    private Storage<Book> storage;
     private ScheduledExecutorService scheduler;
+
+    @Mock
+    private Storage<Book> storage;
+
+    @Mock
+    private Consumer<Book> consumer;
 
     @BeforeEach
     public void setup() throws IOException {
-        this.storage = mock(Storage.class);
+        MockitoAnnotations.initMocks(this);
         this.book = new Book(
                 "genre",
                 "summary",
@@ -43,7 +53,6 @@ class TimerBorrowableItemNotifierTest {
                 new Borrowing(user, Instant.now(), Optional.empty(),
                         expiredTime));
         this.scheduler = Executors.newScheduledThreadPool(10);
-        this.consumer = mock(Consumer.class);
     }
 
     private void createNotifier() {
