@@ -19,7 +19,7 @@ class AddNewBookTaskTest {
     Input consoleInput;
 
     @Test
-    void run() {
+    void run_withStringInput_shouldCallAdd() {
         // Arrange
         MockitoAnnotations.initMocks(this);
         ConsoleCreatorBookIdentifier creatorBookIdentifier =
