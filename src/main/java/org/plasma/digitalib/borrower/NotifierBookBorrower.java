@@ -12,7 +12,6 @@ import org.plasma.digitalib.models.OrderRequest;
 import org.plasma.digitalib.models.User;
 import org.plasma.digitalib.storage.Storage;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +21,7 @@ import java.util.Optional;
 public class NotifierBookBorrower implements Borrower<BookIdentifier> {
     private final BorrowableItemNotifier<Book> notifier;
     private final Storage<Book> storage;
-    private final Duration borrowingDuration;
+    private final BorrowingFactory borrowingFactory;
 
     public final BorrowingResult borrowItem(
             @NonNull final OrderRequest<BookIdentifier> request) {
@@ -51,10 +50,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
         }
 
         Book book = availableBooks.get(0);
-        boolean updateResult = this.updateBorrowBook(
-                book,
-                request,
-                this.borrowingDuration);
+        boolean updateResult = this.updateBorrowBook(book, request);
 
         if (!updateResult) {
             return BorrowingResult.BORROWER_ERROR;
@@ -127,15 +123,10 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
 
     private boolean updateBorrowBook(
             @NonNull final Book book,
-            @NonNull final OrderRequest<BookIdentifier> request,
-            final @NonNull Duration duration) {
-        Instant borrowingTime = Instant.now();
-        Instant expiredTime = Instant.now().plus(duration);
-        book.getBorrowings().add(new Borrowing(
-                request.getUser(),
-                borrowingTime,
-                Optional.empty(),
-                expiredTime));
+            @NonNull final OrderRequest<BookIdentifier> request) {
+
+        book.getBorrowings()
+                .add(this.borrowingFactory.create(request.getUser()));
         book.setIsBorrowed(true);
         if (!this.storage.update(book.getId(), book)) {
             log.info("Failed add borrowing to book: {}", book);
