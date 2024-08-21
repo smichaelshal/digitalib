@@ -98,7 +98,8 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
                     List<Borrowing> borrowings = book.getBorrowings();
                     if (borrowings.isEmpty()) {
                         log.debug(
-                                "The book borrowed but its borrowings is empty: {}",
+                                "The book borrowed but its "
+                                        + "borrowings is empty: {}",
                                 book);
                         return false;
                     }
