@@ -2,6 +2,9 @@ package org.plasma.digitalib.adders;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mocks
+ito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.storage.Storage;
@@ -13,24 +16,25 @@ import java.util.function.Predicate;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class StorageBookAdderTest {
     private Predicate<Book> bookIdentifierFilter;
     private Book book;
     private StorageBookAdder storageBookAdder;
-    private Storage<Book> storage;
     private List<Book> books;
+
+    @Mock
+    private Storage<Book> storage;
 
     @BeforeEach
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         this.book = new Book(
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
         this.books = List.of(this.book);
-        this.storage = mock(Storage.class);
         this.storageBookAdder = new StorageBookAdder(this.storage);
         when(this.storage.create(any(Book.class))).thenReturn(true);
     }
