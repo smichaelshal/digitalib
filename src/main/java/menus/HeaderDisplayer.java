@@ -9,7 +9,7 @@ import java.util.Map;
 public class HeaderDisplayer implements Displayer {
     private final String header;
 
-    public void display(final Map<String, Task> tasks) {
+    public final void display(final Map<String, Task> tasks) {
         System.out.println(this.header);
         for (String key : tasks.keySet()) {
             System.out.printf("%s - %s\n", key, tasks.get(key).getName());
