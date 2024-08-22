@@ -14,16 +14,13 @@ public class BookIdentifierFilter implements Predicate<Book> {
 
     public final boolean test(final Book book) {
         BookIdentifier bookIdentifier = book.getBookIdentifier();
+        boolean filterResult =
+                bookIdentifier.equals(this.expectedBookIdentifier);
 
-        log.debug(
-                "id: {}, name: {}, Author: {}",
-                book.getId().toString(),
-                bookIdentifier.getName(),
-                bookIdentifier.getAuthor());
+        log.debug("The book are {}match to filter"
+                        + " by target bookIdentifier: {}: {}",
+                filterResult ? "not " : "", this.expectedBookIdentifier, book);
 
-        return bookIdentifier.getName()
-                .equals(this.expectedBookIdentifier.getName())
-                && bookIdentifier.getAuthor()
-                .equals(this.expectedBookIdentifier.getAuthor());
+        return filterResult;
     }
 }

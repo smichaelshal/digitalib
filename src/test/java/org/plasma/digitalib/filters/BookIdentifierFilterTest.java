@@ -41,7 +41,7 @@ class BookIdentifierFilterTest {
     }
 
     @Test
-    void test_withDifferentNames_shouldReturnTrue() {
+    void test_withDifferentNames_shouldReturnFalse() {
         // Arrange
         Book secondBook = new Book(
                 "genre",
@@ -58,7 +58,7 @@ class BookIdentifierFilterTest {
     }
 
     @Test
-    void test_withDifferentAuthors_shouldReturnTrue() {
+    void test_withDifferentAuthors_shouldReturnFalse() {
         // Arrange
         Book secondBook = new Book(
                 "genre",
@@ -75,7 +75,7 @@ class BookIdentifierFilterTest {
     }
 
     @Test
-    void test_withDifferentNamesAndAuthors_shouldReturnTrue() {
+    void test_withDifferentNamesAndAuthors_shouldReturnFalse() {
         // Arrange
         Book secondBook = new Book(
                 "genre",
