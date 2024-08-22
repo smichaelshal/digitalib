@@ -2,6 +2,8 @@ package org.plasma.digitalib.borrower;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.models.Borrowing;
@@ -21,19 +23,27 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-
+import static org.mockito.Mockito.after;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class TimerBorrowableItemNotifierTest {
     private Book book;
     private TimerBorrowableItemNotifier<Book> notifier;
-    private Consumer<Book> consumer;
-    private Storage<Book> storage;
     private ScheduledExecutorService scheduler;
+
+    @Mock
+    private Storage<Book> storage;
+
+    @Mock
+    private Consumer<Book> consumer;
 
     @BeforeEach
     public void setup() throws IOException {
-        this.storage = mock(Storage.class);
+        MockitoAnnotations.initMocks(this);
         this.book = new Book(
                 "genre",
                 "summary",
@@ -44,7 +54,6 @@ class TimerBorrowableItemNotifierTest {
                 new Borrowing(user, Instant.now(), Optional.empty(),
                         expiredTime));
         this.scheduler = Executors.newScheduledThreadPool(10);
-        this.consumer = mock(Consumer.class);
     }
 
     private void createNotifier() {
@@ -91,7 +100,7 @@ class TimerBorrowableItemNotifierTest {
                 this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
         // Act
-        boolean notifierResult = this.notifier.add(this.book);
+        this.notifier.add(this.book);
 
         // Assert
         verify(this.consumer, timeout(deltaTime + 1000).times(1)).accept(
@@ -100,6 +109,19 @@ class TimerBorrowableItemNotifierTest {
         long endTime = Instant.now().toEpochMilli();
         boolean isEndTimeBigThanExpiredTime = endTime >= expiredTime;
         assertTrue(isEndTimeBigThanExpiredTime);
+    }
+
+    @Test
+    public void add_withBook_shouldReturnTrue() {
+        // Arrange
+        this.createNotifier();
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+
+        // Act
+        boolean notifierResult = this.notifier.add(this.book);
+
+        // Assert
         assertTrue(notifierResult);
     }
 
@@ -132,20 +154,33 @@ class TimerBorrowableItemNotifierTest {
                 this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
         // Act
-        boolean addResult = this.notifier.add(this.book);
-        boolean deleteResult = this.notifier.delete(this.book);
+        this.notifier.add(this.book);
+        this.notifier.delete(this.book);
 
         // Assert
         verify(this.consumer, after(deltaTime + 1000).never()).accept(
                 this.book);
-        assertTrue(addResult);
+    }
+
+    @Test
+    public void delete_withBook_shouldReturnTrueTwice() {
+        // Arrange
+        this.createNotifier();
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+        this.notifier.add(this.book);
+
+        // Act
+        boolean deleteResult = this.notifier.delete(this.book);
+
+        // Assert
         assertTrue(deleteResult);
     }
+
 
     @Test
     public void delete_withNotExistBook_shouldReturnFalse() {
         // Arrange
-
         this.createNotifier();
         List<Book> books = List.of(this.book);
         when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
