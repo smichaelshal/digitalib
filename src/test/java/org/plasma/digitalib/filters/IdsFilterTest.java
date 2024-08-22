@@ -9,7 +9,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-//import java.util.UUID;
 
 class IdsFilterTest {
     private IdsFilter<Book> filter;

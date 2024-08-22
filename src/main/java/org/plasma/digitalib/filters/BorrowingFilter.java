@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 public final class BorrowingFilter<T extends BorrowableItem>
         implements Predicate<T> {
     public boolean test(final T item) {
-        log.info("{} is{} borrowed",
+        log.debug("{} is{} borrowed",
                 item,
                 ((item.getIsBorrowed()) ? "" : " not"));
         return item.getIsBorrowed();

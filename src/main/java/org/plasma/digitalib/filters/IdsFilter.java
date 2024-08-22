@@ -15,7 +15,7 @@ public class IdsFilter<T extends BorrowableItem>
     private final List<UUID> ids;
 
     public final boolean test(final T item) {
-        log.info("{}, id: {} borrowed", item.getId().toString());
+        log.debug("{}, id: {} borrowed", item.getId().toString());
         return ids.contains(item.getId());
     }
 }

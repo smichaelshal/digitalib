@@ -2,7 +2,14 @@ package org.plasma.digitalib.borrower;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.plasma.digitalib.models.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.plasma.digitalib.models.Book;
+import org.plasma.digitalib.models.BookIdentifier;
+import org.plasma.digitalib.models.Borrowing;
+import org.plasma.digitalib.models.BorrowingResult;
+import org.plasma.digitalib.models.OrderRequest;
+import org.plasma.digitalib.models.User;
 import org.plasma.digitalib.storage.Storage;
 
 import java.time.Duration;
@@ -12,22 +19,36 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class NotifierBookBorrowerTest {
     private NotifierBookBorrower borrower;
     private Book book;
     private OrderRequest<BookIdentifier> orderRequest;
-    private Storage<Book> storage;
     private User user;
+    private Duration duration;
+
+    @Mock
+    BorrowableItemNotifier<Book> notifier;
+
+    @Mock
+    Storage<Book> storage;
+
+    @Mock
+    Borrowing borrowing;
+
+    @Mock
+    BorrowingFactory borrowingFactory;
 
     @BeforeEach
     void setup() {
+        MockitoAnnotations.initMocks(this);
         this.book = new Book(
                 "genre",
                 "summary",
@@ -35,25 +56,22 @@ class NotifierBookBorrowerTest {
         this.user = new User("1234");
         this.orderRequest =
                 new OrderRequest<>(user, this.book.getBookIdentifier());
-        this.storage = mock(Storage.class);
+        this.duration = Duration.of(1, ChronoUnit.DAYS);
 
-        BorrowableItemNotifier<Book> notifier =
-                mock(BorrowableItemNotifier.class);
-        this.borrower =
-                new NotifierBookBorrower(notifier, this.storage,
-                        Duration.of(1, ChronoUnit.DAYS));
+        this.borrower = new NotifierBookBorrower(
+                this.notifier, this.storage, this.borrowingFactory);
 
-        when(notifier.add(any(Book.class))).thenReturn(true);
-        when(notifier.delete(any(Book.class))).thenReturn(true);
+        when(this.notifier.add(any(Book.class))).thenReturn(true);
+        when(this.notifier.delete(any(Book.class))).thenReturn(true);
     }
 
     @Test
     void borrow_whenBookIdentifierExist_shouldReturnSuccess() {
         // Arrange
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
-        when(this.storage.update(any(UUID.class), any(Book.class))).thenReturn(
-                true);
+        when(this.storage.readAll(any())).thenReturn(books);
+        when(this.storage.update(any(UUID.class), any(Book.class)))
+                .thenReturn(true);
 
         // Act
         BorrowingResult borrowingResult =
@@ -64,10 +82,61 @@ class NotifierBookBorrowerTest {
     }
 
     @Test
+    void borrow_whenBookIdentifierExist_shouldCallStorageUpdateWithNewBorrowing() {
+        // Arrange
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any())).thenReturn(books);
+        when(this.storage.update(any(UUID.class), any(Book.class)))
+                .thenReturn(true);
+        this.book.getBorrowings().add(borrowing);
+        when(borrowingFactory.create(any())).thenReturn(borrowing);
+
+        // Act
+        this.borrower.borrowItem(this.orderRequest);
+
+        // Assert
+        verify(this.storage).update(this.book.getId(), this.book);
+    }
+
+    @Test
+    void borrow_whenBookIdentifierExist_shouldCallSNotifierAdd() {
+        // Arrange
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any())).thenReturn(books);
+
+        // Act
+        this.borrower.borrowItem(this.orderRequest);
+
+        // Assert
+        verify(this.notifier).add(this.book);
+    }
+
+    @Test
+    void borrow_whenBookIdentifierExist_shouldCallNotifierDelete() {
+        // Arrange
+        Borrowing borrowingNow = new Borrowing(
+                this.user,
+                Instant.now(),
+                Optional.of(Instant.now()),
+                Instant.now());
+        this.book.setIsBorrowed(true);
+        this.book.getBorrowings().add(borrowingNow);
+
+        List<Book> books = List.of(this.book);
+        when(this.storage.readAll(any())).thenReturn(books);
+
+        // Act
+        this.borrower.returnItem(this.orderRequest);
+
+        // Assert
+        verify(this.notifier).delete(any());
+    }
+
+    @Test
     void borrow_withBookIdentifierNotExist_shouldReturnNotExist() {
         // Arrange
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(
-                new LinkedList());
+        when(this.storage.readAll(any()))
+                .thenReturn(new LinkedList());
 
         // Act
         BorrowingResult borrowingResult =
@@ -80,10 +149,10 @@ class NotifierBookBorrowerTest {
     @Test
     void borrow_withBookIdentifierBorrowed_shouldReturnOutOfStock() {
         // Arrange
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(
-                List.of(this.book));
-        when(this.storage.update(any(UUID.class), any(Book.class))).thenReturn(
-                true);
+        when(this.storage.readAll(any()))
+                .thenReturn(List.of(this.book));
+        when(this.storage.update(any(UUID.class), any(Book.class)))
+                .thenReturn(true);
 
         // Act
         this.borrower.borrowItem(this.orderRequest);
@@ -104,10 +173,10 @@ class NotifierBookBorrowerTest {
                 Instant.now()));
         this.book.setIsBorrowed(true);
 
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(
-                List.of(this.book));
-        when(this.storage.update(any(UUID.class), any(Book.class))).thenReturn(
-                true);
+        when(this.storage.readAll(any()))
+                .thenReturn(List.of(this.book));
+        when(this.storage.update(any(UUID.class), any(Book.class)))
+                .thenReturn(true);
 
         // Act
         boolean borrowingResult = this.borrower.returnItem(this.orderRequest);
@@ -127,10 +196,10 @@ class NotifierBookBorrowerTest {
                 Instant.now()));
         this.book.setIsBorrowed(true);
 
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(
-                List.of(this.book));
-        when(this.storage.update(any(UUID.class), any(Book.class))).thenReturn(
-                true);
+        when(this.storage.readAll(any()))
+                .thenReturn(List.of(this.book));
+        when(this.storage.update(any(UUID.class), any(Book.class)))
+                .thenReturn(true);
 
         // Act
         boolean borrowingResult = this.borrower.returnItem(this.orderRequest);
