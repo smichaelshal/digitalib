@@ -1,6 +1,7 @@
 package org.plasma.digitalib;
 
-import org.plasma.digitalib.storage.FilePersistenterStorage;
+import org.plasma.digitalib.borrower.TimerBorrowableItemNotifier;
+import org.plasma.digitalib.models.Book;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -10,8 +11,8 @@ public class Application {
     public static void main(final String[] args) {
         ConfigurableApplicationContext
                 context = SpringApplication.run(Application.class, args);
-        FilePersistenterStorage storage = (FilePersistenterStorage) context
-                .getBean("bookFilePersistenterStorage");
-        System.out.println(storage);
+        TimerBorrowableItemNotifier<Book> notifier =
+                (TimerBorrowableItemNotifier) context.getBean(
+                        "bookTimerBorrowableItemNotifier");
     }
 }
