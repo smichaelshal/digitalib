@@ -28,6 +28,7 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class FilePersistenterStorageTest {
@@ -35,6 +36,9 @@ class FilePersistenterStorageTest {
     private List<Book> books;
     private FilePersistenterStorage<Book> storage;
     private Book book;
+
+    @Mock
+    Predicate<Book> bookByIdFilter;
 
     @BeforeEach
     public void setup() throws IOException {
@@ -57,7 +61,8 @@ class FilePersistenterStorageTest {
                 ObjectMapper.DefaultTyping.NON_FINAL);
         objectMapper.registerSubtypes(BorrowableItem.class);
 
-        this.storage = new FilePersistenterStorage<>(this.listStorage, path,
+        this.storage = new FilePersistenterStorage<>(this.listStorage,
+                path.toString(),
                 objectMapper);
         this.book = new Book(
                 "genre",
@@ -89,9 +94,6 @@ class FilePersistenterStorageTest {
         assertTrue(addResult);
     }
 
-    @Mock
-    Predicate<Book> bookByIdFilter;
-
     @Test
     public void read_withIdFilter_shouldReturnBook() {
         // Arrange
@@ -104,6 +106,20 @@ class FilePersistenterStorageTest {
 
         // Assert
         assertEquals(List.of(this.book), bookResults);
+    }
+
+    @Test
+    public void read_withIdFilter_shouldNotReturnBook() {
+        // Arrange
+        when(bookByIdFilter.test(any())).thenReturn(false);
+
+        this.storage.create(this.book);
+
+        // Act
+        List<Book> bookResults = this.storage.readAll(bookByIdFilter);
+
+        // Assert
+        assertEquals(List.of(), bookResults);
     }
 
     @Test
