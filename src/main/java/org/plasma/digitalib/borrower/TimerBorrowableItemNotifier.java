@@ -103,11 +103,17 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                 }
 
                 boolean removeResult = ids.remove(item.getId());
-                log.debug("Delete item {}", item);
-                if (removeResult && ids.isEmpty()) {
-                    log.debug("The item is last from this expired time: {} {}",
-                            expiredTime, item);
-                    this.mapTimeId.remove(expiredTime);
+                if (removeResult) {
+                    log.debug("Delete item success {}", item);
+                    if (ids.isEmpty()) {
+                        log.debug(
+                                "The item is last from this "
+                                        + "expired time: {} {}",
+                                expiredTime, item);
+                        this.mapTimeId.remove(expiredTime);
+                    }
+                } else {
+                    log.debug("Delete item failed {}", item);
                 }
 
                 return removeResult;

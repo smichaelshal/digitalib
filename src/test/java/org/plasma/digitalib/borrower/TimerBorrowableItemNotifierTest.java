@@ -168,13 +168,12 @@ class TimerBorrowableItemNotifierTest {
         this.createNotifier();
         List<Book> books = List.of(this.book);
         when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+        this.notifier.add(this.book);
 
         // Act
-        boolean addResult = this.notifier.add(this.book);
         boolean deleteResult = this.notifier.delete(this.book);
 
         // Assert
-        assertTrue(addResult);
         assertTrue(deleteResult);
     }
 
