@@ -2,9 +2,7 @@ package org.plasma.digitalib.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -13,8 +11,6 @@ import java.util.Optional;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
 public class Borrowing implements Serializable {
     private User user;
     private Instant borrowingTime;
