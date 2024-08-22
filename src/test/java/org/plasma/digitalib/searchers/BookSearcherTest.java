@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.models.Book;
-import org.plasma.digitalib.storage.BookIdMatcher;
 import org.plasma.digitalib.storage.Storage;
 
 import java.util.LinkedList;
@@ -13,9 +12,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class BookSearcherTest {

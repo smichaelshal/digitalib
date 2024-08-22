@@ -21,13 +21,13 @@ import java.util.stream.Stream;
 public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         implements Storage<T> {
     private final List<T> items;
-    private final Path directoryPath;
+    private final String directoryPath;
     private final ObjectMapper objectMapper;
 
 
     public FilePersistenterStorage(
             final List<T> items,
-            final Path directoryPath,
+            final String directoryPath,
             final ObjectMapper objectMapper) {
         this.items = items;
         this.directoryPath = directoryPath;
@@ -73,17 +73,17 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                     this.items.set(i, oldItem);
                     return false;
                 }
-                log.debug("Success updated {}", newItem);
+                log.debug("Success updated to item {}: {}", id, newItem);
                 return true;
             }
         }
 
-        log.debug("Id not found: {}", id);
+        log.debug("Failed to update because id not found: {}", id);
         return false;
     }
 
     private boolean saveItem(final T item) {
-        File file = Path.of(this.directoryPath.toString(),
+        File file = Path.of(this.directoryPath,
                 item.getId().toString()).toFile();
         try {
             this.objectMapper.writeValue(file, item);
@@ -96,7 +96,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     }
 
     private void recover() {
-        try (Stream<Path> paths = Files.walk(this.directoryPath)
+        try (Stream<Path> paths = Files.walk(Path.of(this.directoryPath))
                 .filter(Files::isRegularFile)) {
             paths.forEach(path -> {
                 try {
@@ -110,7 +110,9 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 }
             });
         } catch (IOException e) {
-            log.error("Failed recover storage from: {}", this.directoryPath, e);
+            log.error("Failed recover storage from: {}"
+                            + "reading from the directory failed",
+                    this.directoryPath, e);
         }
     }
 }
