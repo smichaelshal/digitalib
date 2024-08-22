@@ -21,19 +21,19 @@ import java.util.UUID;
 @ComponentScan(basePackageClasses = FilePersistenterStorage.class)
 public class StorageConfig {
     @Bean
-    public final List<Book> listStorage() {
+    public List<Book> listStorage() {
         return new LinkedList<>();
     }
 
     @Bean
-    public final String pathDirectoryRecover() throws IOException {
+    public String pathDirectoryRecover() throws IOException {
 //        return "C:\\Users\\Ori\\IdeaProjects\\digitalib\\db";
         return Files.createTempDirectory(UUID.randomUUID().toString())
                 .toString();
     }
 
     @Bean
-    public final ObjectMapper objectMapperStorage() {
+    public ObjectMapper objectMapperStorage() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
@@ -51,7 +51,7 @@ public class StorageConfig {
     }
 
     @Bean
-    public final FilePersistenterStorage<Book> bookFilePersistenterStorage(
+    public FilePersistenterStorage<Book> bookFilePersistenterStorage(
             final List<Book> listStorage,
             final String pathDirectoryRecover,
             final ObjectMapper objectMapperStorage) {
