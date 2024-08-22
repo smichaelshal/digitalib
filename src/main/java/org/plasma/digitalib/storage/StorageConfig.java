@@ -5,32 +5,35 @@ import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.plasma.digitalib.Company;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BorrowableItem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 @Configuration
 @ComponentScan(basePackageClasses = FilePersistenterStorage.class)
 public class StorageConfig {
     @Bean
-    public List<Book> getList() {
-        return new LinkedList<Book>();
+    public final List<Book> listStorage() {
+        return new LinkedList<>();
     }
 
     @Bean
-    public String getPath() {
-        return "C:\\Users\\Ori\\IdeaProjects\\digitalib\\db";
-//        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
+    public final String pathDirectoryRecover() throws IOException {
+//        return "C:\\Users\\Ori\\IdeaProjects\\digitalib\\db";
+        return Files.createTempDirectory(UUID.randomUUID().toString())
+                .toString();
     }
 
     @Bean
-    public ObjectMapper getObjectMapper() {
+    public final ObjectMapper objectMapperStorage() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
@@ -47,5 +50,15 @@ public class StorageConfig {
         return objectMapper;
     }
 
+    @Bean
+    public final FilePersistenterStorage<Book> bookFilePersistenterStorage(
+            final List<Book> listStorage,
+            final String pathDirectoryRecover,
+            final ObjectMapper objectMapperStorage) {
+        return new FilePersistenterStorage<>(
+                listStorage,
+                pathDirectoryRecover,
+                objectMapperStorage);
+    }
 }
 

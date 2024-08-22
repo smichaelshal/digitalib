@@ -1,23 +1,17 @@
 package org.plasma.digitalib;
 
 import org.plasma.digitalib.storage.FilePersistenterStorage;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-
-    @Bean
-    public ApplicationRunner run(FilePersistenterStorage storage) {
-        return args -> {
-            System.out.println(storage);
-        };
+    public static void main(final String[] args) {
+        ConfigurableApplicationContext
+                context = SpringApplication.run(Application.class, args);
+        FilePersistenterStorage storage = (FilePersistenterStorage) context
+                .getBean("bookFilePersistenterStorage");
+        System.out.println(storage);
     }
 }
