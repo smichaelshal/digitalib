@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class StorageBookAdderTest {
-    private Predicate<Book> bookIdentifierFilter;
     private Book book;
     private StorageBookAdder storageBookAdder;
     private List<Book> books;
