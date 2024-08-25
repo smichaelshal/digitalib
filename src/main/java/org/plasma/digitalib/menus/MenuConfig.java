@@ -51,7 +51,6 @@ public class MenuConfig {
         tasks.put("7", printBooksByFilterPresentTask);
         tasks.put("8", printAllBooksTask);
 
-
         return new MapMenu(displayer, tasks, input);
     }
 }
