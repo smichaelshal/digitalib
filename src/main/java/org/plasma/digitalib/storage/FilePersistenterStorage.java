@@ -33,6 +33,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         this.directoryPath = directoryPath;
         this.objectMapper = objectMapper;
         this.recover();
+        this.createDirecotry();
     }
 
     public final boolean create(@NonNull final T item) {
@@ -80,6 +81,13 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
 
         log.debug("Failed to update because id not found: {}", id);
         return false;
+    }
+
+    private void createDirecotry() {
+        File directory = new File(this.directoryPath);
+        if (!directory.exists()){
+            directory.mkdirs();
+        }
     }
 
     private boolean saveItem(final T item) {
