@@ -23,6 +23,18 @@ public class TaskConfig {
     }
 
     @Bean
+    public AddBookCopyTask addBookCopyTask(
+            final ItemAdder<Book> adder,
+            final ConsoleCreatorBookIdentifier creatorBookIdentifier,
+            final Input consoleUtils) {
+        return new AddBookCopyTask(
+                "add copy book",
+                adder,
+                creatorBookIdentifier,
+                consoleUtils);
+    }
+
+    @Bean
     public ConsoleCreatorBookIdentifier consoleCreatorBookIdentifier(
             final Input consoleInput
     ) {
