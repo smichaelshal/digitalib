@@ -58,5 +58,15 @@ public class FilterConfig {
                 searcher,
                 filter);
     }
+
+    @Bean
+    public PrintBooksByFilterTask printBooksByFilterPresentTask(
+            final BookSearcher searcher,
+            final PresentBookFilter filter) {
+        return new PrintBooksByFilterTask(
+                "print present books",
+                searcher,
+                filter);
+    }
 }
 
