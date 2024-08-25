@@ -25,4 +25,8 @@ public class ConsoleInput implements Input {
         System.out.printf("Enter the %s%n", nameParameter);
         return this.scanner.nextLine();
     }
+
+    public final String get() {
+        return this.scanner.nextLine();
+    }
 }
