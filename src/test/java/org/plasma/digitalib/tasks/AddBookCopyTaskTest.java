@@ -24,8 +24,10 @@ class AddBookCopyTaskTest {
         MockitoAnnotations.initMocks(this);
         ConsoleCreatorBookIdentifier creatorBookIdentifier =
                 new ConsoleCreatorBookIdentifier(consoleInput);
-        Task task = new AddBookCopyTask("add new book", storageBookAdder,
-                creatorBookIdentifier, consoleInput);
+        Task task = new AddBookCopyTask(
+                "add copy book",
+                storageBookAdder,
+                creatorBookIdentifier);
         when(consoleInput.getNotEmptyParameter(any()))
                 .thenReturn("book");
         when(consoleInput.getParameter(any()))
