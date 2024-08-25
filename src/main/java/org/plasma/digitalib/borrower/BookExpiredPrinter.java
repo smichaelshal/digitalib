@@ -18,6 +18,6 @@ public final class BookExpiredPrinter implements Consumer<Book> {
         System.out.printf("The book expired:\nName: %s\nAuthor: %s\nUser: %s\n",
                 bookIdentifier.getName(),
                 bookIdentifier.getAuthor(),
-                borrowings.get(borrowings.size() - 1));
+                borrowings.get(borrowings.size() - 1).getUser());
     }
 }
