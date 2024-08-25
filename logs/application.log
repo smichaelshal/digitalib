@@ -1,0 +1,3 @@
+2024-40-25 16:40:18.611 [main] INFO  org.plasma.digitalib.Application - Starting Application using Java 17.0.12 with PID 9020 (C:\Users\Ori\IdeaProjects\digitalib\target\classes started by Ori in C:\Users\Ori\IdeaProjects\digitalib)
+2024-40-25 16:40:18.615 [main] INFO  org.plasma.digitalib.Application - No active profile set, falling back to 1 default profile: "default"
+2024-40-25 16:40:19.944 [main] INFO  org.plasma.digitalib.Application - Started Application in 1.976 seconds (process running for 3.632)

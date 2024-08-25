@@ -203,8 +203,8 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         if (borrowings.isEmpty()) {
             return false;
         }
-        Borrowing lastBorrowing =
-                borrowings.get(borrowings.size() - 1);
+
+        Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
         return lastBorrowing.getExpiredTime().isAfter(Instant.now());
     }
 
