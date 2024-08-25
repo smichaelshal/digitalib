@@ -2,10 +2,8 @@ package org.plasma.digitalib.tasks;
 
 import lombok.NonNull;
 import org.plasma.digitalib.adders.ItemAdder;
-import org.plasma.digitalib.inputs.Input;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
-import org.plasma.digitalib.storage.Storage;
 
 public class AddBookCopyTask extends Task {
     private final ItemAdder<Book> adder;
