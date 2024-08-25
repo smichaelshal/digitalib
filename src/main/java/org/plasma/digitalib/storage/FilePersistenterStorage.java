@@ -85,7 +85,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
 
     private void createDirecotry() {
         File directory = new File(this.directoryPath);
-        if (!directory.exists()){
+        if (!directory.exists()) {
             directory.mkdirs();
         }
     }
