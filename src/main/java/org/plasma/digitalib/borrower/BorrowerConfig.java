@@ -48,6 +48,6 @@ public class BorrowerConfig {
 
     @Bean
     public BorrowingFactory borrowingFactory() {
-        return new BaseBorrowingFactory(Duration.of(1, ChronoUnit.DAYS));
+        return new BaseBorrowingFactory(Duration.of(30, ChronoUnit.SECONDS));
     }
 }
