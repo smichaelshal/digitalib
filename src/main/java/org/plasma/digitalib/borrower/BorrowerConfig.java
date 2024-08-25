@@ -24,7 +24,7 @@ public class BorrowerConfig {
 
     @Bean
     public Consumer<Book> notifyConsumer() {
-        return new BookPrinter();
+        return new BookExpiredPrinter();
     }
 
     @Bean
