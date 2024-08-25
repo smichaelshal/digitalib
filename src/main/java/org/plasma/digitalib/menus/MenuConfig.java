@@ -4,6 +4,7 @@ import org.plasma.digitalib.inputs.Input;
 import org.plasma.digitalib.tasks.AddBookCopyTask;
 import org.plasma.digitalib.tasks.AddNewBookTask;
 import org.plasma.digitalib.tasks.BorrowBookTask;
+import org.plasma.digitalib.tasks.ExitTask;
 import org.plasma.digitalib.tasks.PrintBooksByFilterTask;
 import org.plasma.digitalib.tasks.ReturnBookTask;
 import org.plasma.digitalib.tasks.Task;
@@ -38,7 +39,8 @@ public class MenuConfig {
             final PrintBooksByFilterTask printBooksByFilterExpiredTask,
             final PrintBooksByFilterTask printBooksByFilterBorrowedTask,
             final PrintBooksByFilterTask printBooksByFilterPresentTask,
-            final PrintBooksByFilterTask printAllBooksTask) {
+            final PrintBooksByFilterTask printAllBooksTask,
+            final ExitTask exitTask) {
         Map<String, Task> tasks = new HashMap<>();
 
         tasks.put("1", addNewBookTask);
@@ -50,6 +52,8 @@ public class MenuConfig {
         tasks.put("6", printBooksByFilterBorrowedTask);
         tasks.put("7", printBooksByFilterPresentTask);
         tasks.put("8", printAllBooksTask);
+
+        tasks.put("9", exitTask);
 
         return new MapMenu(displayer, tasks, input);
     }

@@ -57,6 +57,11 @@ public class TaskConfig {
     }
 
     @Bean
+    public ExitTask exitTask() {
+        return new ExitTask("exit");
+    }
+
+    @Bean
     public ConsoleCreatorBookIdentifier consoleCreatorBookIdentifier(
             final Input consoleInput
     ) {
