@@ -13,8 +13,6 @@ public class Application {
         ForeverMenu foreverMenu =
                 (ForeverMenu) context.getBean(
                         "foreverMenu");
-        System.out.println(foreverMenu);
-
         foreverMenu.run();
     }
 }
