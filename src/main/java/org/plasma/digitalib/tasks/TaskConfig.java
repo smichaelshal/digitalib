@@ -2,13 +2,9 @@ package org.plasma.digitalib.tasks;
 
 import org.plasma.digitalib.adders.ItemAdder;
 import org.plasma.digitalib.borrower.Borrower;
-import org.plasma.digitalib.filters.AllBookFilter;
-import org.plasma.digitalib.filters.BorrowedBookFilter;
-import org.plasma.digitalib.filters.ExpiredBookFilter;
 import org.plasma.digitalib.inputs.Input;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
-import org.plasma.digitalib.searchers.BookSearcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

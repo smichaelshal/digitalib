@@ -21,24 +21,24 @@ public class MenuConfig {
     public HeaderDisplayer headerDisplayerMenu() {
         return new HeaderDisplayer("menu");
     }
+
     @Bean
-    public ForeverMenu foreverMenu(MapMenu menu){
+    public ForeverMenu foreverMenu(final MapMenu menu) {
         return new ForeverMenu(menu);
     }
-
 
     @Bean
     public MapMenu mapMenu(
             final HeaderDisplayer displayer,
             final Input input,
-            AddNewBookTask addNewBookTask,
-            AddBookCopyTask addBookCopyTask,
-            BorrowBookTask borrowBookTask,
-            ReturnBookTask returnBookTask,
-            PrintBooksByFilterTask printBooksByFilterExpiredTask,
-            PrintBooksByFilterTask printBooksByFilterBorrowedTask,
-            PrintBooksByFilterTask printBooksByFilterPresentTask,
-            PrintBooksByFilterTask printAllBooksTask) {
+            final AddNewBookTask addNewBookTask,
+            final AddBookCopyTask addBookCopyTask,
+            final BorrowBookTask borrowBookTask,
+            final ReturnBookTask returnBookTask,
+            final PrintBooksByFilterTask printBooksByFilterExpiredTask,
+            final PrintBooksByFilterTask printBooksByFilterBorrowedTask,
+            final PrintBooksByFilterTask printBooksByFilterPresentTask,
+            final PrintBooksByFilterTask printAllBooksTask) {
         Map<String, Task> tasks = new HashMap<>();
 
         tasks.put("1", addNewBookTask);
