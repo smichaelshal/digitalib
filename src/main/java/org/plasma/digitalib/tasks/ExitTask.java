@@ -1,12 +1,12 @@
 package org.plasma.digitalib.tasks;
 
 public class ExitTask extends Task {
-    public ExitTask(String name) {
+    public ExitTask(final String name) {
         super(name);
     }
 
     @Override
-    public void run() {
+    public final void run() {
         System.exit(0);
     }
 }
