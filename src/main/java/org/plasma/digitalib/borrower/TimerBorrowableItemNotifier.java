@@ -88,9 +88,17 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             List<Borrowing> borrowings = item.getBorrowings();
             Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
             Instant expiredTime = lastBorrowing.getExpiredTime();
+            Instant currentTime = Instant.now();
             synchronized (this.mapTimeId) {
                 List<UUID> ids = this.mapTimeId.get(expiredTime);
                 if (ids == null) {
+                    if (expiredTime.isBefore(currentTime)) {
+                        log.debug("Not found ids match to expired time because"
+                                        + " the expired time passed: {}",
+                                expiredTime);
+                        return true;
+                    }
+
                     log.debug("Not found ids match to expired time: {}",
                             expiredTime);
                     return false;
