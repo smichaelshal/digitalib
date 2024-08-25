@@ -1,4 +1,4 @@
-package menus;
+package org.plasma.digitalib.menus;
 
 import org.plasma.digitalib.tasks.Task;
 
