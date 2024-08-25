@@ -48,6 +48,17 @@ public class TaskConfig {
     }
 
     @Bean
+    public ReturnBookTask returnBookTask(
+            final ConsoleCreatorBookIdentifierOrderRequest
+                    consoleCreatorBookIdentifierOrderRequest,
+            final Borrower<BookIdentifier> borrower) {
+        return new ReturnBookTask(
+                "return book",
+                consoleCreatorBookIdentifierOrderRequest,
+                borrower);
+    }
+
+    @Bean
     public ConsoleCreatorBookIdentifier consoleCreatorBookIdentifier(
             final Input consoleInput
     ) {

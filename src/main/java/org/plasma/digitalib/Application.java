@@ -1,7 +1,6 @@
 package org.plasma.digitalib;
 
-import org.plasma.digitalib.tasks.AddBookCopyTask;
-import org.plasma.digitalib.tasks.BorrowBookTask;
+import org.plasma.digitalib.tasks.ReturnBookTask;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -11,9 +10,9 @@ public class Application {
     public static void main(final String[] args) {
         ConfigurableApplicationContext
                 context = SpringApplication.run(Application.class, args);
-        BorrowBookTask borrowBookTask =
-                (BorrowBookTask) context.getBean(
-                        "borrowBookTask");
-        System.out.println(borrowBookTask);
+        ReturnBookTask returnBookTask =
+                (ReturnBookTask) context.getBean(
+                        "returnBookTask");
+        System.out.println(returnBookTask);
     }
 }
