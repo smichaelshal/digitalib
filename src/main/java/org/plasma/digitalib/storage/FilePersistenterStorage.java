@@ -104,6 +104,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     }
 
     private void recover() {
+        log.debug("Start recovery");
         try (Stream<Path> paths = Files.walk(Path.of(this.directoryPath))
                 .filter(Files::isRegularFile)) {
             paths.forEach(path -> {
