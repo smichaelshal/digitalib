@@ -1,4 +1,4 @@
-package menus;
+package org.plasma.digitalib.menus;
 
 import lombok.RequiredArgsConstructor;
 
