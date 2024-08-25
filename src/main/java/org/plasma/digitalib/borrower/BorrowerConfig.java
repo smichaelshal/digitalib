@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -13,6 +15,7 @@ import java.util.function.Consumer;
 
 @Configuration
 @ComponentScan(basePackageClasses = TimerBorrowableItemNotifier.class)
+@ComponentScan(basePackageClasses = NotifierBookBorrower.class)
 public class BorrowerConfig {
     @Bean
     public ScheduledExecutorService scheduledExecutorServiceBookNotifier() {
@@ -32,5 +35,19 @@ public class BorrowerConfig {
         return new TimerBorrowableItemNotifier<>(scheduledExecutorService,
                 storage,
                 notifyConsumer);
+    }
+
+    @Bean
+    public NotifierBookBorrower notifierBookBorrower(
+            final BorrowableItemNotifier<Book> notifier,
+            final Storage<Book> storage,
+            final BorrowingFactory borrowingFactory
+    ) {
+        return new NotifierBookBorrower(notifier, storage, borrowingFactory);
+    }
+
+    @Bean
+    public BorrowingFactory borrowingFactory() {
+        return new BaseBorrowingFactory(Duration.of(1, ChronoUnit.DAYS));
     }
 }

@@ -1,8 +1,10 @@
 package org.plasma.digitalib.tasks;
 
 import org.plasma.digitalib.adders.ItemAdder;
+import org.plasma.digitalib.borrower.Borrower;
 import org.plasma.digitalib.inputs.Input;
 import org.plasma.digitalib.models.Book;
+import org.plasma.digitalib.models.BookIdentifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -35,10 +37,30 @@ public class TaskConfig {
     }
 
     @Bean
+    public BorrowBookTask borrowBookTask(
+            final ConsoleCreatorBookIdentifierOrderRequest
+                    consoleCreatorBookIdentifierOrderRequest,
+            final Borrower<BookIdentifier> borrower) {
+        return new BorrowBookTask(
+                "borrow book",
+                consoleCreatorBookIdentifierOrderRequest,
+                borrower);
+    }
+
+    @Bean
     public ConsoleCreatorBookIdentifier consoleCreatorBookIdentifier(
             final Input consoleInput
     ) {
         return new ConsoleCreatorBookIdentifier(consoleInput);
     }
-}
 
+    @Bean
+    public ConsoleCreatorBookIdentifierOrderRequest
+    consoleCreatorBookIdentifierOrderRequest(
+            final ConsoleCreatorBookIdentifier creatorBookIdentifier,
+            final Input consoleInput
+    ) {
+        return new ConsoleCreatorBookIdentifierOrderRequest(
+                creatorBookIdentifier, consoleInput);
+    }
+}
