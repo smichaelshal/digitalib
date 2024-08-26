@@ -15,7 +15,11 @@ public class IdsFilter<T extends BorrowableItem>
     private final List<UUID> ids;
 
     public final boolean test(final T item) {
-        log.debug("{}, id: {} borrowed", item.getId().toString());
-        return ids.contains(item.getId());
+        boolean isContains = ids.contains(item.getId());
+        log.debug("The id of {} is {}contains in {} borrowed",
+                item,
+                this.ids,
+                isContains ? "" : "not ");
+        return isContains;
     }
 }

@@ -25,7 +25,6 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     private final ObjectMapper objectMapper;
     private final TypeReference<T> typeReference;
 
-
     public FilePersistenterStorage(
             final List<T> items,
             final String directoryPath,
@@ -77,6 +76,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                     this.items.set(i, oldItem);
                     return false;
                 }
+
                 log.debug("Success updated to item {}: {}", id, newItem);
                 return true;
             }
@@ -90,6 +90,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         File directory = new File(this.directoryPath);
         if (!directory.exists()) {
             directory.mkdirs();
+            log.debug("Create recovery directory");
         }
     }
 
@@ -99,7 +100,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         try {
             this.objectMapper.writeValue(file, item);
         } catch (Exception e) {
-            log.error("save item failed: ", e);
+            log.error("Save item failed: ", e);
             return false;
         }
 

@@ -2,8 +2,6 @@ package org.plasma.digitalib.storage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.SerializationUtils;
@@ -13,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
-import org.plasma.digitalib.models.BorrowableItem;
 import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.models.User;
 
@@ -55,7 +52,7 @@ class FilePersistenterStorageTest {
                 this.listStorage,
                 path.toString(),
                 objectMapper,
-                new TypeReference<Book>() {});
+                new TypeReference<Book>() { });
         this.book = new Book(
                 "genre",
                 "summary",
