@@ -9,4 +9,7 @@
     <suppress checks="VisibilityModifier" files="BorrowableItem.java|Task.java"/>
     <suppress checks="HiddenField"
               files="FilePersistenterStorage.java|Book.java|Borrowing.java|AddNewBookTask.java|AddBookCopyTask.java|BorrowBookTask.java|ReturnBookTask.java|PrintBooksByFilterTask.java"/>
+    <suppress checks="MagicNumber" files="BorrowerConfig.java"/>
+
+
 </suppressions>
