@@ -20,7 +20,8 @@ import java.util.Map;
 public class MenuConfig {
     @Bean
     public HeaderDisplayer headerDisplayerMenu() {
-        return new HeaderDisplayer("menu");
+        return new HeaderDisplayer("Enter the number of the option"
+                + " you want to perform: ");
     }
 
     @Bean
