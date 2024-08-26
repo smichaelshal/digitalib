@@ -94,6 +94,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
             Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
             Instant expiredTime = lastBorrowing.getExpiredTime();
             Instant currentTime = Instant.now();
+            boolean isNeedSchedule = false;
             synchronized (this.mapTimeId) {
                 List<UUID> ids = this.mapTimeId.get(expiredTime);
                 if (ids == null) {
@@ -113,6 +114,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
                 if (future != null && ids.size() == 1) {
                     this.mapIdFuture.remove(item.getId());
                     future.cancel(true);
+                    isNeedSchedule = true;
                 }
 
                 boolean removeResult = ids.remove(item.getId());
@@ -127,6 +129,10 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
                     }
                 } else {
                     log.debug("Delete item failed {}", item);
+                }
+
+                if (isNeedSchedule) {
+                    this.schedule();
                 }
 
                 return removeResult;
@@ -248,11 +254,11 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
             for (UUID id : ids) {
                 Future<?> future = this.mapIdFuture.get(id);
                 if (future != null) {
+                    this.mapIdFuture.remove(id);
                     future.cancel(true);
-                    this.schedule();
-                    return;
                 }
             }
+            this.schedule();
         }
     }
 
