@@ -235,29 +235,45 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
         }
     }
 
+    private boolean needSchedule(
+            final Instant newTime,
+            final Optional<Instant> oldMinTime) {
+        synchronized (this.mapIdFuture) {
+            if (oldMinTime.isEmpty() && this.mapIdFuture.isEmpty()) {
+                return true;
+            }
+        }
+
+        Instant oldTime = null;
+        List<UUID> ids = null;
+        synchronized (this.mapTimeId) {
+            oldTime = oldMinTime.get();
+            ids = this.mapTimeId.get(oldTime);
+            if (ids == null || ids.isEmpty()) {
+                return true;
+            }
+        }
+        synchronized (mapIdFuture) {
+            if (oldTime.isAfter(newTime)) {
+                for (UUID id : ids) {
+                    Future<?> future = this.mapIdFuture.get(id);
+                    if (future != null) {
+                        this.mapIdFuture.remove(id);
+                        future.cancel(true);
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void addTimeToSchedule(
             final Instant newTime,
             final Optional<Instant> oldMinTime) {
-        if (oldMinTime.isEmpty() && this.mapIdFuture.isEmpty()) {
-            this.schedule();
-            return;
-        }
-
-        Instant oldTime = oldMinTime.get();
-        List<UUID> ids = this.mapTimeId.get(oldTime);
-        if (ids == null || ids.isEmpty()) {
-            this.schedule();
-            return;
-        }
-
-        if (oldTime.isAfter(newTime)) {
-            for (UUID id : ids) {
-                Future<?> future = this.mapIdFuture.get(id);
-                if (future != null) {
-                    this.mapIdFuture.remove(id);
-                    future.cancel(true);
-                }
-            }
+        if (this.needSchedule(newTime, oldMinTime)) {
             this.schedule();
         }
     }
