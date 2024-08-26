@@ -16,7 +16,7 @@ public class IdsFilter<T extends BorrowableItem>
 
     public final boolean test(final T item) {
         boolean isContains = ids.contains(item.getId());
-        log.debug("the id of {} is {}contains in {} borrowed",
+        log.debug("The id of {} is {}contains in {} borrowed",
                 item,
                 this.ids,
                 isContains ? "" : "not ");
