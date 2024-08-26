@@ -1,5 +1,6 @@
 package org.plasma.digitalib.storage;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
@@ -38,15 +39,6 @@ public class StorageConfig {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
 
-        PolymorphicTypeValidator polymorphicTypeValidator =
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType("org.plasma.digitalib")
-                        .allowIfSubType("java.util.LinkedList")
-                        .build();
-        objectMapper.activateDefaultTyping(
-                polymorphicTypeValidator,
-                ObjectMapper.DefaultTyping.NON_FINAL);
-        objectMapper.registerSubtypes(BorrowableItem.class);
         return objectMapper;
     }
 
@@ -58,7 +50,8 @@ public class StorageConfig {
         return new FilePersistenterStorage<>(
                 listStorage,
                 pathDirectoryRecover,
-                objectMapperStorage);
+                objectMapperStorage,
+                new TypeReference<Book>() {});
     }
 }
 
