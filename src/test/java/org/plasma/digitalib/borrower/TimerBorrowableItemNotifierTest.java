@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,7 +46,8 @@ class TimerBorrowableItemNotifierTest {
         this.book = new Book(
                 "genre",
                 "summary",
-                new BookIdentifier("name", "author"));
+                new BookIdentifier("name", "author"),
+                true);
         Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
         User user = new User("1234");
         this.book.getBorrowings().add(
@@ -130,6 +130,11 @@ class TimerBorrowableItemNotifierTest {
         // Arrange
         this.createNotifier();
         List<Book> books = List.of(this.book);
+        List<Borrowing> borrowings = book.getBorrowings();
+        Borrowing borrowing = borrowings.get(borrowings.size() - 1);
+        borrowing.setExpiredTime(Instant.now().plus(
+                1,
+                ChronoUnit.DAYS));
         when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
         TimerBorrowableItemNotifier<Book> timerBorrowableItemNotifier =
                 new TimerBorrowableItemNotifier<>(
