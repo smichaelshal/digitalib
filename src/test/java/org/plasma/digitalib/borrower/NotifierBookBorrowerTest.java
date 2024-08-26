@@ -103,6 +103,8 @@ class NotifierBookBorrowerTest {
         // Arrange
         List<Book> books = List.of(this.book);
         when(this.storage.readAll(any())).thenReturn(books);
+        when(this.storage.update(any(UUID.class), any(Book.class)))
+                .thenReturn(true);
 
         // Act
         this.borrower.borrowItem(this.orderRequest);
@@ -124,6 +126,8 @@ class NotifierBookBorrowerTest {
 
         List<Book> books = List.of(this.book);
         when(this.storage.readAll(any())).thenReturn(books);
+        when(this.storage.update(any(UUID.class), any(Book.class)))
+                .thenReturn(true);
 
         // Act
         this.borrower.returnItem(this.orderRequest);
