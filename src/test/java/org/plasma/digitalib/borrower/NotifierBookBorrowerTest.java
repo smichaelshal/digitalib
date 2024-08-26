@@ -12,9 +12,7 @@ import org.plasma.digitalib.models.OrderRequest;
 import org.plasma.digitalib.models.User;
 import org.plasma.digitalib.storage.Storage;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +30,6 @@ class NotifierBookBorrowerTest {
     private Book book;
     private OrderRequest<BookIdentifier> orderRequest;
     private User user;
-    private Duration duration;
 
     @Mock
     BorrowableItemNotifier<Book> notifier;
@@ -56,7 +53,6 @@ class NotifierBookBorrowerTest {
         this.user = new User("1234");
         this.orderRequest =
                 new OrderRequest<>(user, this.book.getBookIdentifier());
-        this.duration = Duration.of(1, ChronoUnit.DAYS);
 
         this.borrower = new NotifierBookBorrower(
                 this.notifier, this.storage, this.borrowingFactory);
