@@ -1,5 +1,6 @@
 package org.plasma.digitalib.storage;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
@@ -45,25 +46,26 @@ class FilePersistenterStorageTest {
         MockitoAnnotations.initMocks(this);
         this.books = new LinkedList<>();
         this.listStorage = new LinkedList<Book>();
-        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
+//        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
+        Path path = Path.of("C:\\Users\\Ori\\Desktop\\db");
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
 
-        PolymorphicTypeValidator polymorphicTypeValidator =
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType("org.plasma.digitalib")
-                        .allowIfSubType("java.util.LinkedList")
-                        .build();
-        objectMapper.activateDefaultTyping(
-                polymorphicTypeValidator,
-                ObjectMapper.DefaultTyping.NON_FINAL);
+//        PolymorphicTypeValidator polymorphicTypeValidator =
+//                BasicPolymorphicTypeValidator.builder()
+//                        .allowIfSubType("org.plasma.digitalib")
+//                        .allowIfSubType("java.util.LinkedList")
+//                        .build();
+//        objectMapper.activateDefaultTyping(
+//                polymorphicTypeValidator,
+//                ObjectMapper.DefaultTyping.NON_FINAL);
         objectMapper.registerSubtypes(BorrowableItem.class);
 
         this.storage = new FilePersistenterStorage<>(this.listStorage,
                 path.toString(),
-                objectMapper);
+                objectMapper, new TypeReference<Book>() {});
         this.book = new Book(
                 "genre",
                 "summary",
