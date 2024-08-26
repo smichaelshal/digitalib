@@ -51,9 +51,11 @@ class FilePersistenterStorageTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
-        this.storage = new FilePersistenterStorage<>(this.listStorage,
+        this.storage = new FilePersistenterStorage<>(
+                this.listStorage,
                 path.toString(),
-                objectMapper, new TypeReference<Book>() {});
+                objectMapper,
+                new TypeReference<Book>() {});
         this.book = new Book(
                 "genre",
                 "summary",
