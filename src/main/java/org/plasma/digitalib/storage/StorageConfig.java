@@ -2,30 +2,32 @@ package org.plasma.digitalib.storage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.plasma.digitalib.models.Book;
-import org.plasma.digitalib.models.BorrowableItem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 @Configuration
 @ComponentScan(basePackageClasses = FilePersistenterStorage.class)
 public class StorageConfig {
+    /**
+     * @return
+     */
     @Bean
     public List<Book> listStorage() {
         return new LinkedList<>();
     }
 
+    /**
+     * @return
+     * @throws IOException
+     */
     @Bean
     public String pathDirectoryRecover() throws IOException {
         return "C:\\Users\\Ori\\Desktop\\db";
@@ -33,6 +35,9 @@ public class StorageConfig {
 //                .toString();
     }
 
+    /**
+     * @return
+     */
     @Bean
     public ObjectMapper objectMapperStorage() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -42,6 +47,12 @@ public class StorageConfig {
         return objectMapper;
     }
 
+    /**
+     * @param listStorage
+     * @param pathDirectoryRecover
+     * @param objectMapperStorage
+     * @return
+     */
     @Bean
     public FilePersistenterStorage<Book> bookFilePersistenterStorage(
             final List<Book> listStorage,
@@ -51,7 +62,8 @@ public class StorageConfig {
                 listStorage,
                 pathDirectoryRecover,
                 objectMapperStorage,
-                new TypeReference<Book>() {});
+                new TypeReference<Book>() {
+                });
     }
 }
 

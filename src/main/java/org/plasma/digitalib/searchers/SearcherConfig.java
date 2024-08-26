@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackageClasses = BookSearcher.class)
 public class SearcherConfig {
+    /**
+     * @param storage
+     * @return
+     */
     @Bean
     public BookSearcher bookSearcher(final Storage<Book> storage) {
         return new BookSearcher(storage);

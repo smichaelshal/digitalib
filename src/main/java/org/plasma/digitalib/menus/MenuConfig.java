@@ -18,17 +18,38 @@ import java.util.Map;
 @Configuration
 @ComponentScan(basePackageClasses = HeaderDisplayer.class)
 public class MenuConfig {
+    /**
+     * @return
+     */
     @Bean
     public HeaderDisplayer headerDisplayerMenu() {
         return new HeaderDisplayer("Enter the number of the option"
                 + " you want to perform: ");
     }
 
+    /**
+     * @param menu
+     * @return
+     */
     @Bean
     public ForeverMenu foreverMenu(final MapMenu menu) {
         return new ForeverMenu(menu);
     }
 
+    /**
+     * @param displayer
+     * @param input
+     * @param addNewBookTask
+     * @param addBookCopyTask
+     * @param borrowBookTask
+     * @param returnBookTask
+     * @param printBooksByFilterExpiredTask
+     * @param printBooksByFilterBorrowedTask
+     * @param printBooksByFilterPresentTask
+     * @param printAllBooksTask
+     * @param exitTask
+     * @return
+     */
     @Bean
     public MapMenu mapMenu(
             final HeaderDisplayer displayer,

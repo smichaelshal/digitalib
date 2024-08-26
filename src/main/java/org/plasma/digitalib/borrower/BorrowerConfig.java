@@ -17,16 +17,28 @@ import java.util.function.Consumer;
 @ComponentScan(basePackageClasses = TimerBorrowableItemNotifier.class)
 @ComponentScan(basePackageClasses = NotifierBookBorrower.class)
 public class BorrowerConfig {
+    /**
+     * @return
+     */
     @Bean
     public ScheduledExecutorService scheduledExecutorServiceBookNotifier() {
         return Executors.newScheduledThreadPool(10);
     }
 
+    /**
+     * @return
+     */
     @Bean
     public Consumer<Book> notifyConsumer() {
         return new BookExpiredPrinter();
     }
 
+    /**
+     * @param scheduledExecutorService
+     * @param storage
+     * @param notifyConsumer
+     * @return
+     */
     @Bean
     public TimerBorrowableItemNotifier<Book> bookTimerBorrowableItemNotifier(
             final ScheduledExecutorService scheduledExecutorService,
@@ -37,6 +49,12 @@ public class BorrowerConfig {
                 notifyConsumer);
     }
 
+    /**
+     * @param notifier
+     * @param storage
+     * @param borrowingFactory
+     * @return
+     */
     @Bean
     public NotifierBookBorrower notifierBookBorrower(
             final BorrowableItemNotifier<Book> notifier,
@@ -46,6 +64,9 @@ public class BorrowerConfig {
         return new NotifierBookBorrower(notifier, storage, borrowingFactory);
     }
 
+    /**
+     * @return
+     */
     @Bean
     public BorrowingFactory borrowingFactory() {
         return new BaseBorrowingFactory(Duration.of(30, ChronoUnit.SECONDS));

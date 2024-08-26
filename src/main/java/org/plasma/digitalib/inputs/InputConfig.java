@@ -9,6 +9,9 @@ import java.util.Scanner;
 @Configuration
 @ComponentScan(basePackageClasses = ConsoleInput.class)
 public class InputConfig {
+    /**
+     * @return
+     */
     @Bean
     public ConsoleInput consoleInput() {
         Scanner scanner = new Scanner(System.in);

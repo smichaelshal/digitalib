@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackageClasses = StorageBookAdder.class)
 public class ConfigAdder {
+    /**
+     * @param storage
+     * @return
+     */
     @Bean
     public StorageBookAdder storageBookAdder(final Storage<Book> storage) {
         return new StorageBookAdder(storage);

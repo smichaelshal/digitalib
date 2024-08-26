@@ -12,6 +12,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackageClasses = AddNewBookTask.class)
 public class TaskConfig {
+    /**
+     * @param adder
+     * @param creatorBookIdentifier
+     * @param consoleUtils
+     * @return
+     */
     @Bean
     public AddNewBookTask addNewBookTask(
             final ItemAdder<Book> adder,
@@ -24,6 +30,11 @@ public class TaskConfig {
                 consoleUtils);
     }
 
+    /**
+     * @param adder
+     * @param creatorBookIdentifier
+     * @return
+     */
     @Bean
     public AddBookCopyTask addBookCopyTask(
             final ItemAdder<Book> adder,
@@ -34,6 +45,11 @@ public class TaskConfig {
                 creatorBookIdentifier);
     }
 
+    /**
+     * @param consoleCreatorBookIdentifierOrderRequest
+     * @param borrower
+     * @return
+     */
     @Bean
     public BorrowBookTask borrowBookTask(
             final ConsoleCreatorBookIdentifierOrderRequest
@@ -45,6 +61,11 @@ public class TaskConfig {
                 borrower);
     }
 
+    /**
+     * @param consoleCreatorBookIdentifierOrderRequest
+     * @param borrower
+     * @return
+     */
     @Bean
     public ReturnBookTask returnBookTask(
             final ConsoleCreatorBookIdentifierOrderRequest
@@ -56,11 +77,18 @@ public class TaskConfig {
                 borrower);
     }
 
+    /**
+     * @return
+     */
     @Bean
     public ExitTask exitTask() {
         return new ExitTask("exit");
     }
 
+    /**
+     * @param consoleInput
+     * @return
+     */
     @Bean
     public ConsoleCreatorBookIdentifier consoleCreatorBookIdentifier(
             final Input consoleInput
@@ -68,6 +96,11 @@ public class TaskConfig {
         return new ConsoleCreatorBookIdentifier(consoleInput);
     }
 
+    /**
+     * @param creatorBookIdentifier
+     * @param consoleInput
+     * @return
+     */
     @Bean
     public ConsoleCreatorBookIdentifierOrderRequest
     consoleCreatorBookIdentifierOrderRequest(
