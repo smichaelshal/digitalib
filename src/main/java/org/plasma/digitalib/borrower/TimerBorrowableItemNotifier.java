@@ -12,9 +12,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -27,15 +27,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Slf4j
-public class TimerBorrowableItemNotifier<T extends BorrowableItem>
-        implements BorrowableItemNotifier<T> {
+public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
+        BorrowableItemNotifier<T> {
     private final ConcurrentMap<Instant, List<UUID>> mapTimeId;
     private final ConcurrentMap<UUID, Future<?>> mapIdFuture;
 
     private final Storage<T> storage;
     private final Consumer<T> consumer;
     private final ScheduledExecutorService scheduler;
-    private final List<Instant> times;
 
     public TimerBorrowableItemNotifier(
             @NonNull final ScheduledExecutorService scheduledExecutorService,
@@ -46,9 +45,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         this.consumer = notifyConsumer;
         this.mapTimeId = new ConcurrentHashMap<>();
         this.mapIdFuture = new ConcurrentHashMap<>();
-        this.times = new LinkedList<>();
         this.fetchAllBorrowedItems();
-        this.schedule();
     }
 
     public final boolean add(@NonNull final T item) {
@@ -57,7 +54,15 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
             Borrowing lastBorrowing = borrowings.get(borrowings.size() - 1);
             Instant expiredTime = lastBorrowing.getExpiredTime();
             UUID id = item.getId();
+            Optional<Instant> oldMinTime = Optional.empty();
+
             synchronized (this.mapTimeId) {
+                Set<Instant> allTimes = this.mapTimeId.keySet();
+                if (!allTimes.isEmpty()) {
+                    oldMinTime = Optional
+                            .of(Collections.min(allTimes));
+                }
+
                 if (this.mapTimeId.containsKey(expiredTime)) {
                     if (this.mapTimeId.get(expiredTime).contains(id)) {
                         log.debug("Item with same id already exist: {}", item);
@@ -75,7 +80,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                 }
             }
 
-            this.addTimeToSchedule(expiredTime);
+            this.addTimeToSchedule(expiredTime, oldMinTime);
             return true;
         } catch (Exception e) {
             log.error("Failed to add item: {}", item, e);
@@ -141,6 +146,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                 log.error("Ids is null to currentTime: {}",
                         currentTime);
             } else {
+
                 if (!ids.isEmpty()) {
                     List<T> items =
                             this.storage.readAll(new IdsFilter<>(ids));
@@ -154,7 +160,6 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
                         this.consumer.accept(item);
                         this.mapIdFuture.remove(item.getId());
                     }
-
                     this.mapTimeId.remove(currentTime);
                 } else {
                     log.debug("Running without items");
@@ -224,30 +229,41 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem>
         }
     }
 
-    private void addTimeToSchedule(final Instant expiredTime) {
-        int idsSize;
-        synchronized (this.times) {
-            if (!this.times.contains(expiredTime)) {
-                this.times.add(expiredTime);
-                Collections.sort(this.times);
-            }
-
-            idsSize = this.times.size();
+    private void addTimeToSchedule(
+            final Instant newTime,
+            final Optional<Instant> oldMinTime) {
+        if (oldMinTime.isEmpty() && this.mapIdFuture.isEmpty()) {
+            this.schedule();
+            return;
         }
 
-        if (idsSize == 1) {
+        Instant oldTime = oldMinTime.get();
+        List<UUID> ids = this.mapTimeId.get(oldTime);
+        if (ids == null || ids.isEmpty()) {
             this.schedule();
+            return;
+        }
+
+        if (oldTime.isAfter(newTime)) {
+            for (UUID id : ids) {
+                Future<?> future = this.mapIdFuture.get(id);
+                if (future != null) {
+                    future.cancel(true);
+                    this.schedule();
+                    return;
+                }
+            }
         }
     }
 
     private Optional<Instant> getNextScheduledTime() {
         Instant currentTime;
-        synchronized (this.times) {
-            if (this.times.isEmpty()) {
+        synchronized (this.mapTimeId) {
+            if (this.mapTimeId.isEmpty()) {
                 return Optional.empty();
             }
 
-            currentTime = this.times.remove(0);
+            currentTime = Collections.min(this.mapTimeId.keySet());
         }
 
         return Optional.of(currentTime);
