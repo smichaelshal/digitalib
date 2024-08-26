@@ -38,7 +38,7 @@ class FilePersistenterStorageTest {
     private Book book;
 
     @Mock
-    Predicate<Book> bookByIdFilter;
+    private Predicate<Book> bookByIdFilter;
 
     @BeforeEach
     public void setup() throws IOException {
