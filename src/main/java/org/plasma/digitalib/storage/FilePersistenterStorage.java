@@ -23,15 +23,18 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     private final List<T> items;
     private final String directoryPath;
     private final ObjectMapper objectMapper;
+    private final TypeReference<T> typeReference;
 
 
     public FilePersistenterStorage(
             final List<T> items,
             final String directoryPath,
-            final ObjectMapper objectMapper) {
+            final ObjectMapper objectMapper,
+            final TypeReference<T> typeReference) {
         this.items = items;
         this.directoryPath = directoryPath;
         this.objectMapper = objectMapper;
+        this.typeReference = typeReference;
         this.recover();
         this.createDirecotry();
     }
@@ -111,7 +114,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 try {
                     T item = this.objectMapper.readValue(
                             path.toFile(),
-                            new TypeReference<T>() {});
+                            this.typeReference);
                     this.items.add(item);
                     log.debug("Success recover item: {}", item);
                 } catch (IOException e) {
