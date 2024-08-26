@@ -1,0 +1,17 @@
+2024-47-26 09:47:34.068 [main] INFO  org.plasma.digitalib.Application - Starting Application using Java 17.0.12 with PID 45572 (C:\Users\Ori\IdeaProjects\digitalib\target\classes started by Ori in C:\Users\Ori\IdeaProjects\digitalib)
+2024-47-26 09:47:34.072 [main] INFO  org.plasma.digitalib.Application - No active profile set, falling back to 1 default profile: "default"
+2024-47-26 09:47:35.848 [main] INFO  org.plasma.digitalib.Application - Started Application in 2.309 seconds (process running for 4.206)
+2024-49-26 09:49:46.053 [main] INFO  org.plasma.digitalib.Application - Starting Application using Java 17.0.12 with PID 45228 (C:\Users\Ori\IdeaProjects\digitalib\target\classes started by Ori in C:\Users\Ori\IdeaProjects\digitalib)
+2024-49-26 09:49:46.057 [main] INFO  org.plasma.digitalib.Application - No active profile set, falling back to 1 default profile: "default"
+2024-49-26 09:49:47.063 [main] INFO  org.plasma.digitalib.Application - Started Application in 1.418 seconds (process running for 2.403)
+2024-50-26 09:50:49.422 [main] INFO  org.plasma.digitalib.Application - Starting Application using Java 17.0.12 with PID 49804 (C:\Users\Ori\IdeaProjects\digitalib\target\classes started by Ori in C:\Users\Ori\IdeaProjects\digitalib)
+2024-50-26 09:50:49.425 [main] INFO  org.plasma.digitalib.Application - No active profile set, falling back to 1 default profile: "default"
+2024-50-26 09:50:50.037 [main] INFO  org.plasma.digitalib.storage.FilePersistenterStorage - Start recovery
+2024-50-26 09:50:50.232 [main] INFO  org.plasma.digitalib.Application - Started Application in 1.226 seconds (process running for 1.973)
+2024-51-26 09:51:23.322 [main] INFO  org.plasma.digitalib.Application - Starting Application using Java 17.0.12 with PID 46176 (C:\Users\Ori\IdeaProjects\digitalib\target\classes started by Ori in C:\Users\Ori\IdeaProjects\digitalib)
+2024-51-26 09:51:23.325 [main] INFO  org.plasma.digitalib.Application - No active profile set, falling back to 1 default profile: "default"
+2024-51-26 09:51:23.948 [main] ERROR org.plasma.digitalib.storage.FilePersistenterStorage - Start recovery
+2024-51-26 09:51:24.132 [main] INFO  org.plasma.digitalib.Application - Started Application in 1.224 seconds (process running for 1.975)
+2024-51-26 09:51:44.038 [main] INFO  org.plasma.digitalib.Application - Starting Application using Java 17.0.12 with PID 44364 (C:\Users\Ori\IdeaProjects\digitalib\target\classes started by Ori in C:\Users\Ori\IdeaProjects\digitalib)
+2024-51-26 09:51:44.040 [main] INFO  org.plasma.digitalib.Application - No active profile set, falling back to 1 default profile: "default"
+2024-51-26 09:51:44.824 [main] INFO  org.plasma.digitalib.Application - Started Application in 1.177 seconds (process running for 1.913)
