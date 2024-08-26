@@ -41,7 +41,8 @@ public class PrintBooksByFilterTask extends Task {
         String baseInfo = String.format("Name: %s\nAuthor: %s\n",
                 bookIdentifier.getName(),
                 bookIdentifier.getAuthor());
-        String generalInfo = String.format("Enter time: %s\nIs borrowed: %s\n\n",
+        String generalInfo = String.format("Enter time: %s\nIs borrowed:"
+                        + "%s\n\n",
                 book.getEnteredTime(), book.getIsBorrowed());
         LinkedList<String> borrowings = new LinkedList<>();
         for (Borrowing borrowing : book.getBorrowings()) {
