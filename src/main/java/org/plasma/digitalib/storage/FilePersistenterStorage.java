@@ -29,7 +29,8 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     public FilePersistenterStorage(
             final List<T> items,
             final String directoryPath,
-            final ObjectMapper objectMapper, TypeReference<T> typeReference) {
+            final ObjectMapper objectMapper,
+            final TypeReference<T> typeReference) {
         this.items = items;
         this.directoryPath = directoryPath;
         this.objectMapper = objectMapper;
