@@ -140,7 +140,7 @@ class NotifierBookBorrowerTest {
     void borrow_withBookIdentifierNotExist_shouldReturnNotExist() {
         // Arrange
         when(this.storage.readAll(any()))
-                .thenReturn(new LinkedList());
+                .thenReturn(new LinkedList<>());
 
         // Act
         BorrowingResult borrowingResult =
