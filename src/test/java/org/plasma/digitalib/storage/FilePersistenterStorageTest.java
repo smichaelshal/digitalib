@@ -46,23 +46,11 @@ class FilePersistenterStorageTest {
         MockitoAnnotations.initMocks(this);
         this.books = new LinkedList<>();
         this.listStorage = new LinkedList<Book>();
-//        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
-        Path path = Path.of("C:\\Users\\Ori\\Desktop\\db");
+        Path path = Files.createTempDirectory(UUID.randomUUID().toString());
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
-
-//        PolymorphicTypeValidator polymorphicTypeValidator =
-//                BasicPolymorphicTypeValidator.builder()
-//                        .allowIfSubType("org.plasma.digitalib")
-//                        .allowIfSubType("java.util.LinkedList")
-//                        .build();
-//        objectMapper.activateDefaultTyping(
-//                polymorphicTypeValidator,
-//                ObjectMapper.DefaultTyping.NON_FINAL);
-        objectMapper.registerSubtypes(BorrowableItem.class);
-
         this.storage = new FilePersistenterStorage<>(this.listStorage,
                 path.toString(),
                 objectMapper, new TypeReference<Book>() {});
