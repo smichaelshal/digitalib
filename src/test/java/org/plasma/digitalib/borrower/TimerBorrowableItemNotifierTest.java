@@ -10,7 +10,6 @@ import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.models.User;
 import org.plasma.digitalib.storage.Storage;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -19,7 +18,6 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,7 +39,7 @@ class TimerBorrowableItemNotifierTest {
     private Consumer<Book> consumer;
 
     @BeforeEach
-    public void setup() throws IOException {
+    public void setup() {
         MockitoAnnotations.initMocks(this);
         this.book = new Book(
                 "genre",
@@ -67,7 +65,7 @@ class TimerBorrowableItemNotifierTest {
     public void constructor_withExistBookOnStorage_shouldCallWithBookOnTime() {
         // Arrange
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+        when(this.storage.readAll(any())).thenReturn(books);
         long expiredTime = this.book.getBorrowings().get(0).getExpiredTime()
                 .toEpochMilli();
         long deltaTime = Duration.between(Instant.now(),
@@ -93,7 +91,7 @@ class TimerBorrowableItemNotifierTest {
         // Arrange
         this.createNotifier();
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+        when(this.storage.readAll(any())).thenReturn(books);
         long expiredTime = this.book.getBorrowings().get(0).getExpiredTime()
                 .toEpochMilli();
         long deltaTime = Duration.between(Instant.now(),
@@ -116,7 +114,7 @@ class TimerBorrowableItemNotifierTest {
         // Arrange
         this.createNotifier();
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+        when(this.storage.readAll(any())).thenReturn(books);
 
         // Act
         boolean notifierResult = this.notifier.add(this.book);
@@ -135,7 +133,7 @@ class TimerBorrowableItemNotifierTest {
         borrowing.setExpiredTime(Instant.now().plus(
                 1,
                 ChronoUnit.DAYS));
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+        when(this.storage.readAll(any())).thenReturn(books);
         TimerBorrowableItemNotifier<Book> timerBorrowableItemNotifier =
                 new TimerBorrowableItemNotifier<>(
                         Executors.newScheduledThreadPool(10),
@@ -154,7 +152,7 @@ class TimerBorrowableItemNotifierTest {
         // Arrange
         this.createNotifier();
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+        when(this.storage.readAll(any())).thenReturn(books);
         long deltaTime = Duration.between(Instant.now(),
                 this.book.getBorrowings().get(0).getExpiredTime()).toMillis();
 
@@ -172,7 +170,7 @@ class TimerBorrowableItemNotifierTest {
         // Arrange
         this.createNotifier();
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+        when(this.storage.readAll(any())).thenReturn(books);
         this.notifier.add(this.book);
 
         // Act
@@ -188,7 +186,7 @@ class TimerBorrowableItemNotifierTest {
         // Arrange
         this.createNotifier();
         List<Book> books = List.of(this.book);
-        when(this.storage.readAll(any(Predicate.class))).thenReturn(books);
+        when(this.storage.readAll(any())).thenReturn(books);
 
         // Act
         boolean deleteResult = this.notifier.delete(this.book);
