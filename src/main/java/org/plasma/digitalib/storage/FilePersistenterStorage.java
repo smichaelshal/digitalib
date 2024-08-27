@@ -21,18 +21,21 @@ import java.util.stream.Stream;
 public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         implements Storage<T> {
     private final List<T> items;
-    private final Path directoryPath;
+    private final String directoryPath;
     private final ObjectMapper objectMapper;
-
+    private final TypeReference<T> typeReference;
 
     public FilePersistenterStorage(
             final List<T> items,
-            final Path directoryPath,
-            final ObjectMapper objectMapper) {
+            final String directoryPath,
+            final ObjectMapper objectMapper,
+            final TypeReference<T> typeReference) {
         this.items = items;
         this.directoryPath = directoryPath;
         this.objectMapper = objectMapper;
+        this.typeReference = typeReference;
         this.recover();
+        this.createDirecotry();
     }
 
     public final boolean create(@NonNull final T item) {
@@ -73,22 +76,31 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                     this.items.set(i, oldItem);
                     return false;
                 }
-                log.debug("Success updated {}", newItem);
+
+                log.debug("Success updated to item {}: {}", id, newItem);
                 return true;
             }
         }
 
-        log.debug("Id not found: {}", id);
+        log.debug("Failed to update because id not found: {}", id);
         return false;
     }
 
+    private void createDirecotry() {
+        File directory = new File(this.directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+            log.debug("Create recovery directory");
+        }
+    }
+
     private boolean saveItem(final T item) {
-        File file = Path.of(this.directoryPath.toString(),
+        File file = Path.of(this.directoryPath,
                 item.getId().toString()).toFile();
         try {
             this.objectMapper.writeValue(file, item);
         } catch (Exception e) {
-            log.error("save item failed: ", e);
+            log.error("Save item failed: ", e);
             return false;
         }
 
@@ -96,13 +108,14 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     }
 
     private void recover() {
-        try (Stream<Path> paths = Files.walk(this.directoryPath)
+        log.debug("Start recovery");
+        try (Stream<Path> paths = Files.walk(Path.of(this.directoryPath))
                 .filter(Files::isRegularFile)) {
             paths.forEach(path -> {
                 try {
                     T item = this.objectMapper.readValue(
                             path.toFile(),
-                            new TypeReference<T>() {});
+                            this.typeReference);
                     this.items.add(item);
                     log.debug("Success recover item: {}", item);
                 } catch (IOException e) {
@@ -110,7 +123,9 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 }
             });
         } catch (IOException e) {
-            log.error("Failed recover storage from: {}", this.directoryPath, e);
+            log.error("Failed recover storage from: {}"
+                            + "reading from the directory failed",
+                    this.directoryPath, e);
         }
     }
 }
