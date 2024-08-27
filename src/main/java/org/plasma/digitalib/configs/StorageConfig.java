@@ -31,9 +31,7 @@ public class StorageConfig {
      */
     @Bean
     public String pathDirectoryRecover() throws IOException {
-        return "C:\\Users\\Ori\\Desktop\\db";
-//        return Files.createTempDirectory(UUID.randomUUID().toString())
-//                .toString();
+        return "digitalib/items";
     }
 
     /**
