@@ -79,6 +79,27 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
         this.storage.update(book.getId(), book);
     }
 
+    private boolean filterBookByBorrowingUser(
+            final Book book,
+            final User user) {
+        if (!book.getIsBorrowed()) {
+            return false;
+        }
+
+        List<Borrowing> borrowings = book.getBorrowings();
+        if (borrowings.isEmpty()) {
+            log.debug(
+                    "The book borrowed but its "
+                            + "borrowings is empty: {}",
+                    book);
+            return false;
+        }
+
+        Borrowing lastBorrowing = borrowings.get(
+                borrowings.size() - 1);
+        return lastBorrowing.getUser().equals(user);
+    }
+
     public final boolean returnItem(
             @NonNull final OrderRequest<BookIdentifier> request) {
         BookIdentifier bookIdentifier = request.getItemIdentifier();
@@ -90,24 +111,7 @@ public class NotifierBookBorrower implements Borrower<BookIdentifier> {
         User user = request.getUser();
         List<Book> books = this.filterBooks(request);
         List<Book> matchBooks = books.stream()
-                .filter((book) -> {
-                    if (!book.getIsBorrowed()) {
-                        return false;
-                    }
-
-                    List<Borrowing> borrowings = book.getBorrowings();
-                    if (borrowings.isEmpty()) {
-                        log.debug(
-                                "The book borrowed but its "
-                                        + "borrowings is empty: {}",
-                                book);
-                        return false;
-                    }
-
-                    Borrowing lastBorrowing = borrowings.get(
-                            borrowings.size() - 1);
-                    return lastBorrowing.getUser().equals(user);
-                })
+                .filter((book) -> this.filterBookByBorrowingUser(book, user))
                 .toList();
         if (matchBooks.isEmpty()) {
             log.debug("Not found match books to request: {}", request);
