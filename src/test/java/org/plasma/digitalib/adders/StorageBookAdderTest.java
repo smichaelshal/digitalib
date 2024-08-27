@@ -10,11 +10,13 @@ import org.plasma.digitalib.storage.Storage;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class StorageBookAdderTest {
@@ -47,6 +49,31 @@ class StorageBookAdderTest {
 
         // Assert
         assertTrue(adderResult);
+    }
+
+    @Test
+    public void add_withNewBookWhenStorageCreateFailed_shouldReturnFalse() {
+        // Arrange
+        when(this.storage.create(any(Book.class))).thenReturn(false);
+        when(this.storage.readAll(any())).thenReturn(new LinkedList<>());
+
+        // Act
+        boolean adderResult = this.storageBookAdder.add(this.book);
+
+        // Assert
+        assertFalse(adderResult);
+    }
+
+    @Test
+    public void add_withNewBook_shouldCallStorageCreate() {
+        // Arrange
+        when(this.storage.readAll(any())).thenReturn(this.books);
+
+        // Act
+        this.storageBookAdder.add(this.book);
+
+        // Assert
+        verify(this.storage, times(1)).create(this.book);
     }
 
     @Test
@@ -85,6 +112,25 @@ class StorageBookAdderTest {
 
         // Assert
         assertFalse(adderResult);
+    }
+
+    @Test
+    public void add_withTwoBooksWithDifferentSummery_shouldNotCallStorageCreate() {
+        // Arrange
+        when(this.storage.readAll(any())).thenReturn(this.books);
+        Book secondBook = new Book(
+                this.book.getGenre(),
+                this.book.getSummary() + "_",
+                new BookIdentifier(
+                        this.book.getBookIdentifier().getName(),
+                        this.book.getBookIdentifier().getAuthor()));
+        this.storageBookAdder.add(this.book);
+
+        // Act
+        this.storageBookAdder.add(secondBook);
+
+        // Assert
+        verify(this.storage, never()).create(secondBook);
     }
 
     @Test
@@ -186,7 +232,7 @@ class StorageBookAdderTest {
     public void add_withNewBookWithEmptySummaryAndGenre_shouldReturnFalse() {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(
-                new LinkedList());
+                new LinkedList<>());
         Book book = new Book(
                 "",
                 "",
@@ -205,7 +251,7 @@ class StorageBookAdderTest {
     public void add_withNewBookWithEmptyNameAndAuthor_shouldReturnFalse() {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(
-                new LinkedList());
+                new LinkedList<>());
         Book book = new Book(
                 this.book.getGenre(),
                 this.book.getSummary(),
@@ -224,7 +270,7 @@ class StorageBookAdderTest {
     public void add_withNewBookWithEmptyAuthor_shouldReturnFalse() {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(
-                new LinkedList());
+                new LinkedList<>());
         Book book = new Book(
                 this.book.getGenre(),
                 this.book.getSummary(),
@@ -243,7 +289,7 @@ class StorageBookAdderTest {
     public void add_withNewBookWithEmptyName_shouldReturnFalse() {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(
-                new LinkedList());
+                new LinkedList<>());
         Book book = new Book(
                 this.book.getGenre(),
                 this.book.getSummary(),
