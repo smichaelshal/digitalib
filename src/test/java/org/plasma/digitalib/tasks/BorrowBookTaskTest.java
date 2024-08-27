@@ -18,10 +18,10 @@ class BorrowBookTaskTest {
             creatorBookIdentifierOrderRequest;
 
     @Mock
-    Borrower<BookIdentifier> borrower;
+    private Borrower<BookIdentifier> borrower;
 
     @Mock
-    Input consoleInput;
+    private Input consoleInput;
 
     @BeforeEach
     void setup() {

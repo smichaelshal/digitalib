@@ -12,8 +12,8 @@ public class BorrowBookTask extends Task {
     private final Borrower<BookIdentifier> borrower;
 
     public BorrowBookTask(@NonNull final String name,
-                          @NonNull
-                          final ConsoleCreatorBookIdentifierOrderRequest
+                          @NonNull final
+                          ConsoleCreatorBookIdentifierOrderRequest
                                   creatorBookIdentifierOrderRequest,
                           @NonNull final Borrower<BookIdentifier> borrower) {
         super(name);
