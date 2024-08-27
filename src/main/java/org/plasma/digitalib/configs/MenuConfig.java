@@ -1,6 +1,9 @@
-package org.plasma.digitalib.menus;
+package org.plasma.digitalib.configs;
 
 import org.plasma.digitalib.inputs.Input;
+import org.plasma.digitalib.menus.ForeverMenu;
+import org.plasma.digitalib.menus.HeaderDisplayer;
+import org.plasma.digitalib.menus.MapMenu;
 import org.plasma.digitalib.tasks.AddBookCopyTask;
 import org.plasma.digitalib.tasks.AddNewBookTask;
 import org.plasma.digitalib.tasks.BorrowBookTask;

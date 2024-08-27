@@ -1,5 +1,6 @@
-package org.plasma.digitalib.adders;
+package org.plasma.digitalib.configs;
 
+import org.plasma.digitalib.adders.StorageBookAdder;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.storage.Storage;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackageClasses = StorageBookAdder.class)
-public class ConfigAdder {
+public class AdderConfig {
     /**
      * @param storage
      * @return

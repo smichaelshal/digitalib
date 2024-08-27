@@ -1,5 +1,11 @@
-package org.plasma.digitalib.borrower;
+package org.plasma.digitalib.configs;
 
+import org.plasma.digitalib.borrower.BaseBorrowingFactory;
+import org.plasma.digitalib.borrower.BookExpiredPrinter;
+import org.plasma.digitalib.borrower.BorrowableItemNotifier;
+import org.plasma.digitalib.borrower.BorrowingFactory;
+import org.plasma.digitalib.borrower.NotifierBookBorrower;
+import org.plasma.digitalib.borrower.TimerBorrowableItemNotifier;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.storage.Storage;
 import org.springframework.context.annotation.Bean;

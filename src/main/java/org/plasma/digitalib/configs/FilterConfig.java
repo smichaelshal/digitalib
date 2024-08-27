@@ -1,5 +1,9 @@
-package org.plasma.digitalib.filters;
+package org.plasma.digitalib.configs;
 
+import org.plasma.digitalib.filters.AllBookFilter;
+import org.plasma.digitalib.filters.BorrowedBookFilter;
+import org.plasma.digitalib.filters.ExpiredBookFilter;
+import org.plasma.digitalib.filters.PresentBookFilter;
 import org.plasma.digitalib.searchers.BookSearcher;
 import org.plasma.digitalib.tasks.PrintBooksByFilterTask;
 import org.springframework.context.annotation.Bean;

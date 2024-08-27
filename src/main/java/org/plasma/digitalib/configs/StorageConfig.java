@@ -1,10 +1,11 @@
-package org.plasma.digitalib.storage;
+package org.plasma.digitalib.configs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.plasma.digitalib.models.Book;
+import org.plasma.digitalib.storage.FilePersistenterStorage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

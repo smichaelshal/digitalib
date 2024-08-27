@@ -1,6 +1,7 @@
-package org.plasma.digitalib.searchers;
+package org.plasma.digitalib.configs;
 
 import org.plasma.digitalib.models.Book;
+import org.plasma.digitalib.searchers.BookSearcher;
 import org.plasma.digitalib.storage.Storage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
