@@ -1,8 +1,7 @@
 package org.plasma.digitalib.storage;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.SerializationUtils;
@@ -12,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
-import org.plasma.digitalib.models.BorrowableItem;
 import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.models.User;
 
@@ -38,7 +36,7 @@ class FilePersistenterStorageTest {
     private Book book;
 
     @Mock
-    Predicate<Book> bookByIdFilter;
+    private Predicate<Book> bookByIdFilter;
 
     @BeforeEach
     public void setup() throws IOException {
@@ -50,20 +48,11 @@ class FilePersistenterStorageTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
-
-        PolymorphicTypeValidator polymorphicTypeValidator =
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType("org.plasma.digitalib")
-                        .allowIfSubType("java.util.LinkedList")
-                        .build();
-        objectMapper.activateDefaultTyping(
-                polymorphicTypeValidator,
-                ObjectMapper.DefaultTyping.NON_FINAL);
-        objectMapper.registerSubtypes(BorrowableItem.class);
-
-        this.storage = new FilePersistenterStorage<>(this.listStorage,
+        this.storage = new FilePersistenterStorage<>(
+                this.listStorage,
                 path.toString(),
-                objectMapper);
+                objectMapper,
+                new TypeReference<Book>() { });
         this.book = new Book(
                 "genre",
                 "summary",
