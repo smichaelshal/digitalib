@@ -1,4 +1,4 @@
-package menus;
+package org.plasma.digitalib.storage.menus;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
