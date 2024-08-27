@@ -12,10 +12,10 @@ import static org.mockito.Mockito.verify;
 
 class PrintBooksByFilterTaskTest {
     @Mock
-    Searcher<Book> searcher;
+    private Searcher<Book> searcher;
 
     @Mock
-    Predicate<Book> filter;
+    private Predicate<Book> filter;
 
     @Test
     void run_withFilter_shouldCallSearch() {
