@@ -32,16 +32,16 @@ class NotifierBookBorrowerTest {
     private User user;
 
     @Mock
-    BorrowableItemNotifier<Book> notifier;
+    private BorrowableItemNotifier<Book> notifier;
 
     @Mock
-    Storage<Book> storage;
+    private Storage<Book> storage;
 
     @Mock
-    Borrowing borrowing;
+    private Borrowing borrowing;
 
     @Mock
-    BorrowingFactory borrowingFactory;
+    private BorrowingFactory borrowingFactory;
 
     @BeforeEach
     void setup() {
