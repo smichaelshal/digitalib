@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +26,6 @@ public class StorageConfig {
 
     /**
      * @return
-     * @throws IOException
      */
     @Bean
     public String pathDirectoryRecover() {
@@ -54,15 +52,11 @@ public class StorageConfig {
      */
     @Bean
     public FilePersistenterStorage<Book> bookFilePersistenterStorage(
-            final List<Book> listStorage,
-            final String pathDirectoryRecover,
+            final List<Book> listStorage, final String pathDirectoryRecover,
             final ObjectMapper objectMapperStorage) {
-        return new FilePersistenterStorage<>(
-                listStorage,
-                pathDirectoryRecover,
-                objectMapperStorage,
-                new TypeReference<Book>() {
-                });
+        return new FilePersistenterStorage<>(listStorage, pathDirectoryRecover,
+                objectMapperStorage, new TypeReference<Book>() {
+        });
     }
 }
 
