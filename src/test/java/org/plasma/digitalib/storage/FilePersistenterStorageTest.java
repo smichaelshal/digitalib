@@ -42,7 +42,7 @@ class FilePersistenterStorageTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         this.books = new LinkedList<>();
-        this.listStorage = new LinkedList<Book>();
+        this.listStorage = new LinkedList<>();
         Path path = Files.createTempDirectory(UUID.randomUUID().toString());
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -52,7 +52,7 @@ class FilePersistenterStorageTest {
                 this.listStorage,
                 path.toString(),
                 objectMapper,
-                new TypeReference<Book>() { });
+                new TypeReference<>() { });
         this.book = new Book(
                 "genre",
                 "summary",
