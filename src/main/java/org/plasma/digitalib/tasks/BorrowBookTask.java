@@ -43,6 +43,9 @@ public class BorrowBookTask extends Task {
             case SUCCESS:
                 System.out.println("The book has been borrowed successfully");
                 break;
+            case BORROWER_ERROR:
+                System.out.println("Borrower error, try again");
+                break;
             default:
                 System.out.println("Error, try again");
         }
