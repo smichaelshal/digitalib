@@ -10,13 +10,12 @@ import java.util.function.Predicate;
 
 @Slf4j
 @AllArgsConstructor
-public class IdsFilter<T extends BorrowableItem>
-        implements Predicate<T> {
+public class IdsFilter<T extends BorrowableItem> implements Predicate<T> {
     private final List<UUID> ids;
 
     public final boolean test(final T item) {
         boolean isContains = ids.contains(item.getId());
-        log.debug("The id of {} is {}contains in {} borrowed",
+        log.debug("The id of {} is {}contains in {}",
                 item,
                 this.ids,
                 isContains ? "" : "not ");
