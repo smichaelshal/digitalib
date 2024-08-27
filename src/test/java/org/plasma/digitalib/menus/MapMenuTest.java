@@ -5,9 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.inputs.Input;
-import org.plasma.digitalib.menus.Displayer;
-import org.plasma.digitalib.menus.MapMenu;
-import org.plasma.digitalib.menus.Menu;
 import org.plasma.digitalib.tasks.Task;
 
 import java.util.HashMap;
@@ -22,13 +19,13 @@ class MapMenuTest {
     private String key;
 
     @Mock
-    Task task;
+    private Task task;
 
     @Mock
-    Displayer displayer;
+    private Displayer displayer;
 
     @Mock
-    Input input;
+    private Input input;
 
     @BeforeEach
     public void setup() {
