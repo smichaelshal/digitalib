@@ -35,7 +35,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         this.objectMapper = objectMapper;
         this.typeReference = typeReference;
         this.recover();
-        this.createDirecotry();
+        this.createDirectory();
     }
 
     public final boolean create(@NonNull final T item) {
@@ -86,10 +86,14 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         return false;
     }
 
-    private void createDirecotry() {
+    private void createDirectory() {
         File directory = new File(this.directoryPath);
         if (!directory.exists()) {
-            directory.mkdirs();
+            boolean mkdirResult = directory.mkdirs();
+            if (!mkdirResult) {
+                log.error("Failed to create recovery directory");
+            }
+
             log.debug("Create recovery directory");
         }
     }
