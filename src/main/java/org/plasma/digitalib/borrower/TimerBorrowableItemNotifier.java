@@ -1,6 +1,7 @@
 package org.plasma.digitalib.borrower;
 
 import lombok.NonNull;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.plasma.digitalib.filters.BorrowingFilter;
 import org.plasma.digitalib.filters.IdsFilter;
@@ -164,8 +165,11 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
 
                         log.debug("Send notify with {}", item);
                         this.consumer.accept(item);
-                        this.mapIdFuture.remove(item.getId());
+                        synchronized (this.mapIdFuture) {
+                            this.mapIdFuture.remove(item.getId());
+                        }
                     }
+
                     this.mapTimeId.remove(currentTime);
                 } else {
                     log.debug("Running without items");
@@ -238,14 +242,18 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
     private boolean needSchedule(
             final Instant newTime,
             final Optional<Instant> oldMinTime) {
-        synchronized (this.mapIdFuture) {
-            if (oldMinTime.isEmpty() && this.mapIdFuture.isEmpty()) {
-                return true;
+        if (oldMinTime.isEmpty()) {
+            synchronized (this.mapIdFuture) {
+                if (!this.mapIdFuture.isEmpty()) {
+                    return false;
+                }
             }
+
+            return true;
         }
 
-        Instant oldTime = null;
-        List<UUID> ids = null;
+        Instant oldTime;
+        List<UUID> ids;
         synchronized (this.mapTimeId) {
             oldTime = oldMinTime.get();
             ids = this.mapTimeId.get(oldTime);
@@ -253,6 +261,7 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
                 return true;
             }
         }
+
         synchronized (mapIdFuture) {
             if (oldTime.isAfter(newTime)) {
                 for (UUID id : ids) {
@@ -278,16 +287,13 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
         }
     }
 
+    @Synchronized("mapTimeId")
     private Optional<Instant> getNextScheduledTime() {
-        Instant currentTime;
-        synchronized (this.mapTimeId) {
-            if (this.mapTimeId.isEmpty()) {
-                return Optional.empty();
-            }
-
-            currentTime = Collections.min(this.mapTimeId.keySet());
+        if (this.mapTimeId.isEmpty()) {
+            return Optional.empty();
         }
 
+        Instant currentTime = Collections.min(this.mapTimeId.keySet());
         return Optional.of(currentTime);
     }
 }
