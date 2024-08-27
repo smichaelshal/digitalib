@@ -10,7 +10,6 @@ import org.plasma.digitalib.storage.Storage;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -186,7 +185,7 @@ class StorageBookAdderTest {
     public void add_withNewBookWithEmptySummaryAndGenre_shouldReturnFalse() {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(
-                new LinkedList());
+                new LinkedList<>());
         Book book = new Book(
                 "",
                 "",
@@ -205,7 +204,7 @@ class StorageBookAdderTest {
     public void add_withNewBookWithEmptyNameAndAuthor_shouldReturnFalse() {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(
-                new LinkedList());
+                new LinkedList<>());
         Book book = new Book(
                 this.book.getGenre(),
                 this.book.getSummary(),
@@ -224,7 +223,7 @@ class StorageBookAdderTest {
     public void add_withNewBookWithEmptyAuthor_shouldReturnFalse() {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(
-                new LinkedList());
+                new LinkedList<>());
         Book book = new Book(
                 this.book.getGenre(),
                 this.book.getSummary(),
@@ -243,7 +242,7 @@ class StorageBookAdderTest {
     public void add_withNewBookWithEmptyName_shouldReturnFalse() {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(
-                new LinkedList());
+                new LinkedList<>());
         Book book = new Book(
                 this.book.getGenre(),
                 this.book.getSummary(),
