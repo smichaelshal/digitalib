@@ -243,12 +243,6 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
             final Instant newTime,
             final Optional<Instant> oldMinTime) {
         if (oldMinTime.isEmpty()) {
-            synchronized (this.mapIdFuture) {
-                if (!this.mapIdFuture.isEmpty()) {
-                    return false;
-                }
-            }
-
             return true;
         }
 
