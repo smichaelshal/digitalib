@@ -13,10 +13,10 @@ import static org.mockito.Mockito.when;
 
 class AddNewBookTaskTest {
     @Mock
-    ItemAdder<Book> storageBookAdder;
+    private ItemAdder<Book> storageBookAdder;
 
     @Mock
-    Input consoleInput;
+    private Input consoleInput;
 
     @Test
     void run_withStringInput_shouldCallAdd() {
