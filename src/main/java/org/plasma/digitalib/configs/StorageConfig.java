@@ -30,7 +30,7 @@ public class StorageConfig {
      * @throws IOException
      */
     @Bean
-    public String pathDirectoryRecover() throws IOException {
+    public String pathDirectoryRecover() {
         return "digitalib/items";
     }
 
