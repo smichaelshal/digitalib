@@ -1,6 +1,7 @@
 package org.plasma.digitalib.borrower;
 
 import lombok.NonNull;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.plasma.digitalib.filters.BorrowingFilter;
 import org.plasma.digitalib.filters.IdsFilter;
@@ -278,15 +279,13 @@ public class TimerBorrowableItemNotifier<T extends BorrowableItem> implements
         }
     }
 
+    @Synchronized("mapTimeId")
     private Optional<Instant> getNextScheduledTime() {
-        Instant currentTime;
-        synchronized (this.mapTimeId) {
-            if (this.mapTimeId.isEmpty()) {
-                return Optional.empty();
-            }
-
-            currentTime = Collections.min(this.mapTimeId.keySet());
+        if (this.mapTimeId.isEmpty()) {
+            return Optional.empty();
         }
+
+        Instant currentTime = Collections.min(this.mapTimeId.keySet());
 
         return Optional.of(currentTime);
     }
