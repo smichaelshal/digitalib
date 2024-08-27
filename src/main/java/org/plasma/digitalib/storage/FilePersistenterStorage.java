@@ -3,6 +3,7 @@ package org.plasma.digitalib.storage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.plasma.digitalib.models.BorrowableItem;
 
@@ -38,6 +39,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         this.createDirecotry();
     }
 
+    @Synchronized("items")
     public final boolean create(@NonNull final T item) {
         try {
             this.items.add(item);
@@ -56,6 +58,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         return true;
     }
 
+    @Synchronized("items")
     public final List<T> readAll(@NonNull final Predicate<T> filter) {
         log.debug("Read all by filter: {}", filter);
         return this.items.stream()
@@ -63,6 +66,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 collect(Collectors.toList());
     }
 
+    @Synchronized("items")
     public final boolean update(
             @NonNull final UUID id,
             @NonNull final T newItem) {
