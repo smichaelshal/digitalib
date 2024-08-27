@@ -89,7 +89,11 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     private void createDirecotry() {
         File directory = new File(this.directoryPath);
         if (!directory.exists()) {
-            directory.mkdirs();
+            boolean mkdirResult = directory.mkdirs();
+            if (!mkdirResult) {
+                log.error("Failed to create recovery directory");
+            }
+
             log.debug("Create recovery directory");
         }
     }
