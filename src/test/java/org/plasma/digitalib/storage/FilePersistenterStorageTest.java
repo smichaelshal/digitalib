@@ -36,13 +36,13 @@ class FilePersistenterStorageTest {
     private Book book;
 
     @Mock
-    private Predicate<Book> bookByIdFilter;
+    private Predicate<Book> filter;
 
     @BeforeEach
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         this.books = new LinkedList<>();
-        this.listStorage = new LinkedList<Book>();
+        this.listStorage = new LinkedList<>();
         Path path = Files.createTempDirectory(UUID.randomUUID().toString());
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -52,8 +52,12 @@ class FilePersistenterStorageTest {
                 this.listStorage,
                 path.toString(),
                 objectMapper,
-                new TypeReference<Book>() { });
+                new TypeReference<>() { });
         this.book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
@@ -84,28 +88,28 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void read_withIdFilter_shouldReturnBook() {
+    public void read_withFilterMatch_shouldReturnBook() {
         // Arrange
-        when(bookByIdFilter.test(this.book)).thenReturn(true);
+        when(filter.test(this.book)).thenReturn(true);
 
         this.storage.create(this.book);
 
         // Act
-        List<Book> bookResults = this.storage.readAll(bookByIdFilter);
+        List<Book> bookResults = this.storage.readAll(filter);
 
         // Assert
         assertEquals(List.of(this.book), bookResults);
     }
 
     @Test
-    public void read_withIdFilter_shouldNotReturnBook() {
+    public void read_withFilterNotMatch_shouldNotReturnBook() {
         // Arrange
-        when(bookByIdFilter.test(any())).thenReturn(false);
+        when(filter.test(any())).thenReturn(false);
 
         this.storage.create(this.book);
 
         // Act
-        List<Book> bookResults = this.storage.readAll(bookByIdFilter);
+        List<Book> bookResults = this.storage.readAll(filter);
 
         // Assert
         assertEquals(List.of(), bookResults);
