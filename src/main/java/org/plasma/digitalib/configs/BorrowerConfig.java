@@ -23,30 +23,21 @@ import java.util.function.Consumer;
 @ComponentScan(basePackageClasses = TimerBorrowableItemNotifier.class)
 @ComponentScan(basePackageClasses = NotifierBookBorrower.class)
 public class BorrowerConfig {
-    /**
-     * @return
-     */
+
     @Bean
-    public ScheduledExecutorService scheduledExecutorServiceBookNotifier() {
+    public static ScheduledExecutorService
+    scheduledExecutorServiceBookNotifier() {
         return Executors.newScheduledThreadPool(10);
     }
 
-    /**
-     * @return
-     */
     @Bean
-    public Consumer<Book> notifyConsumer() {
+    public static Consumer<Book> notifyConsumer() {
         return new BookExpiredPrinter();
     }
 
-    /**
-     * @param scheduledExecutorService
-     * @param storage
-     * @param notifyConsumer
-     * @return
-     */
     @Bean
-    public TimerBorrowableItemNotifier<Book> bookTimerBorrowableItemNotifier(
+    public static TimerBorrowableItemNotifier<Book>
+    bookTimerBorrowableItemNotifier(
             final ScheduledExecutorService scheduledExecutorService,
             final Storage<Book> storage,
             final Consumer<Book> notifyConsumer) {
@@ -55,26 +46,16 @@ public class BorrowerConfig {
                 notifyConsumer);
     }
 
-    /**
-     * @param notifier
-     * @param storage
-     * @param borrowingFactory
-     * @return
-     */
     @Bean
-    public NotifierBookBorrower notifierBookBorrower(
+    public static NotifierBookBorrower notifierBookBorrower(
             final BorrowableItemNotifier<Book> notifier,
             final Storage<Book> storage,
-            final BorrowingFactory borrowingFactory
-    ) {
+            final BorrowingFactory borrowingFactory) {
         return new NotifierBookBorrower(notifier, storage, borrowingFactory);
     }
 
-    /**
-     * @return
-     */
     @Bean
-    public BorrowingFactory borrowingFactory() {
+    public static BorrowingFactory borrowingFactory() {
         return new BaseBorrowingFactory(Duration.of(30, ChronoUnit.SECONDS));
     }
 }

@@ -16,27 +16,19 @@ import java.util.List;
 @Configuration
 @ComponentScan(basePackageClasses = FilePersistenterStorage.class)
 public class StorageConfig {
-    /**
-     * @return
-     */
+
     @Bean
-    public List<Book> listStorage() {
+    public static List<Book> listStorage() {
         return new LinkedList<>();
     }
 
-    /**
-     * @return
-     */
     @Bean
-    public String pathDirectoryRecover() {
+    public static String pathDirectoryRecover() {
         return "digitalib/items";
     }
 
-    /**
-     * @return
-     */
     @Bean
-    public ObjectMapper objectMapperStorage() {
+    public static ObjectMapper objectMapperStorage() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
@@ -44,19 +36,12 @@ public class StorageConfig {
         return objectMapper;
     }
 
-    /**
-     * @param listStorage
-     * @param pathDirectoryRecover
-     * @param objectMapperStorage
-     * @return
-     */
     @Bean
-    public FilePersistenterStorage<Book> bookFilePersistenterStorage(
+    public static FilePersistenterStorage<Book> bookFilePersistenterStorage(
             final List<Book> listStorage, final String pathDirectoryRecover,
             final ObjectMapper objectMapperStorage) {
         return new FilePersistenterStorage<>(listStorage, pathDirectoryRecover,
-                objectMapperStorage, new TypeReference<Book>() {
-        });
+                objectMapperStorage, new TypeReference<>() { });
     }
 }
 

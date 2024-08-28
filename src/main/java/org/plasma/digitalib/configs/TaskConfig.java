@@ -19,14 +19,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackageClasses = AddNewBookTask.class)
 public class TaskConfig {
-    /**
-     * @param adder
-     * @param creatorBookIdentifier
-     * @param consoleUtils
-     * @return
-     */
+
     @Bean
-    public AddNewBookTask addNewBookTask(
+    public static AddNewBookTask addNewBookTask(
             final ItemAdder<Book> adder,
             final ConsoleCreatorBookIdentifier creatorBookIdentifier,
             final Input consoleUtils) {
@@ -37,13 +32,8 @@ public class TaskConfig {
                 consoleUtils);
     }
 
-    /**
-     * @param adder
-     * @param creatorBookIdentifier
-     * @return
-     */
     @Bean
-    public AddBookCopyTask addBookCopyTask(
+    public static AddBookCopyTask addBookCopyTask(
             final ItemAdder<Book> adder,
             final ConsoleCreatorBookIdentifier creatorBookIdentifier) {
         return new AddBookCopyTask(
@@ -52,13 +42,8 @@ public class TaskConfig {
                 creatorBookIdentifier);
     }
 
-    /**
-     * @param consoleCreatorBookIdentifierOrderRequest
-     * @param borrower
-     * @return
-     */
     @Bean
-    public BorrowBookTask borrowBookTask(
+    public static BorrowBookTask borrowBookTask(
             final ConsoleCreatorBookIdentifierOrderRequest
                     consoleCreatorBookIdentifierOrderRequest,
             final Borrower<BookIdentifier> borrower) {
@@ -68,13 +53,8 @@ public class TaskConfig {
                 borrower);
     }
 
-    /**
-     * @param consoleCreatorBookIdentifierOrderRequest
-     * @param borrower
-     * @return
-     */
     @Bean
-    public ReturnBookTask returnBookTask(
+    public static ReturnBookTask returnBookTask(
             final ConsoleCreatorBookIdentifierOrderRequest
                     consoleCreatorBookIdentifierOrderRequest,
             final Borrower<BookIdentifier> borrower) {
@@ -84,36 +64,22 @@ public class TaskConfig {
                 borrower);
     }
 
-    /**
-     * @return
-     */
     @Bean
-    public ExitTask exitTask() {
+    public static ExitTask exitTask() {
         return new ExitTask("exit");
     }
 
-    /**
-     * @param consoleInput
-     * @return
-     */
     @Bean
-    public ConsoleCreatorBookIdentifier consoleCreatorBookIdentifier(
-            final Input consoleInput
-    ) {
+    public static ConsoleCreatorBookIdentifier consoleCreatorBookIdentifier(
+            final Input consoleInput) {
         return new ConsoleCreatorBookIdentifier(consoleInput);
     }
 
-    /**
-     * @param creatorBookIdentifier
-     * @param consoleInput
-     * @return
-     */
     @Bean
-    public ConsoleCreatorBookIdentifierOrderRequest
+    public static ConsoleCreatorBookIdentifierOrderRequest
     consoleCreatorBookIdentifierOrderRequest(
             final ConsoleCreatorBookIdentifier creatorBookIdentifier,
-            final Input consoleInput
-    ) {
+            final Input consoleInput) {
         return new ConsoleCreatorBookIdentifierOrderRequest(
                 creatorBookIdentifier, consoleInput);
     }

@@ -13,45 +13,29 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackageClasses = AllBookFilter.class)
 public class FilterConfig {
-    /**
-     * @return
-     */
+
     @Bean
-    public AllBookFilter allBookFilter() {
+    public static AllBookFilter allBookFilter() {
         return new AllBookFilter();
     }
 
-    /**
-     * @return
-     */
     @Bean
-    public BorrowedBookFilter borrowedBookFilter() {
+    public static BorrowedBookFilter borrowedBookFilter() {
         return new BorrowedBookFilter();
     }
 
-    /**
-     * @return
-     */
     @Bean
-    public ExpiredBookFilter expiredBookFilter() {
+    public static ExpiredBookFilter expiredBookFilter() {
         return new ExpiredBookFilter();
     }
 
-    /**
-     * @return
-     */
     @Bean
-    public PresentBookFilter presentBookFilter() {
+    public static PresentBookFilter presentBookFilter() {
         return new PresentBookFilter();
     }
 
-    /**
-     * @param searcher
-     * @param filter
-     * @return
-     */
     @Bean
-    public PrintBooksByFilterTask printBooksByFilterExpiredTask(
+    public static PrintBooksByFilterTask printBooksByFilterExpiredTask(
             final BookSearcher searcher,
             final ExpiredBookFilter filter) {
         return new PrintBooksByFilterTask(
@@ -60,13 +44,8 @@ public class FilterConfig {
                 filter);
     }
 
-    /**
-     * @param searcher
-     * @param filter
-     * @return
-     */
     @Bean
-    public PrintBooksByFilterTask printBooksByFilterBorrowedTask(
+    public static PrintBooksByFilterTask printBooksByFilterBorrowedTask(
             final BookSearcher searcher,
             final BorrowedBookFilter filter) {
         return new PrintBooksByFilterTask(
@@ -75,13 +54,8 @@ public class FilterConfig {
                 filter);
     }
 
-    /**
-     * @param searcher
-     * @param filter
-     * @return
-     */
     @Bean
-    public PrintBooksByFilterTask printAllBooksTask(
+    public static PrintBooksByFilterTask printAllBooksTask(
             final BookSearcher searcher,
             final AllBookFilter filter) {
         return new PrintBooksByFilterTask(
@@ -90,13 +64,8 @@ public class FilterConfig {
                 filter);
     }
 
-    /**
-     * @param searcher
-     * @param filter
-     * @return
-     */
     @Bean
-    public PrintBooksByFilterTask printBooksByFilterPresentTask(
+    public static PrintBooksByFilterTask printBooksByFilterPresentTask(
             final BookSearcher searcher,
             final PresentBookFilter filter) {
         return new PrintBooksByFilterTask(
