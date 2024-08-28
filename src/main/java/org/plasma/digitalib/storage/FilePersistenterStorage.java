@@ -132,7 +132,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
             });
         } catch (IOException e) {
             log.error("Failed recover storage from: {}"
-                            + "reading from the directory failed",
+                            + " reading from the directory failed",
                     this.directoryPath, e);
         }
     }
