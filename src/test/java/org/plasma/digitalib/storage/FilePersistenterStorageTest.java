@@ -54,6 +54,10 @@ class FilePersistenterStorageTest {
                 objectMapper,
                 new TypeReference<>() { });
         this.book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
@@ -84,7 +88,7 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void read_withFilter_shouldReturnBook() {
+    public void read_withFilterMatch_shouldReturnBook() {
         // Arrange
         when(filter.test(this.book)).thenReturn(true);
 
@@ -98,7 +102,7 @@ class FilePersistenterStorageTest {
     }
 
     @Test
-    public void read_withFilter_shouldNotReturnBook() {
+    public void read_withFilterNotMatch_shouldNotReturnBook() {
         // Arrange
         when(filter.test(any())).thenReturn(false);
 
