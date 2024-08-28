@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 
+import java.time.Instant;
+import java.util.LinkedList;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,6 +20,10 @@ class BorrowedBookFilterTest {
     void setup() {
         this.filter = new BorrowedBookFilter();
         this.book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
