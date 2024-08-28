@@ -54,6 +54,10 @@ class FilePersistenterStorageTest {
                 objectMapper,
                 new TypeReference<>() { });
         this.book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
