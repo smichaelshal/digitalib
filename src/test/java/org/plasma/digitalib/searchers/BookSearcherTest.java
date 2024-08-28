@@ -32,7 +32,7 @@ class BookSearcherTest {
     @Test
     void search() {
         // Arrange
-        List<Book> expectedResult = new LinkedList();
+        List<Book> expectedResult = new LinkedList<>();
         when(this.storage.readAll(this.filter)).thenReturn(expectedResult);
 
         // Act
