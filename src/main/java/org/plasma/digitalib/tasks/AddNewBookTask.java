@@ -6,6 +6,10 @@ import org.plasma.digitalib.inputs.Input;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 
+import java.time.Instant;
+import java.util.LinkedList;
+import java.util.UUID;
+
 public class AddNewBookTask extends Task {
     private final ItemAdder<Book> adder;
     private final ConsoleCreatorBookIdentifier creatorBookIdentifier;
@@ -30,7 +34,16 @@ public class AddNewBookTask extends Task {
         String summary = this.consoleUtils.getNotEmptyParameter(
                 "summary book");
 
-        Book book = new Book(genre, summary, bookIdentifier);
+        Book book =
+                new Book(
+                        new LinkedList<>(),
+                        UUID.randomUUID(),
+                        Instant.now(),
+                        false,
+                        genre,
+                        summary,
+                        bookIdentifier);
+        new Book();
         boolean adderResult = this.adder.add(book);
         if (adderResult) {
             System.out.println("success created book");
