@@ -3,6 +3,7 @@ package org.plasma.digitalib.storage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.plasma.digitalib.models.BorrowableItem;
 
@@ -21,20 +22,24 @@ import java.util.stream.Stream;
 public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         implements Storage<T> {
     private final List<T> items;
-    private final Path directoryPath;
+    private final String directoryPath;
     private final ObjectMapper objectMapper;
-
+    private final TypeReference<T> typeReference;
 
     public FilePersistenterStorage(
             final List<T> items,
-            final Path directoryPath,
-            final ObjectMapper objectMapper) {
+            final String directoryPath,
+            final ObjectMapper objectMapper,
+            final TypeReference<T> typeReference) {
         this.items = items;
         this.directoryPath = directoryPath;
         this.objectMapper = objectMapper;
+        this.typeReference = typeReference;
         this.recover();
+        this.createDirectory();
     }
 
+    @Synchronized("items")
     public final boolean create(@NonNull final T item) {
         try {
             this.items.add(item);
@@ -53,6 +58,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
         return true;
     }
 
+    @Synchronized("items")
     public final List<T> readAll(@NonNull final Predicate<T> filter) {
         log.debug("Read all by filter: {}", filter);
         return this.items.stream()
@@ -60,6 +66,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 collect(Collectors.toList());
     }
 
+    @Synchronized("items")
     public final boolean update(
             @NonNull final UUID id,
             @NonNull final T newItem) {
@@ -69,26 +76,39 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 this.items.set(i, newItem);
                 boolean saveResult = this.saveItem(newItem);
                 if (!saveResult) {
-                    log.warn("Failed save update {}", oldItem);
+                    log.warn("Failed save update {} to {}", oldItem, newItem);
                     this.items.set(i, oldItem);
                     return false;
                 }
-                log.debug("Success updated {}", newItem);
+
+                log.debug("Success updated to item {}: {}", id, newItem);
                 return true;
             }
         }
 
-        log.debug("Id not found: {}", id);
+        log.debug("Failed to update because id not found: {}", id);
         return false;
     }
 
+    private void createDirectory() {
+        File directory = new File(this.directoryPath);
+        if (!directory.exists()) {
+            boolean mkdirResult = directory.mkdirs();
+            if (!mkdirResult) {
+                log.error("Failed to create recovery directory");
+            }
+
+            log.debug("Create recovery directory");
+        }
+    }
+
     private boolean saveItem(final T item) {
-        File file = Path.of(this.directoryPath.toString(),
+        File file = Path.of(this.directoryPath,
                 item.getId().toString()).toFile();
         try {
             this.objectMapper.writeValue(file, item);
         } catch (Exception e) {
-            log.error("save item failed: ", e);
+            log.error("Save item failed: ", e);
             return false;
         }
 
@@ -96,13 +116,14 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
     }
 
     private void recover() {
-        try (Stream<Path> paths = Files.walk(this.directoryPath)
+        log.debug("Start recovery");
+        try (Stream<Path> paths = Files.walk(Path.of(this.directoryPath))
                 .filter(Files::isRegularFile)) {
             paths.forEach(path -> {
                 try {
                     T item = this.objectMapper.readValue(
                             path.toFile(),
-                            new TypeReference<T>() {});
+                            this.typeReference);
                     this.items.add(item);
                     log.debug("Success recover item: {}", item);
                 } catch (IOException e) {
@@ -110,7 +131,9 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 }
             });
         } catch (IOException e) {
-            log.error("Failed recover storage from: {}", this.directoryPath, e);
+            log.error("Failed recover storage from: {}"
+                            + " reading from the directory failed",
+                    this.directoryPath, e);
         }
     }
 }

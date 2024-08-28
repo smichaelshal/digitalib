@@ -1,8 +1,7 @@
 package org.plasma.digitalib.storage;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.SerializationUtils;
@@ -12,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
-import org.plasma.digitalib.models.BorrowableItem;
 import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.models.User;
 
@@ -28,6 +26,7 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class FilePersistenterStorageTest {
@@ -36,30 +35,29 @@ class FilePersistenterStorageTest {
     private FilePersistenterStorage<Book> storage;
     private Book book;
 
+    @Mock
+    private Predicate<Book> filter;
+
     @BeforeEach
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         this.books = new LinkedList<>();
-        this.listStorage = new LinkedList<Book>();
+        this.listStorage = new LinkedList<>();
         Path path = Files.createTempDirectory(UUID.randomUUID().toString());
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
-
-        PolymorphicTypeValidator polymorphicTypeValidator =
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType("org.plasma.digitalib")
-                        .allowIfSubType("java.util.LinkedList")
-                        .build();
-        objectMapper.activateDefaultTyping(
-                polymorphicTypeValidator,
-                ObjectMapper.DefaultTyping.NON_FINAL);
-        objectMapper.registerSubtypes(BorrowableItem.class);
-
-        this.storage = new FilePersistenterStorage<>(this.listStorage, path,
-                objectMapper);
+        this.storage = new FilePersistenterStorage<>(
+                this.listStorage,
+                path.toString(),
+                objectMapper,
+                new TypeReference<>() { });
         this.book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
@@ -89,21 +87,32 @@ class FilePersistenterStorageTest {
         assertTrue(addResult);
     }
 
-    @Mock
-    Predicate<Book> bookByIdFilter;
-
     @Test
-    public void read_withIdFilter_shouldReturnBook() {
+    public void read_withFilterMatch_shouldReturnBook() {
         // Arrange
-        when(bookByIdFilter.test(this.book)).thenReturn(true);
+        when(filter.test(this.book)).thenReturn(true);
 
         this.storage.create(this.book);
 
         // Act
-        List<Book> bookResults = this.storage.readAll(bookByIdFilter);
+        List<Book> bookResults = this.storage.readAll(filter);
 
         // Assert
         assertEquals(List.of(this.book), bookResults);
+    }
+
+    @Test
+    public void read_withFilterNotMatch_shouldNotReturnBook() {
+        // Arrange
+        when(filter.test(any())).thenReturn(false);
+
+        this.storage.create(this.book);
+
+        // Act
+        List<Book> bookResults = this.storage.readAll(filter);
+
+        // Assert
+        assertEquals(List.of(), bookResults);
     }
 
     @Test
