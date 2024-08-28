@@ -43,7 +43,6 @@ public class AddNewBookTask extends Task {
                         genre,
                         summary,
                         bookIdentifier);
-        new Book();
         boolean adderResult = this.adder.add(book);
         if (adderResult) {
             System.out.println("success created book");
