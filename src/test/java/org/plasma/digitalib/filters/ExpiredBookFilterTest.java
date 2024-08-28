@@ -9,6 +9,8 @@ import org.plasma.digitalib.models.User;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedList;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,6 +23,10 @@ class ExpiredBookFilterTest {
     void setup() {
         this.filter = new ExpiredBookFilter();
         this.book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
