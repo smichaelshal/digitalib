@@ -8,8 +8,10 @@ import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.storage.Storage;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,6 +33,10 @@ class StorageBookAdderTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         this.book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
@@ -81,6 +87,10 @@ class StorageBookAdderTest {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(this.books);
         Book secondBook = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 this.book.getGenre(),
                 this.book.getSummary(),
                 new BookIdentifier(
@@ -100,6 +110,10 @@ class StorageBookAdderTest {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(this.books);
         Book secondBook = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 this.book.getGenre(),
                 this.book.getSummary() + "_",
                 new BookIdentifier(
@@ -119,6 +133,10 @@ class StorageBookAdderTest {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(this.books);
         Book secondBook = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 this.book.getGenre(),
                 this.book.getSummary() + "_",
                 new BookIdentifier(
@@ -138,6 +156,10 @@ class StorageBookAdderTest {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(this.books);
         Book secondBook = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 this.book.getGenre(),
                 "",
                 new BookIdentifier(
@@ -157,6 +179,10 @@ class StorageBookAdderTest {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(this.books);
         Book secondBook = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "",
                 this.book.getSummary(),
                 new BookIdentifier(
@@ -176,6 +202,10 @@ class StorageBookAdderTest {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(this.books);
         Book secondBook = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "",
                 "",
                 new BookIdentifier(
@@ -195,6 +225,10 @@ class StorageBookAdderTest {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(this.books);
         Book secondBook = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 this.book.getGenre() + "_",
                 "",
                 new BookIdentifier(
@@ -214,6 +248,10 @@ class StorageBookAdderTest {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(this.books);
         Book secondBook = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "",
                 this.book.getSummary() + "_",
                 new BookIdentifier(
@@ -233,12 +271,18 @@ class StorageBookAdderTest {
         // Arrange
         when(this.storage.readAll(any())).thenReturn(
                 new LinkedList<>());
-        Book book = new Book(
-                "",
-                "",
-                new BookIdentifier(
-                        this.book.getBookIdentifier().getName() + "_",
-                        this.book.getBookIdentifier().getAuthor() + "_"));
+        Book book =
+                new Book(
+                        new LinkedList<>(),
+                        UUID.randomUUID(),
+                        Instant.now(),
+                        false,
+                        "",
+                        "",
+                        new BookIdentifier(
+                                this.book.getBookIdentifier().getName() + "_",
+                                this.book.getBookIdentifier().getAuthor() +
+                                        "_"));
 
         // Act
         boolean adderResult = this.storageBookAdder.add(book);
@@ -253,6 +297,10 @@ class StorageBookAdderTest {
         when(this.storage.readAll(any())).thenReturn(
                 new LinkedList<>());
         Book book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 this.book.getGenre(),
                 this.book.getSummary(),
                 new BookIdentifier(
@@ -272,6 +320,10 @@ class StorageBookAdderTest {
         when(this.storage.readAll(any())).thenReturn(
                 new LinkedList<>());
         Book book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 this.book.getGenre(),
                 this.book.getSummary(),
                 new BookIdentifier(
@@ -291,6 +343,10 @@ class StorageBookAdderTest {
         when(this.storage.readAll(any())).thenReturn(
                 new LinkedList<>());
         Book book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 this.book.getGenre(),
                 this.book.getSummary(),
                 new BookIdentifier(

@@ -76,7 +76,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                 this.items.set(i, newItem);
                 boolean saveResult = this.saveItem(newItem);
                 if (!saveResult) {
-                    log.warn("Failed save update {}", oldItem);
+                    log.warn("Failed save update {} to {}", oldItem, newItem);
                     this.items.set(i, oldItem);
                     return false;
                 }
@@ -132,7 +132,7 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
             });
         } catch (IOException e) {
             log.error("Failed recover storage from: {}"
-                            + "reading from the directory failed",
+                            + " reading from the directory failed",
                     this.directoryPath, e);
         }
     }
