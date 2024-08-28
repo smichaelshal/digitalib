@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 
+import java.time.Instant;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,6 +20,10 @@ class IdsFilterTest {
     @BeforeEach
     void setup() {
         this.book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));
@@ -37,6 +44,10 @@ class IdsFilterTest {
     void test_withNotContainId_shouldReturnFalse() {
         // Arrange
         Book secondBook = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                false,
                 "genre",
                 "summary",
                 new BookIdentifier("name", "author"));

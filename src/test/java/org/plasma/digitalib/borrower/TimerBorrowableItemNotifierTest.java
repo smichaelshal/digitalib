@@ -13,8 +13,10 @@ import org.plasma.digitalib.storage.Storage;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -42,10 +44,13 @@ class TimerBorrowableItemNotifierTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         this.book = new Book(
+                new LinkedList<>(),
+                UUID.randomUUID(),
+                Instant.now(),
+                true,
                 "genre",
                 "summary",
-                new BookIdentifier("name", "author"),
-                true);
+                new BookIdentifier("name", "author"));
         Instant expiredTime = Instant.now().plus(3, ChronoUnit.SECONDS);
         User user = new User("1234");
         this.book.getBorrowings().add(
