@@ -17,8 +17,8 @@ public class IdsFilter<T extends BorrowableItem> implements Predicate<T> {
         boolean isContains = ids.contains(item.getId());
         log.debug("The id of {} is {}contains in {}",
                 item,
-                this.ids,
-                isContains ? "" : "not ");
+                isContains ? "" : "not ",
+                this.ids);
         return isContains;
     }
 }
