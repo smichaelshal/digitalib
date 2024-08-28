@@ -5,6 +5,10 @@ import org.plasma.digitalib.adders.ItemAdder;
 import org.plasma.digitalib.models.Book;
 import org.plasma.digitalib.models.BookIdentifier;
 
+import java.time.Instant;
+import java.util.LinkedList;
+import java.util.UUID;
+
 public class AddBookCopyTask extends Task {
     private final ItemAdder<Book> adder;
     private final ConsoleCreatorBookIdentifier creatorBookIdentifier;
@@ -21,7 +25,16 @@ public class AddBookCopyTask extends Task {
     @Override
     public final void run() {
         BookIdentifier bookIdentifier = this.creatorBookIdentifier.create();
-        Book book = new Book("", "", bookIdentifier);
+        Book book =
+                new Book(
+                        new LinkedList<>(),
+                        UUID.randomUUID(),
+                        Instant.now(),
+                        false,
+                        "",
+                        "",
+                        bookIdentifier);
+
         boolean adderResult = this.adder.add(book);
         if (adderResult) {
             System.out.println("success created book");
