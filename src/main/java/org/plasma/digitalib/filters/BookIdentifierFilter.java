@@ -24,4 +24,3 @@ public class BookIdentifierFilter implements Predicate<Book> {
         return filterResult;
     }
 }
-a
