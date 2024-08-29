@@ -15,6 +15,6 @@ import java.util.UUID;
 public class BorrowableItem implements Serializable {
     protected List<Borrowing> borrowings;
     protected Instant enteredTime;
-    protected Boolean isBorrowed;
+    protected boolean isBorrowed;
     protected UUID id;
 }
