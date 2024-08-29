@@ -11,10 +11,6 @@
               files="FilePersistenterStorage.java|Book.java|Borrowing.java|AddNewBookTask.java|AddBookCopyTask.java|BorrowBookTask.java|ReturnBookTask.java|PrintBooksByFilterTask.java"/>
     <suppress checks="MagicNumber" files="BorrowerConfig.java"/>
     <suppress checks="ParameterNumber" files="MenuConfig.java"/>
+    <suppress checks="HiddenField" files="FilePersistenterStorage.java|Book.java|Borrowing.java|PrintBooksByFilterTask.java|AddNewBookTask.java|AddBookCopyTask.java"/>
     <suppress checks="HideUtilityClassConstructor" files="configs\\.*"/>
-
-
-
-<!--    C:\Users\Ori\IdeaProjects\digitalib\src\main\java\org\plasma\digitalib\-->
-
 </suppressions>

@@ -81,7 +81,8 @@ public class FilePersistenterStorage<T extends BorrowableItem & Serializable>
                     return false;
                 }
 
-                log.debug("Success updated to item {}: {}", id, newItem);
+                log.debug("Success updated to item {}: from {} to {}", id,
+                        oldItem, newItem);
                 return true;
             }
         }
