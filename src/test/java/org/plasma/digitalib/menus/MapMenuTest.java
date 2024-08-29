@@ -32,32 +32,32 @@ class MapMenuTest {
         MockitoAnnotations.initMocks(this);
         this.key = "key";
         Map<String, Task> tasks = new HashMap<>();
-        tasks.put(this.key, task);
-        this.menu = new MapMenu(displayer, tasks, input);
+        tasks.put(this.key, this.task);
+        this.menu = new MapMenu(this.displayer, tasks, this.input);
     }
 
 
     @Test
     void run_withExistKey_shouldCallTaskRun() {
         // Arrange
-        when(input.get()).thenReturn(key);
+        when(this.input.get()).thenReturn(this.key);
 
         // Act
         this.menu.run();
 
         // Assert
-        verify(task).run();
+        verify(this.task).run();
     }
 
     @Test
     void run_withNotExistKey_shouldNotCallTaskRun() {
         // Arrange
-        when(input.get()).thenReturn(key + "_");
+        when(this.input.get()).thenReturn(this.key + "_");
 
         // Act
         this.menu.run();
 
         // Assert
-        verify(task, times(0)).run();
+        verify(this.task, times(0)).run();
     }
 }
