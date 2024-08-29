@@ -4,4 +4,5 @@ public interface Input {
     String getNotEmptyParameter(String nameParameter);
 
     String getParameter(String nameParameter);
+    String get();
 }
