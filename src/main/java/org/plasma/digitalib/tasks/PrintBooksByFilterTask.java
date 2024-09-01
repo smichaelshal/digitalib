@@ -6,6 +6,7 @@ import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.searchers.Searcher;
 
+import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -55,13 +56,16 @@ public class PrintBooksByFilterTask extends Task {
     }
 
     private String formatBorrowing(final Borrowing borrowing) {
+        ZoneId zoneId = ZoneId.of("Asia/Jerusalem");
+
         return String.format(
                 "User: %s\nBorrowing time: %s\nExpired time: %s\n%s\n",
-                borrowing.getUser(),
-                borrowing.getBorrowingTime(),
-                borrowing.getExpiredTime(),
+                borrowing.getUser().getId(),
+                borrowing.getBorrowingTime().atZone(zoneId),
+                borrowing.getExpiredTime().atZone(zoneId),
                 borrowing.getReturnTime().isPresent()
-                        ? "Return time: " + borrowing.getReturnTime().get()
+                        ? "Return time: "
+                        + borrowing.getReturnTime().get().atZone(zoneId)
                         : "Not returned");
     }
 }
