@@ -38,13 +38,16 @@ public class PrintBooksByFilterTask extends Task {
 
     private String formatBook(final Book book) {
         BookIdentifier bookIdentifier = book.getBookIdentifier();
+        ZoneId zoneId = ZoneId.of("Asia/Jerusalem");
+
 
         String baseInfo = String.format("Name: %s\nAuthor: %s\n",
                 bookIdentifier.getName(),
                 bookIdentifier.getAuthor());
         String generalInfo = String.format("Enter time: %s%nIs borrowed:"
                         + "%s%n\n",
-                book.getEnteredTime(), book.getIsBorrowed());
+                book.getEnteredTime().atZone(zoneId),
+                book.getIsBorrowed());
         LinkedList<String> borrowings = new LinkedList<>();
         for (Borrowing borrowing : book.getBorrowings()) {
             borrowings.add(this.formatBorrowing(borrowing));
