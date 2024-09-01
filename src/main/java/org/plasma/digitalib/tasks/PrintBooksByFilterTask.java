@@ -6,7 +6,7 @@ import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.searchers.Searcher;
 
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -15,13 +15,16 @@ import java.util.function.Predicate;
 public class PrintBooksByFilterTask extends Task {
     private final Searcher<Book> searcher;
     private final Predicate<Book> filter;
+    private final DateTimeFormatter timeFormatter;
 
     public PrintBooksByFilterTask(final String name,
                                   final Searcher<Book> searcher,
-                                  final Predicate<Book> filter) {
+                                  final Predicate<Book> filter,
+                                  final DateTimeFormatter timeFormatter) {
         super(name);
         this.searcher = searcher;
         this.filter = filter;
+        this.timeFormatter = timeFormatter;
     }
 
     public final void run() {
@@ -38,15 +41,13 @@ public class PrintBooksByFilterTask extends Task {
 
     private String formatBook(final Book book) {
         BookIdentifier bookIdentifier = book.getBookIdentifier();
-        ZoneId zoneId = ZoneId.of("Asia/Jerusalem");
-
 
         String baseInfo = String.format("Name: %s\nAuthor: %s\n",
                 bookIdentifier.getName(),
                 bookIdentifier.getAuthor());
         String generalInfo = String.format("Enter time: %s%nIs borrowed:"
                         + "%s%n\n",
-                book.getEnteredTime().atZone(zoneId),
+                this.timeFormatter.format(book.getEnteredTime()),
                 book.getIsBorrowed());
         LinkedList<String> borrowings = new LinkedList<>();
         for (Borrowing borrowing : book.getBorrowings()) {
@@ -59,16 +60,16 @@ public class PrintBooksByFilterTask extends Task {
     }
 
     private String formatBorrowing(final Borrowing borrowing) {
-        ZoneId zoneId = ZoneId.of("Asia/Jerusalem");
 
         return String.format(
                 "User: %s\nBorrowing time: %s\nExpired time: %s\n%s\n",
                 borrowing.getUser().getId(),
-                borrowing.getBorrowingTime().atZone(zoneId),
-                borrowing.getExpiredTime().atZone(zoneId),
+                this.timeFormatter.format(borrowing.getBorrowingTime()),
+                this.timeFormatter.format(borrowing.getExpiredTime()),
                 borrowing.getReturnTime().isPresent()
                         ? "Return time: "
-                        + borrowing.getReturnTime().get().atZone(zoneId)
+                        + this.timeFormatter
+                        .format(borrowing.getReturnTime().get())
                         : "Not returned");
     }
 }
