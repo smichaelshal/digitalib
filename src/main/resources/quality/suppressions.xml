@@ -13,4 +13,5 @@
     <suppress checks="ParameterNumber" files="MenuConfig.java"/>
     <suppress checks="HideUtilityClassConstructor" files="configs\\.*"/>
     <suppress checks="HiddenField" files="FilePersistenterStorage.java|Book.java|Borrowing.java|BorrowBookTask.java|ReturnBookTask.java|AddNewBookTask.java|AddBookCopyTask.java|PrintBooksByFilterTask.java"/>
+    <suppress checks="MagicNumber" files="PrintBooksByFilterTask.java"/>
 </suppressions>

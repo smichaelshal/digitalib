@@ -14,11 +14,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
-
 public class PrintBooksByFilterTask extends Task {
     private final Searcher<Book> searcher;
     private final Predicate<Book> filter;
     private final DateTimeFormatter timeFormatter;
+    private static String splitBooks;
 
     public PrintBooksByFilterTask(final String name,
                                   final Searcher<Book> searcher,
@@ -28,13 +28,15 @@ public class PrintBooksByFilterTask extends Task {
         this.searcher = searcher;
         this.filter = filter;
         this.timeFormatter = timeFormatter;
+        splitBooks = new String(new char[40]).replace("\0", "-");
     }
 
     public final void run() {
         List<Book> books = this.searcher.search(this.filter);
 
+        System.out.println(splitBooks);
         for (Book book : books) {
-            System.out.println(this.formatBook(book));
+            System.out.println(this.formatBook(book) + splitBooks);
         }
 
         if (books.isEmpty()) {
