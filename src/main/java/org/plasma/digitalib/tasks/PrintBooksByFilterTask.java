@@ -6,28 +6,37 @@ import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.searchers.Searcher;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
-
 public class PrintBooksByFilterTask extends Task {
     private final Searcher<Book> searcher;
     private final Predicate<Book> filter;
+    private final DateTimeFormatter timeFormatter;
+    private static String splitBooks;
 
     public PrintBooksByFilterTask(final String name,
                                   final Searcher<Book> searcher,
-                                  final Predicate<Book> filter) {
+                                  final Predicate<Book> filter,
+                                  final DateTimeFormatter timeFormatter) {
         super(name);
         this.searcher = searcher;
         this.filter = filter;
+        this.timeFormatter = timeFormatter;
+        splitBooks = new String(new char[40]).replace("\0", "-");
     }
 
     public final void run() {
         List<Book> books = this.searcher.search(this.filter);
 
+        System.out.println(splitBooks);
         for (Book book : books) {
-            System.out.println(this.formatBook(book));
+            System.out.println(this.formatBook(book) + splitBooks);
         }
 
         if (books.isEmpty()) {
@@ -43,7 +52,8 @@ public class PrintBooksByFilterTask extends Task {
                 bookIdentifier.getAuthor());
         String generalInfo = String.format("Enter time: %s%nIs borrowed:"
                         + "%s%n\n",
-                book.getEnteredTime(), book.getIsBorrowed());
+                this.formatTime(book.getEnteredTime()),
+                book.getIsBorrowed());
         LinkedList<String> borrowings = new LinkedList<>();
         for (Borrowing borrowing : book.getBorrowings()) {
             borrowings.add(this.formatBorrowing(borrowing));
@@ -55,13 +65,20 @@ public class PrintBooksByFilterTask extends Task {
     }
 
     private String formatBorrowing(final Borrowing borrowing) {
+
         return String.format(
                 "User: %s\nBorrowing time: %s\nExpired time: %s\n%s\n",
-                borrowing.getUser(),
-                borrowing.getBorrowingTime(),
-                borrowing.getExpiredTime(),
+                borrowing.getUser().getId(),
+                this.formatTime(borrowing.getBorrowingTime()),
+                this.formatTime(borrowing.getExpiredTime()),
                 borrowing.getReturnTime().isPresent()
-                        ? "Return time: " + borrowing.getReturnTime().get()
+                        ? "Return time: "
+                        + this.formatTime(borrowing.getReturnTime().get())
                         : "Not returned");
+    }
+
+    private String formatTime(final Instant time) {
+        ZonedDateTime currentTime = time.atZone(ZoneId.systemDefault());
+        return currentTime.format(this.timeFormatter);
     }
 }

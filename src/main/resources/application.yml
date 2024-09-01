@@ -1,0 +1,9 @@
+logging:
+  level:
+    root: "info"
+  file:
+    name: "digitalib/logs/application.log"
+
+spring:
+  main:
+    banner-mode: "off"

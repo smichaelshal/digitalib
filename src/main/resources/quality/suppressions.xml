@@ -7,5 +7,11 @@
 <suppressions>
     <suppress checks="HideUtilityClassConstructor" files="Application.java"/>
     <suppress checks="VisibilityModifier" files="BorrowableItem.java|Task.java"/>
+    <suppress checks="HiddenField"
+              files="FilePersistenterStorage.java|Book.java|Borrowing.java|AddNewBookTask.java|AddBookCopyTask.java|BorrowBookTask.java|ReturnBookTask.java|PrintBooksByFilterTask.java"/>
+    <suppress checks="MagicNumber" files="BorrowerConfig.java"/>
+    <suppress checks="ParameterNumber" files="MenuConfig.java"/>
+    <suppress checks="HideUtilityClassConstructor" files="configs\\.*"/>
     <suppress checks="HiddenField" files="FilePersistenterStorage.java|Book.java|Borrowing.java|BorrowBookTask.java|ReturnBookTask.java|AddNewBookTask.java|AddBookCopyTask.java|PrintBooksByFilterTask.java"/>
+    <suppress checks="MagicNumber" files="PrintBooksByFilterTask.java"/>
 </suppressions>
