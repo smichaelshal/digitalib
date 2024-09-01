@@ -6,8 +6,9 @@ import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.searchers.Searcher;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,16 +44,13 @@ public class PrintBooksByFilterTask extends Task {
 
     private String formatBook(final Book book) {
         BookIdentifier bookIdentifier = book.getBookIdentifier();
-        ZoneId zoneId = ZoneId.systemDefault();
 
         String baseInfo = String.format("Name: %s\nAuthor: %s\n",
                 bookIdentifier.getName(),
                 bookIdentifier.getAuthor());
         String generalInfo = String.format("Enter time: %s%nIs borrowed:"
                         + "%s%n\n",
-                this.timeFormatter.format(
-                        LocalDateTime.from(book.getEnteredTime())
-                                .atZone(zoneId)),
+                this.formatTime(book.getEnteredTime()),
                 book.getIsBorrowed());
         LinkedList<String> borrowings = new LinkedList<>();
         for (Borrowing borrowing : book.getBorrowings()) {
@@ -65,21 +63,20 @@ public class PrintBooksByFilterTask extends Task {
     }
 
     private String formatBorrowing(final Borrowing borrowing) {
-        ZoneId zoneId = ZoneId.systemDefault();
+
         return String.format(
                 "User: %s\nBorrowing time: %s\nExpired time: %s\n%s\n",
                 borrowing.getUser().getId(),
-                this.timeFormatter.format(
-                        LocalDateTime.from(
-                                borrowing.getBorrowingTime().atZone(zoneId))),
-                this.timeFormatter.format(
-                        LocalDateTime.from(borrowing.getExpiredTime())
-                                .atZone(zoneId)),
+                this.formatTime(borrowing.getBorrowingTime()),
+                this.formatTime(borrowing.getExpiredTime()),
                 borrowing.getReturnTime().isPresent()
                         ? "Return time: "
-                        + this.timeFormatter
-                        .format(LocalDateTime.from(
-                                borrowing.getReturnTime().get()).atZone(zoneId))
+                        + this.formatTime(borrowing.getReturnTime().get())
                         : "Not returned");
+    }
+
+    private String formatTime(final Instant time) {
+        ZonedDateTime currentTime = time.atZone(ZoneId.systemDefault());
+        return currentTime.format(this.timeFormatter);
     }
 }

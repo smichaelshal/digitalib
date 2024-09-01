@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Configuration
@@ -20,7 +18,7 @@ public class FilterConfig {
 
     @Bean
     public static DateTimeFormatter timeFormatter() {
-        return DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     }
 
     @Bean

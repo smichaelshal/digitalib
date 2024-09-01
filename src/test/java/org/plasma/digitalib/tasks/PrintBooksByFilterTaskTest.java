@@ -22,7 +22,7 @@ class PrintBooksByFilterTaskTest {
     void run_withFilter_shouldCallSearch() {
         // Arrange
         DateTimeFormatter timeFormatter =
-                DateTimeFormatter.ofPattern("dd.MM.yyyy h:m:s");
+                DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
         MockitoAnnotations.initMocks(this);
         Task task =
                 new PrintBooksByFilterTask("print books by filter",
