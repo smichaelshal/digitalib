@@ -1,5 +1,6 @@
-package org.plasma.digitalib.inputs;
+package org.plasma.digitalib.configs;
 
+import org.plasma.digitalib.inputs.ConsoleInput;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
