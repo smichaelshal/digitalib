@@ -6,6 +6,9 @@ import org.plasma.digitalib.models.BookIdentifier;
 import org.plasma.digitalib.models.Borrowing;
 import org.plasma.digitalib.searchers.Searcher;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +50,7 @@ public class PrintBooksByFilterTask extends Task {
                 bookIdentifier.getAuthor());
         String generalInfo = String.format("Enter time: %s%nIs borrowed:"
                         + "%s%n\n",
-                this.timeFormatter.format(book.getEnteredTime()),
+                this.formatTime(book.getEnteredTime()),
                 book.getIsBorrowed());
         LinkedList<String> borrowings = new LinkedList<>();
         for (Borrowing borrowing : book.getBorrowings()) {
@@ -64,12 +67,16 @@ public class PrintBooksByFilterTask extends Task {
         return String.format(
                 "User: %s\nBorrowing time: %s\nExpired time: %s\n%s\n",
                 borrowing.getUser().getId(),
-                this.timeFormatter.format(borrowing.getBorrowingTime()),
-                this.timeFormatter.format(borrowing.getExpiredTime()),
+                this.formatTime(borrowing.getBorrowingTime()),
+                this.formatTime(borrowing.getExpiredTime()),
                 borrowing.getReturnTime().isPresent()
                         ? "Return time: "
-                        + this.timeFormatter
-                        .format(borrowing.getReturnTime().get())
+                        + this.formatTime(borrowing.getReturnTime().get())
                         : "Not returned");
+    }
+
+    private String formatTime(final Instant time) {
+        ZonedDateTime currentTime = time.atZone(ZoneId.systemDefault());
+        return currentTime.format(this.timeFormatter);
     }
 }
