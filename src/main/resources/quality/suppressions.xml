@@ -8,4 +8,5 @@
     <suppress checks="HideUtilityClassConstructor" files="Application.java"/>
     <suppress checks="VisibilityModifier" files="BorrowableItem.java|Task.java"/>
     <suppress checks="HiddenField" files="FilePersistenterStorage.java|Book.java|Borrowing.java|BorrowBookTask.java|ReturnBookTask.java|AddNewBookTask.java|AddBookCopyTask.java|PrintBooksByFilterTask.java"/>
+    <suppress checks="MagicNumber" files="PrintBooksByFilterTask.java"/>
 </suppressions>
