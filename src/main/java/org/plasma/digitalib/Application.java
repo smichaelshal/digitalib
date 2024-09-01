@@ -16,7 +16,7 @@ public class Application {
                             "foreverMenu");
             foreverMenu.run();
         } catch (Exception e) {
-            System.out.println("");
+            System.out.println();
         }
     }
 }
